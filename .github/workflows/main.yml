@@ -24,32 +24,53 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+        with:
+          ref: ${{ github.event.inputs.version_number }}
+          
+      - name: 'change version'
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: ${{ github.event.inputs.version_number }}
+          git-tag-version: 'false'
         
+              
       - uses: actions/setup-node@v4.0.1
         with:
           node-version: 20.10
           cache: 'npm'
       - run: npm i
-      - run: CI=false npm run build:prod
-        
+      - run: CI=false npm run build
+              
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.0.0
-          
+                
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.0.1
         with:
           role-to-assume: arn:aws:iam::368076259134:role/github-actions-role
           aws-region: us-east-1
-          
+                
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1.7.1
 
-      - name: Build, tag, and push docker image to Amazon ECR
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-flags: --debug
+
+      - name: Image Metadata
+        id: metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.REPOSITORY }}
+          tags: |
+            type=raw,value=${{ github.event.repository.name }}-${{ github.event.inputs.version_number }}
+
+      - name: Build and  tag
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG  .
-        #   docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t ${{ steps.metadata.outputs.tags }} .
           
-    #   - name: Publish
-    #     run: |
-    #       aws ecs update-service --service sdk-chess0-svc --force-new-deployment --cluster SDK-Example-CLS
+      - name: Publish
+        run: |
+          aws ecs update-service --service topia-dev-race0 --force-new-deployment --cluster topia-dev-sdk-apps
