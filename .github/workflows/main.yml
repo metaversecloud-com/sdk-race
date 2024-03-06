@@ -62,6 +62,10 @@ jobs:
         run: |
           docker build -t ${{ steps.metadata.outputs.tags }} .
           
+      - name: push docker image to Amazon ECR
+        run: |
+          docker push ${{ steps.metadata.outputs.tags }}
+          
       - name: Publish
         run: |
           aws ecs update-service --service topia-dev-race0 --force-new-deployment --cluster topia-dev-sdk-apps
