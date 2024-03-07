@@ -1,0 +1,40 @@
+// import { GlobalStateContext } from "@context/GlobalContext";
+// import { backendAPI } from "@utils/backendAPI";
+// import React, { useContext, useState } from "react";
+// import racingMap from "../assets/racingMap.png";
+
+// // new
+// const Instructions = () => (
+//   <div className="instructions">
+//     <h3 className="text-base mb-2">Instructions:</h3>
+//     <p className="text-sm mb-1">Click START to begin.</p>
+//     <p className="text-sm mb-1">Run through all waypoints in the correct order to complete the race!</p>
+//     <p className="text-sm mb-1">Click leaderboard to compare your time with the top 20 players.</p>
+//   </div>
+// );
+
+// const Home = () => {
+//   // const [droppedAsset, setDroppedAsset] = useState();
+
+//   // const { hasInteractiveParams } = useContext(GlobalStateContext);
+
+//   // const handleGetDroppedAsset = async () => {
+//   //   try {
+//   //     const result = await backendAPI.get("/dropped-asset");
+//   //     if (result.data.success) {
+//   //       setDroppedAsset(result.data.droppedAsset);
+//   //     } else return console.log("Error getting data object");
+//   //   } catch (error) {
+//   //     console.log(error);
+//   //   }
+//   // };
+
+//   return (
+//     <div className="app-wrapper">
+//       <Instructions />
+//       <img src={racingMap} alt="racing map" className="max-w-full h-auto my-4" />
+//     </div>
+//   );
+// };
+
+// export default Home;

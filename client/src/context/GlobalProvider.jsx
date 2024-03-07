@@ -6,6 +6,7 @@ const initialState = {
   hasInteractiveParams: false,
   selectedWorld: {},
   urlSlug: "",
+  showOnYourMarkScreen: false,
 };
 
 const GlobalProvider = ({ children }) => {
