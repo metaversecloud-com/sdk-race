@@ -8,6 +8,8 @@ import {
   handleUpdateWorldDataObject,
   moveVisitor,
   handleRemoveDroppedAssets,
+  handleRaceStart,
+  handleWaypointEntered,
 } from "./controllers/index.js";
 import { getVersion } from "./utils/getVersion.js";
 
@@ -33,5 +35,9 @@ router.put("/visitor/move", moveVisitor);
 // World
 router.get("/world", handleGetWorldDetails);
 router.put("/world/data-object", handleUpdateWorldDataObject);
+
+// Race
+router.post("/race/start-race", handleRaceStart);
+router.post("/race/waypoint-entered", handleWaypointEntered);
 
 export default router;

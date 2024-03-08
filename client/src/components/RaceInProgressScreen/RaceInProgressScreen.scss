@@ -1,0 +1,60 @@
+.race-in-progress-wrapper {
+  border-radius: 10px;
+}
+
+.waypoints-container {
+  padding: 16px;
+  padding-top: 34px;
+  margin: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.waypoints {
+  padding: 0 16px;
+}
+
+.race-tracker h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.timer {
+  background: #f4f4f4;
+  padding: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.waypoint {
+  display: flex;
+  align-items: center; /* Isto deve alinhar verticalmente o indicador com o texto */
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.cancel-button {
+  background: red;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  opacity: 0.8;
+}

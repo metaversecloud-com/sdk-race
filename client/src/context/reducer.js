@@ -1,4 +1,4 @@
-import { SET_INTERACTIVE_PARAMS, SCREEN_MANAGER } from "./types";
+import { SET_INTERACTIVE_PARAMS, SCREEN_MANAGER, START_RACE } from "./types";
 
 const globalReducer = (state, action) => {
   const { type, payload } = action;
@@ -15,6 +15,12 @@ const globalReducer = (state, action) => {
         screenManager: {
           showOnYourMarkScreen: !state.showOnYourMarkScreen,
         },
+      };
+    case START_RACE:
+      console.log("START_RACE", payload, state);
+      return {
+        ...state,
+        raceStarted: payload.raceStarted,
       };
     default: {
       throw new Error(`Unhandled action type: ${type}`);

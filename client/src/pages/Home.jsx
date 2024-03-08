@@ -1,14 +1,13 @@
 import React, { useContext, useState } from "react";
 import racingMap from "../assets/racingMap.png";
-import OnYourMarkScreen from "../components/OnYourMarkScreen";
+import OnYourMarkScreen from "../components/OnYourMarkScreen/OnYourMarkScreen";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER } from "@context/types";
+import RaceInProgressScreen from "../components/RaceInProgressScreen/RaceInProgressScreen";
 
 function Home() {
   const { screenManager } = useContext(GlobalStateContext);
   const dispatch = useContext(GlobalDispatchContext);
-
-  console.log("screenManager", screenManager);
 
   const startRace = () => {
     dispatch({ type: SCREEN_MANAGER.TOGGLE_ON_YOUR_MARK_SCREEN });
@@ -59,6 +58,8 @@ function Home() {
       </div>
     );
   }
+
+  // return <RaceInProgressScreen />;
 
   return (
     <div className="app-wrapper">

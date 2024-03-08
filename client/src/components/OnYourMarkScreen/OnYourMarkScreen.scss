@@ -1,10 +1,9 @@
 .container {
-  color: #34495e;
-  text-align: center;
-  display: block;
-  max-width: 352px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   height: 100vh;
-  overflow-x: hidden;
 }
 
 .initialMessage, .countdown {
