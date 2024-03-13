@@ -1,4 +1,4 @@
-import { Visitor, World } from "../../utils/topiaInit.js";
+import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
 export const handleWaypointEntered = async (req, res) => {
@@ -34,7 +34,14 @@ export const handleWaypointEntered = async (req, res) => {
 
     if (!dataObject.race) dataObject.race = {};
     if (!dataObject.race.profiles) dataObject.race.profiles = {};
-    if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
+
+    // User didn't start the race didn't start
+    if (!dataObject.race.profiles[profileId]) {
+      const visitor = Visitor.create(urlSlug, { credentials });
+
+      const droppedAsset = DroppedAsset.create();
+      dataObject.race.profiles[profileId] = {};
+    }
 
     dataObject.race.profiles[profileId].waypoints = waypointsCompleted;
 

@@ -1,4 +1,4 @@
-import { SET_INTERACTIVE_PARAMS, SCREEN_MANAGER, START_RACE, LOAD_GAME_STATE } from "./types";
+import { SET_INTERACTIVE_PARAMS, SCREEN_MANAGER, START_RACE, CANCEL_RACE, LOAD_GAME_STATE } from "./types";
 
 const globalReducer = (state, action) => {
   const { type, payload } = action;
@@ -17,6 +17,7 @@ const globalReducer = (state, action) => {
     case SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN:
       return {
         ...state,
+        waypoints: [],
         screenManager: SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN,
       };
     case SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN:
@@ -28,6 +29,14 @@ const globalReducer = (state, action) => {
       return {
         ...state,
         raceStarted: payload.raceStarted,
+        waypoints: [],
+        startTimestamp: payload.startTimestamp,
+      };
+    case CANCEL_RACE:
+      return {
+        ...state,
+        waypoints: [],
+        startTimestamp: null,
       };
     case LOAD_GAME_STATE:
       return {

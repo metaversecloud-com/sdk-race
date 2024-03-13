@@ -32,6 +32,7 @@ export const startRace = async ({ dispatch, navigate }) => {
         type: START_RACE,
         payload: {
           raceStarted: true,
+          startTimestamp: result.data.startTimestamp,
         },
       });
       return result.data;

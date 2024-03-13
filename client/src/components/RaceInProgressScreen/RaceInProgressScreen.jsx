@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { backendAPI } from "@utils/backendAPI";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
-import { SCREEN_MANAGER } from "@context/types";
+import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
 import "./RaceInProgressScreen.scss"; // Importe seu arquivo CSS aqui
 
 const Waypoint = ({ number, completed }) => {
@@ -15,11 +15,13 @@ const Waypoint = ({ number, completed }) => {
 
 const RaceInProgressScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
-  const { completedWaypoints } = useContext(GlobalStateContext);
+  const { completedWaypoints, startTimestamp } = useContext(GlobalStateContext);
 
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState("...");
 
-  console.log(completedWaypoints, "completedWaypoints");
+  // console.log(completedWaypoints, "completedWaypoints");
+  console.log("startTimestamp", startTimestamp);
 
   const [waypoints, setWaypoints] = useState([
     { id: 1, completed: true },
@@ -29,12 +31,26 @@ const RaceInProgressScreen = () => {
     { id: 5, completed: false },
   ]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const diff = now - startTimestamp;
+      const seconds = Math.floor((diff / 1000) % 60);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+      setElapsedTime(`${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [startTimestamp]);
+
   const handleCancelRace = async () => {
     try {
       setAreAllButtonsDisabled(true);
       const result = await backendAPI.post("/race/cancel-race");
       if (result.data.success) {
         dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
+        dispatch({ type: CANCEL_RACE });
       }
     } catch (error) {
       console.error(error);
@@ -61,9 +77,8 @@ const RaceInProgressScreen = () => {
         <div style={{ marginBottom: "20px", textAlign: "center" }}>
           <h2>Race in progress!</h2>
         </div>
-        {/* <div className="timer">TIME ELAPSED 00:01:23</div> */}
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <div className="timer">⌛ 12:34</div>
+          <div className="timer">⌛ {elapsedTime}</div>
         </div>
         <div className="waypoints">
           {waypoints.map((waypoint) => (

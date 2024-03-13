@@ -29,7 +29,8 @@ export const handleRaceStart = async (req, res) => {
     if (!dataObject.race.profiles) dataObject.race.profiles = {};
     if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
 
-    dataObject.race.profiles[profileId].startTimestamp = Date.now();
+    const startTimestamp = Date.now();
+    dataObject.race.profiles[profileId].startTimestamp = startTimestamp;
     dataObject.race.profiles[profileId].waypoints = [];
 
     await Promise.all([
@@ -40,7 +41,7 @@ export const handleRaceStart = async (req, res) => {
     // await world.updateDataObject(dataObject);
     // await visitor.moveVisitor({ shouldTeleportVisitor: true, x: 0, y: 0 });
 
-    return res.json({ success: true });
+    return res.json({ startTimestamp, success: true });
   } catch (error) {
     return errorHandler({
       error,

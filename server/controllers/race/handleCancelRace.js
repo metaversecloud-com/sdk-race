@@ -17,6 +17,8 @@ export const handleCancelRace = async (req, res) => {
     await world.fetchDataObject();
 
     if (profileId) {
+      world.dataObject.race.profiles[profileId].startTimestamp = null;
+      world.dataObject.race.profiles[profileId].waypoints = [];
       world.dataObject.race.profiles[profileId] = {};
       await world.updateDataObject({ race: world.dataObject.race });
     }
