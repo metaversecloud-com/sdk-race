@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { startRace } from "../../context/actions";
+import { startRace, showRaceInProgressScreen } from "../../context/actions";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import "./OnYourMarkScreen.scss";
@@ -23,6 +23,9 @@ const OnYourMarkScreen = () => {
     } else if (currentMessage === countdown.length - 1 && !raceInitiated) {
       startRace({ dispatch, navigate });
       setRaceInitiated(true);
+      setTimeout(() => {
+        showRaceInProgressScreen(dispatch);
+      }, 5000);
     }
   }, [currentMessage, raceInitiated, dispatch, navigate]);
 

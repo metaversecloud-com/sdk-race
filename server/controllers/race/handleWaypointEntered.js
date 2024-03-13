@@ -3,10 +3,8 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleWaypointEntered = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId } = req.body;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId } = req.body;
     const { assetId, isInteractive, position, uniqueName, sceneDropId } = req.body;
-
-    const profileId = "myProfileId";
 
     const credentials = {
       assetId,
@@ -21,35 +19,32 @@ export const handleWaypointEntered = async (req, res) => {
 
     const dataObject = await world.fetchDataObject();
 
-    // await world.setDataObject({});
-
     const raceObject = dataObject.race || {};
-    const sceneDropObject = raceObject[sceneDropId] || {};
-    const profilesObject = sceneDropObject.profiles || {};
+    const profilesObject = raceObject.profiles || {};
     const profileObject = profilesObject[profileId] || {};
-    const completedWaypoints = (profileObject.waypoints || []).slice();
+    const waypointsCompleted = (profileObject.waypoints || []).slice();
 
-    if (completedWaypoints.length >= waypointNumber - 1 && !completedWaypoints[waypointNumber - 1]) {
-      completedWaypoints[waypointNumber - 1] = true;
-
-      if (!dataObject.race) {
-        dataObject.race = {};
-      }
-      if (!dataObject.race[sceneDropId]) {
-        dataObject.race[sceneDropId] = { profiles: {} };
-      }
-      if (!dataObject.race[sceneDropId].profiles[profileId]) {
-        dataObject.race[sceneDropId].profiles[profileId] = {};
-      }
-
-      dataObject.race[sceneDropId].profiles[profileId].waypoints = completedWaypoints;
-
-      await world.updateDataObject(dataObject);
-
-      return res.json({ completedWaypoints, success: true });
-    } else {
-      return res.status(400).json({ error: "Você precisa completar os waypoints na ordem correta." });
+    if (waypointsCompleted.length < waypointNumber - 1 || waypointsCompleted[waypointNumber - 1]) {
+      return res
+        .status(400)
+        .json({ error: "Wrong waypoint order. You need to enter the waypoints in the correct order" });
     }
+
+    waypointsCompleted[waypointNumber - 1] = true;
+
+    if (!dataObject.race) dataObject.race = {};
+    if (!dataObject.race.profiles) dataObject.race.profiles = {};
+    if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
+
+    dataObject.race.profiles[profileId].waypoints = waypointsCompleted;
+
+    await world.updateDataObject(dataObject);
+
+    return res.json({
+      waypointsCompleted,
+      startTimestamp: dataObject.race.profiles[profileId].startTimestamp,
+      success: true,
+    });
   } catch (error) {
     return errorHandler({
       error,

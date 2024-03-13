@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { backendAPI } from "@utils/backendAPI";
+import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import { SCREEN_MANAGER } from "@context/types";
 import "./RaceInProgressScreen.scss"; // Importe seu arquivo CSS aqui
 
 const Waypoint = ({ number, completed }) => {
@@ -11,6 +14,13 @@ const Waypoint = ({ number, completed }) => {
 };
 
 const RaceInProgressScreen = () => {
+  const dispatch = useContext(GlobalDispatchContext);
+  const { completedWaypoints } = useContext(GlobalStateContext);
+
+  const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
+
+  console.log(completedWaypoints, "completedWaypoints");
+
   const [waypoints, setWaypoints] = useState([
     { id: 1, completed: true },
     { id: 2, completed: false },
@@ -19,16 +29,27 @@ const RaceInProgressScreen = () => {
     { id: 5, completed: false },
   ]);
 
-  const handleCancelRace = () => {
-    // Adicione a lógica para cancelar a corrida aqui
-    console.log("Race cancelled");
+  const handleCancelRace = async () => {
+    try {
+      setAreAllButtonsDisabled(true);
+      const result = await backendAPI.post("/race/cancel-race");
+      if (result.data.success) {
+        dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAreAllButtonsDisabled(false);
+    }
   };
 
   function Footer() {
     return (
       <div className="footer-fixed">
         <div>
-          <button style={{ width: "94%" }}> Cancel Race</button>
+          <button style={{ width: "94%" }} disabled={areAllButtonsDisabled} onClick={() => handleCancelRace()}>
+            Cancel Race
+          </button>
         </div>
       </div>
     );
@@ -42,7 +63,7 @@ const RaceInProgressScreen = () => {
         </div>
         {/* <div className="timer">TIME ELAPSED 00:01:23</div> */}
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <div class="timer">⌛ 12:34</div>
+          <div className="timer">⌛ 12:34</div>
         </div>
         <div className="waypoints">
           {waypoints.map((waypoint) => (

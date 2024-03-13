@@ -37,3 +37,10 @@ img {
   padding: 10px 0;
   text-align: center;
 }
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
