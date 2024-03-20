@@ -1,10 +1,9 @@
-import { Visitor, World } from "../../utils/topiaInit.js";
+import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
 export const handleRaceStart = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId } = req.query;
-    const { assetId, isInteractive, position, uniqueName } = req.body;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId } = req.query;
 
     const visitor = await Visitor.get(visitorId, urlSlug, {
       credentials: {
@@ -23,6 +22,14 @@ export const handleRaceStart = async (req, res) => {
       },
     });
 
+    const droppedAsset = await DroppedAsset.get(assetId, urlSlug, {
+      credentials: {
+        interactiveNonce,
+        interactivePublicKey,
+        visitorId,
+      },
+    });
+
     const dataObject = await world.fetchDataObject();
 
     if (!dataObject.race) dataObject.race = {};
@@ -35,7 +42,7 @@ export const handleRaceStart = async (req, res) => {
 
     await Promise.all([
       world.updateDataObject(dataObject),
-      visitor.moveVisitor({ shouldTeleportVisitor: true, x: 0, y: 0 }),
+      visitor.moveVisitor({ shouldTeleportVisitor: true, x: droppedAsset?.position?.x, y: droppedAsset?.position?.y }),
     ]);
 
     // await world.updateDataObject(dataObject);

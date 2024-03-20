@@ -9,7 +9,7 @@ const OnYourMarkScreen = () => {
   const navigate = useNavigate();
   const { raceStarted } = useContext(GlobalStateContext);
 
-  const countdown = ["3...", "2...", "1..."];
+  const countdown = ["3...", "2...", "1...", "0..."];
   const [currentMessage, setCurrentMessage] = useState(0);
   const initialMessages = ["On Your Mark...", "Get Set..."];
   const [raceInitiated, setRaceInitiated] = useState(false);

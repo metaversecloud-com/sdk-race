@@ -15,47 +15,48 @@ export const handleWaypointEntered = async (req, res) => {
       visitorId,
     };
 
-    redis.publish(`events:${profileId}`, JSON.stringify(profileId));
-
     const waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
 
-    const world = World.create(urlSlug, { credentials });
+    redis.publish(`events:${profileId}`, JSON.stringify({ profileId, waypointNumber }));
 
-    const dataObject = await world.fetchDataObject();
+    return res.status(200).json({ success: true });
+    // const world = World.create(urlSlug, { credentials });
 
-    const raceObject = dataObject.race || {};
-    const profilesObject = raceObject.profiles || {};
-    const profileObject = profilesObject[profileId] || {};
-    const waypointsCompleted = (profileObject.waypoints || []).slice();
+    // const dataObject = await world.fetchDataObject();
 
-    if (waypointsCompleted.length < waypointNumber - 1 || waypointsCompleted[waypointNumber - 1]) {
-      return res
-        .status(400)
-        .json({ error: "Wrong waypoint order. You need to enter the waypoints in the correct order" });
-    }
+    // const raceObject = dataObject.race || {};
+    // const profilesObject = raceObject.profiles || {};
+    // const profileObject = profilesObject[profileId] || {};
+    // const waypointsCompleted = (profileObject.waypoints || []).slice();
 
-    waypointsCompleted[waypointNumber - 1] = true;
+    // if (waypointsCompleted.length < waypointNumber - 1 || waypointsCompleted[waypointNumber - 1]) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "Wrong waypoint order. You need to enter the waypoints in the correct order" });
+    // }
 
-    if (!dataObject.race) dataObject.race = {};
-    if (!dataObject.race.profiles) dataObject.race.profiles = {};
+    // waypointsCompleted[waypointNumber - 1] = true;
 
-    // User didn't start the race didn't start
-    if (!dataObject.race.profiles[profileId]) {
-      const visitor = Visitor.create(urlSlug, { credentials });
+    // if (!dataObject.race) dataObject.race = {};
+    // if (!dataObject.race.profiles) dataObject.race.profiles = {};
 
-      const droppedAsset = DroppedAsset.create();
-      dataObject.race.profiles[profileId] = {};
-    }
+    // // User didn't start the race didn't start
+    // if (!dataObject.race.profiles[profileId]) {
+    //   const visitor = Visitor.create(urlSlug, { credentials });
 
-    dataObject.race.profiles[profileId].waypoints = waypointsCompleted;
+    //   const droppedAsset = DroppedAsset.create();
+    //   dataObject.race.profiles[profileId] = {};
+    // }
 
-    await world.updateDataObject(dataObject);
+    // dataObject.race.profiles[profileId].waypoints = waypointsCompleted;
 
-    return res.json({
-      waypointsCompleted,
-      startTimestamp: dataObject.race.profiles[profileId].startTimestamp,
-      success: true,
-    });
+    // await world.updateDataObject(dataObject);
+
+    // return res.json({
+    //   waypointsCompleted,
+    //   startTimestamp: dataObject.race.profiles[profileId].startTimestamp,
+    //   success: true,
+    // });
   } catch (error) {
     return errorHandler({
       error,

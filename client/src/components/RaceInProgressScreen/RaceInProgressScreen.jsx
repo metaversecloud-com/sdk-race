@@ -26,7 +26,7 @@ const RaceInProgressScreen = () => {
   const [elapsedTime, setElapsedTime] = useState("...");
 
   const [waypoints, setWaypoints] = useState([
-    { id: 1, completed: true },
+    { id: 1, completed: false },
     { id: 2, completed: false },
     { id: 3, completed: false },
     { id: 4, completed: false },
@@ -36,12 +36,19 @@ const RaceInProgressScreen = () => {
   useEffect(() => {
     if (profileId) {
       const eventSource = new EventSource(`http://localhost:3000/api/events?profileId=${profileId}`);
-
       eventSource.onmessage = function (event) {
         const newEvent = JSON.parse(event.data);
         setEvents((prevEvents) => [...prevEvents, newEvent]);
+        setWaypoints((prevWaypoints) => {
+          const updatedWaypoints = prevWaypoints.map((waypoint, index) => {
+            if (waypoint.id === newEvent.waypointNumber && (index === 0 || prevWaypoints[index - 1].completed)) {
+              return { ...waypoint, completed: true };
+            }
+            return waypoint;
+          });
+          return updatedWaypoints;
+        });
       };
-
       return () => {
         eventSource.close();
       };
@@ -108,9 +115,9 @@ const RaceInProgressScreen = () => {
         </div>
       </div>
       <ul>
-        {events.map((event, index) => (
-          <li key={index}>{event}</li>
-        ))}
+        {/* {events.map((event, index) => (
+          <li key={index}>{event?.waypointNumber}</li>
+        ))} */}
       </ul>
       <Footer />
     </div>
