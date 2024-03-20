@@ -1,6 +1,7 @@
 import { Route, Routes, useSearchParams } from "react-router-dom";
 
 import Home from "@pages/Home";
+import Events from "@pages/Events";
 import Error from "@pages/Error";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { GlobalDispatchContext } from "@context/GlobalContext";
@@ -81,6 +82,7 @@ const App = () => {
     <Routes>
       {/* <Route path="/" element={<Home />} /> */}
       <Route path="/start" element={<Home />} />
+      <Route path="/events" element={<Events />} />
       <Route path="*" element={<Error />} />
     </Routes>
   );

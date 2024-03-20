@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   handleDropAsset,
   handleGetDroppedAssetsWithUniqueName,
@@ -12,6 +13,8 @@ import {
   handleWaypointEntered,
   handleLoadGameState,
   handleCancelRace,
+  handleSendEvent,
+  handleGetEvents,
 } from "./controllers/index.js";
 import { getVersion } from "./utils/getVersion.js";
 
@@ -43,5 +46,9 @@ router.get("/race/game-state", handleLoadGameState);
 router.post("/race/start-race", handleRaceStart);
 router.post("/race/waypoint-entered", handleWaypointEntered);
 router.post("/race/cancel-race", handleCancelRace);
+
+// Events
+router.post("/send-event", handleSendEvent);
+router.get("/events", handleGetEvents);
 
 export default router;

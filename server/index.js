@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import router from "./routes.js";
 import path from "path";
+import router from "./routes.js";
+
+const app = express();
 
 import { cleanReturnPayload } from "./utils/cleanReturnPayload.js";
 import { fileURLToPath } from "url";
@@ -21,7 +23,6 @@ function checkEnvVariables() {
 checkEnvVariables();
 
 const PORT = process.env.PORT || 3000;
-const app = express();
 
 app.use(cors());
 app.use(express.json());
