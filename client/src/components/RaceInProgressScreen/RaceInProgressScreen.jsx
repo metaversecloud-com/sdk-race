@@ -2,7 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { backendAPI } from "@utils/backendAPI";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
-import "./RaceInProgressScreen.scss"; // Importe seu arquivo CSS aqui
+import { useSearchParams } from "react-router-dom";
+import "./RaceInProgressScreen.scss";
 
 const Waypoint = ({ number, completed }) => {
   return (
@@ -16,12 +17,13 @@ const Waypoint = ({ number, completed }) => {
 const RaceInProgressScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
   const { completedWaypoints, startTimestamp } = useContext(GlobalStateContext);
+  const [searchParams] = useSearchParams();
+  const [events, setEvents] = useState(["event1"]);
+
+  const profileId = searchParams.get("profileId");
 
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
   const [elapsedTime, setElapsedTime] = useState("...");
-
-  // console.log(completedWaypoints, "completedWaypoints");
-  console.log("startTimestamp", startTimestamp);
 
   const [waypoints, setWaypoints] = useState([
     { id: 1, completed: true },
@@ -30,6 +32,21 @@ const RaceInProgressScreen = () => {
     { id: 4, completed: false },
     { id: 5, completed: false },
   ]);
+
+  useEffect(() => {
+    if (profileId) {
+      const eventSource = new EventSource(`http://localhost:3000/api/events?profileId=${profileId}`);
+
+      eventSource.onmessage = function (event) {
+        const newEvent = JSON.parse(event.data);
+        setEvents((prevEvents) => [...prevEvents, newEvent]);
+      };
+
+      return () => {
+        eventSource.close();
+      };
+    }
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -71,6 +88,10 @@ const RaceInProgressScreen = () => {
     );
   }
 
+  {
+    console.log("events", events);
+  }
+
   return (
     <div className="race-in-progress-wrapper">
       <div className="waypoints-container">
@@ -86,6 +107,11 @@ const RaceInProgressScreen = () => {
           ))}
         </div>
       </div>
+      <ul>
+        {events.map((event, index) => (
+          <li key={index}>{event}</li>
+        ))}
+      </ul>
       <Footer />
     </div>
   );

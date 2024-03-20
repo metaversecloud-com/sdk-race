@@ -1,5 +1,7 @@
+import Redis from "ioredis";
 import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
+const redis = new Redis();
 
 export const handleWaypointEntered = async (req, res) => {
   try {
@@ -12,6 +14,8 @@ export const handleWaypointEntered = async (req, res) => {
       interactivePublicKey,
       visitorId,
     };
+
+    redis.publish(`events:${profileId}`, JSON.stringify(profileId));
 
     const waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
 

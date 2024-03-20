@@ -14,8 +14,6 @@ function Home() {
   const { screenManager, waypointsCompleted } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
 
-  // console.log("waypointsCompleted", waypointsCompleted);
-
   useEffect(() => {
     const fetchGameState = async () => {
       try {
