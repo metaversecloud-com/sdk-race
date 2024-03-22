@@ -8,6 +8,7 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 
 import RaceInProgressScreen from "../components/RaceInProgressScreen/RaceInProgressScreen";
 import NewGameScreen from "../components/NewGameScreen/NewGameScreen";
+import RaceCompletedScreen from "../components/RaceCompletedScreen/RaceCompletedScreen";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
@@ -38,9 +39,16 @@ function Home() {
             startTimestamp: result.data.startTimestamp,
           },
         });
-        if (result.data.startTimestamp) {
+
+        if (result.data.startTimestamp && !result.data.endTimestamp) {
           await dispatch({
             type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN,
+          });
+        }
+
+        if (result.data.startTimestamp && result.data.endTimestamp) {
+          await dispatch({
+            type: SCREEN_MANAGER.SHOW_RACE_COMPLETED,
           });
         }
 
@@ -71,6 +79,7 @@ function Home() {
       {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
+      {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
     </div>
   );
 }

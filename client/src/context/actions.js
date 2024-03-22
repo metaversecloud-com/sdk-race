@@ -1,5 +1,5 @@
 import { backendAPI } from "@utils/backendAPI";
-import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER } from "./types";
+import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER, COMPLETE_RACE } from "./types";
 
 export const loadGameState = async ({ dispatch }) => {
   try {
@@ -43,6 +43,20 @@ export const startRace = async ({ dispatch, navigate }) => {
   }
 };
 
+export const completeRace = async ({ dispatch }) => {
+  try {
+    const result = await backendAPI.post("/race/complete-race");
+    dispatch({ type: COMPLETE_RACE });
+  } catch (error) {
+    console.error("error in startRace action");
+    console.error(error);
+  }
+};
+
 export const showRaceInProgressScreen = (dispatch) => {
   dispatch({ type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN });
+};
+
+export const showRaceCompletedScreen = (dispatch) => {
+  dispatch({ type: SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN });
 };

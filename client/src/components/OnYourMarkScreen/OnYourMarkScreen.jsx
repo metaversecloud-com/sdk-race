@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import "./OnYourMarkScreen.scss";
 
 const OnYourMarkScreen = () => {
-  const dispatch = useContext(GlobalDispatchContext);
   const navigate = useNavigate();
+  const dispatch = useContext(GlobalDispatchContext);
   const { raceStarted } = useContext(GlobalStateContext);
 
   const countdown = ["3...", "2...", "1...", "0..."];

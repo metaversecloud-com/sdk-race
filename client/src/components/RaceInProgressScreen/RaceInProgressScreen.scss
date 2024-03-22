@@ -4,7 +4,7 @@
 
 .waypoints-container {
   padding: 16px;
-  padding-top: 34px;
+  padding-top: 24px;
   margin: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -23,14 +23,14 @@
 .timer {
   background: #f4f4f4;
   padding: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
   border-radius: 10px;
 }
 
 .waypoint {
   display: flex;
-  align-items: center; /* Isto deve alinhar verticalmente o indicador com o texto */
+  align-items: center;
   margin-bottom: 30px;
   font-size: 24px;
 }
@@ -57,4 +57,50 @@
 
 .cancel-button:hover {
   opacity: 0.8;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.initialMessage, .countdown {
+  font-size: 2rem;
+}
+
+.countdown {
+  &.small-to-large {
+    animation: grow 1s forwards;
+  }
+
+  &.heartbeat {
+    font-size: 40px;
+    color: #e74c3c;
+    animation: heartbeat 1.5s infinite;
+  }
+}
+
+@keyframes grow {
+  from {
+    transform: scale(0.5);
+  }
+  to {
+    transform: scale(3);
+  }
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+
+  28% {
+    transform: scale(1.2);
+  }
+  70% {
+    transform: scale(1);
+  }
 }

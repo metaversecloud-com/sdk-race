@@ -3,6 +3,8 @@ import { backendAPI } from "@utils/backendAPI";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
 import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { showRaceCompletedScreen, completeRace } from "../../context/actions";
 import "./RaceInProgressScreen.scss";
 
 const Waypoint = ({ number, completed }) => {
@@ -15,6 +17,7 @@ const Waypoint = ({ number, completed }) => {
 };
 
 const RaceInProgressScreen = () => {
+  const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
   const { completedWaypoints, startTimestamp } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
@@ -29,8 +32,6 @@ const RaceInProgressScreen = () => {
     { id: 1, completed: false },
     { id: 2, completed: false },
     { id: 3, completed: false },
-    { id: 4, completed: false },
-    { id: 5, completed: false },
   ]);
 
   useEffect(() => {
@@ -55,6 +56,15 @@ const RaceInProgressScreen = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const allCompleted = waypoints.every((waypoint) => waypoint.completed);
+    if (allCompleted) {
+      completeRace({ dispatch });
+      // showRaceCompletedScreen(dispatch);
+    }
+  }, [waypoints, dispatch]);
+
+  // Timer
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -95,18 +105,21 @@ const RaceInProgressScreen = () => {
     );
   }
 
-  {
-    console.log("events", events);
-  }
-
   return (
     <div className="race-in-progress-wrapper">
       <div className="waypoints-container">
-        <div style={{ marginBottom: "20px", textAlign: "center" }}>
-          <h2>Race in progress!</h2>
-        </div>
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <div className="timer">⌛ {elapsedTime}</div>
+        <h2 style={{ textAlign: "center" }}>Race in progress!</h2>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "16px" }}>
+          <div
+            key={"run"}
+            className={`countdown heartbeat`}
+            style={{ marginRight: "16px", display: "flex", alignItems: "center" }}
+          >
+            Run!
+          </div>
+          <div className="timer" style={{ display: "flex", alignItems: "center" }}>
+            ⌛ {elapsedTime}
+          </div>
         </div>
         <div className="waypoints">
           {waypoints.map((waypoint) => (
@@ -114,11 +127,6 @@ const RaceInProgressScreen = () => {
           ))}
         </div>
       </div>
-      <ul>
-        {/* {events.map((event, index) => (
-          <li key={index}>{event?.waypointNumber}</li>
-        ))} */}
-      </ul>
       <Footer />
     </div>
   );
