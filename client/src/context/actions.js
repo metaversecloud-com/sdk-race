@@ -43,10 +43,12 @@ export const startRace = async ({ dispatch, navigate }) => {
   }
 };
 
-export const completeRace = async ({ dispatch }) => {
+export const completeRace = async ({ dispatch, elapsedTime }) => {
   try {
-    const result = await backendAPI.post("/race/complete-race");
-    dispatch({ type: COMPLETE_RACE });
+    const result = await backendAPI.post("/race/complete-race", { elapsedTime });
+    dispatch({
+      type: COMPLETE_RACE,
+    });
   } catch (error) {
     console.error("error in startRace action");
     console.error(error);

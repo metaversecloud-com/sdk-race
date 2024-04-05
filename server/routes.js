@@ -15,6 +15,7 @@ import {
   handleCancelRace,
   handleSendEvent,
   handleGetEvents,
+  handleCompleteRace,
 } from "./controllers/index.js";
 import { getVersion } from "./utils/getVersion.js";
 
@@ -46,6 +47,7 @@ router.get("/race/game-state", handleLoadGameState);
 router.post("/race/start-race", handleRaceStart);
 router.post("/race/waypoint-entered", handleWaypointEntered);
 router.post("/race/cancel-race", handleCancelRace);
+router.post("/race/complete-race", handleCompleteRace);
 
 // Events
 router.post("/send-event", handleSendEvent);

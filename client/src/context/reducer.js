@@ -61,6 +61,7 @@ const globalReducer = (state, action) => {
         ...state,
         waypointsCompleted: payload.waypointsCompleted,
         startTimestamp: payload.startTimestamp,
+        leaderboard: payload.leaderboard,
       };
     default: {
       throw new Error(`Unhandled action type: ${type}`);

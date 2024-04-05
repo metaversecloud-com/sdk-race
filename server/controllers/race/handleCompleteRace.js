@@ -1,9 +1,13 @@
 import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
-export const handleCancelRace = async (req, res) => {
+/* This functions completes the race
+ * Reset the game for that user
+ * Update the leaderboard with the elapsed time of the user
+ */
+export const handleCompleteRace = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, username } = req.query;
     const { elapsedTime } = req.body;
 
     const credentials = {
@@ -20,29 +24,30 @@ export const handleCancelRace = async (req, res) => {
     const world = await World.create(urlSlug, { credentials });
     await world.fetchDataObject();
 
-    if (!world?.dataObject?.raceApp) {
-      world.dataObject.raceApp == {};
+    if (!world?.dataObject?.race) {
+      world.dataObject.race == {};
     }
 
-    if (!world?.dataObject?.raceApp?.leaderboard) {
-      world.dataObject.raceApp.leaderboard == {};
+    if (!world?.dataObject?.race?.leaderboard) {
+      world.dataObject.race.leaderboard = {};
+      await world.updateDataObject({ race });
     }
 
-    world.dataObject.raceApp.leaderboard[profileId] = elapsedTime;
+    world.dataObject.race.leaderboard[profileId] = { username, elapsedTime };
 
-    if (profileId) {
-      world.dataObject.race.profiles[profileId].startTimestamp = null;
-      world.dataObject.race.profiles[profileId].waypoints = [];
-      world.dataObject.race.profiles[profileId] = {};
-      await world.updateDataObject({ race: world.dataObject.race });
-    }
+    const leaderboard = world.dataObject.race.leaderboard;
 
-    return res.json({ success: true });
+    await world.updateDataObject({
+      [`race.profiles.${profileId}`]: null,
+      [`race.leaderboard.${profileId}`]: { username, elapsedTime },
+    });
+
+    return res.json({ success: true, leaderboard });
   } catch (error) {
     return errorHandler({
       error,
-      functionName: "handleCancelRace",
-      message: "Error canceling race",
+      functionName: "handleCompleteRace",
+      message: "Error completing race",
       req,
       res,
     });

@@ -59,7 +59,7 @@ const RaceInProgressScreen = () => {
   useEffect(() => {
     const allCompleted = waypoints.every((waypoint) => waypoint.completed);
     if (allCompleted) {
-      completeRace({ dispatch });
+      completeRace({ dispatch, elapsedTime });
       // showRaceCompletedScreen(dispatch);
     }
   }, [waypoints, dispatch]);

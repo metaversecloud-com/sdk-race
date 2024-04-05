@@ -23,8 +23,9 @@ export const handleLoadGameState = async (req, res) => {
 
     const waypointsCompleted = world?.dataObject?.race?.profiles[profileId]?.waypoints;
     const startTimestamp = world?.dataObject?.race?.profiles[profileId]?.startTimestamp;
+    const leaderboard = world?.dataObject?.race?.leaderboard;
 
-    return res.json({ waypointsCompleted, startTimestamp, success: true });
+    return res.json({ waypointsCompleted, startTimestamp, leaderboard, success: true });
   } catch (error) {
     return errorHandler({
       error,

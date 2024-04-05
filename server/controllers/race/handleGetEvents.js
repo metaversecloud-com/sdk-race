@@ -1,5 +1,4 @@
 import Redis from "ioredis";
-const redis = new Redis();
 import { errorHandler } from "../../utils/index.js";
 
 export const handleGetEvents = async (req, res) => {
