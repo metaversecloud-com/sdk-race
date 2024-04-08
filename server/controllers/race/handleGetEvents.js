@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { createClient } from "redis";
 import { errorHandler } from "../../utils/index.js";
 
 export const handleGetEvents = async (req, res) => {
@@ -16,21 +16,21 @@ export const handleGetEvents = async (req, res) => {
       res.write(`data: ${message}\n\n`);
     };
 
-    const subscriber = new Redis();
-    subscriber.subscribe(`events:${profileId}`, (err, count) => {
-      if (err) {
-        console.error("Failed to subscribe to events", err);
-        res.end();
-      }
+    const subscriber = createClient({
+      url: process.env.REDIS_URL,
+      socket: {
+        tls: process.env.REDIS_URL?.startsWith("rediss"),
+      },
     });
 
-    subscriber.on("message", (channel, message) => {
+    await subscriber.connect();
+    await subscriber.subscribe(`events:${profileId}`, (message) => {
       sendEvent(message);
     });
 
-    req.on("close", () => {
-      subscriber.unsubscribe();
-      subscriber.quit();
+    req.on("close", async () => {
+      await subscriber.unsubscribe();
+      await subscriber.quit();
     });
   } catch (error) {
     return errorHandler({
