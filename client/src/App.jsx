@@ -73,6 +73,7 @@ const App = () => {
   }, [interactiveParams, setInteractiveParams]);
 
   useEffect(() => {
+    console.log("hasInitBackendAPI, interactiveParams", hasInitBackendAPI, interactiveParams);
     if (!hasInitBackendAPI) {
       setupBackendAPI(interactiveParams);
       setHasInitBackendAPI(true);

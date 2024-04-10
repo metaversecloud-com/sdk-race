@@ -25,7 +25,7 @@ function Home() {
     };
 
     fetchGameState();
-  }, [dispatch]);
+  }, [dispatch, backendAPI]);
 
   const loadGameState = async ({ dispatch }) => {
     try {

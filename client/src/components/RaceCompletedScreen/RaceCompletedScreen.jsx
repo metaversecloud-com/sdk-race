@@ -1,7 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { backendAPI } from "@utils/backendAPI";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
-import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
 import { useSearchParams } from "react-router-dom";
 import "./RaceCompletedScreen.scss";
 
