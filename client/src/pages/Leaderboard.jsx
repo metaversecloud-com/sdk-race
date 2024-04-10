@@ -10,8 +10,6 @@ function Home() {
   const { leaderboard } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
 
-  console.log("leaderboard", leaderboard);
-
   useEffect(() => {
     const fetchGameState = async () => {
       try {
