@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { errorHandler } from "../../utils/index.js";
+import redisObj from "../../redis/redis.js";
 
 const redis = createClient({
   url: process.env.REDIS_URL,
@@ -25,7 +26,13 @@ export const handleWaypointEntered = async (req, res) => {
     };
 
     const waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
-    await redis.publish(`events:${profileId}`, JSON.stringify({ profileId, waypointNumber }));
+    // await redis.publish(`events:${profileId}`, JSON.stringify({ profileId, waypointNumber }));
+
+    redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
+      profileId,
+      waypointNumber,
+      event: "waypoint-entered",
+    });
 
     return res.status(200).json({ success: true });
   } catch (error) {

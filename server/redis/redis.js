@@ -1,11 +1,7 @@
 import { createClient } from "redis";
 
-const shouldSendEvent = (data, assetId, visitorId, interactiveNonce) => {
-  return (
-    data.assetId === assetId &&
-    (data.visitorId === undefined || data.visitorId !== visitorId) &&
-    (data.interactiveNonce === undefined || data.interactiveNonce !== interactiveNonce)
-  );
+const shouldSendEvent = (data, profileId) => {
+  return data.profileId === profileId;
 };
 
 // Code for Redis in AWS
@@ -28,15 +24,17 @@ const redisObj = {
   // code for Redis on my local
   // const redisObj = {
   //   publisher: createClient({
+  //     password: process.env.REDIS_PASSWORD,
   //     socket: {
-  //       host: "localhost",
-  //       port: 6379,
+  //       host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
+  //       port: 10627,
   //     },
   //   }),
   //   subscriber: createClient({
+  //     password: process.env.REDIS_PASSWORD,
   //     socket: {
-  //       host: "localhost",
-  //       port: 6379,
+  //       host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
+  //       port: 10627,
   //     },
   //   }),
 
@@ -47,28 +45,18 @@ const redisObj = {
   subscribe: function (channel) {
     this.subscriber.subscribe(channel, (message) => {
       const data = JSON.parse(message);
+      const { profileId, waypointNumber } = data;
       console.log(`Event '${data.event}' received on ${channel}`);
-      if (data.event === "nowPlaying") {
-        this.connections.forEach(({ res: existingConnection }) => {
-          const { assetId, visitorId, interactiveNonce } = existingConnection.req.query;
-          if (shouldSendEvent(data, assetId, visitorId, interactiveNonce)) {
-            const dataToSend =
-              data.currentPlayIndex !== null
-                ? { data: { currentPlayIndex: data.currentPlayIndex } }
-                : { data: { video: data.video } };
-            dataToSend["kind"] = "nowPlaying";
-            existingConnection.write(`retry: 5000\ndata: ${JSON.stringify(dataToSend)}\n\n`);
-          }
-        });
-      } else if (data.event === "queueAction") {
-        this.connections.forEach(({ res: existingConnection }) => {
-          const { assetId, visitorId, interactiveNonce } = existingConnection.req.query;
-          if (shouldSendEvent(data, assetId, visitorId, interactiveNonce)) {
-            const dataWithKind = { videos: data.videos, kind: data.kind, videoIds: data.videoIds };
-            existingConnection.write(`retry: 5000\ndata: ${JSON.stringify(dataWithKind)}\n\n`);
-          }
-        });
+      let dataToSend = null;
+      if (data.event === "waypoint-entered") {
+        dataToSend = { profileId, waypointNumber };
       }
+      this.connections.forEach(({ res: existingConnection }) => {
+        const { profileId } = existingConnection.req.query;
+        if (shouldSendEvent(data, profileId)) {
+          existingConnection.write(`retry: 5000\ndata: ${JSON.stringify(dataToSend)}\n\n`);
+        }
+      });
     });
   },
   connections: [],
