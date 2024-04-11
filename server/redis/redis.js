@@ -5,38 +5,38 @@ const shouldSendEvent = (data, profileId) => {
 };
 
 // Code for Redis in AWS
-// const redisObj = {
-//   publisher: createClient({
-//     url: process.env.REDIS_URL,
-//     socket: {
-//       tls: process.env.REDIS_URL.startsWith("rediss"),
-//     },
-//   }),
-//   subscriber: createClient({
-//     url: process.env.REDIS_URL,
-//     socket: {
-//       tls: process.env.REDIS_URL.startsWith("rediss"),
-//     },
-//   }),
-
-// For local development
-
-// code for Redis on my local
 const redisObj = {
   publisher: createClient({
-    password: process.env.REDIS_PASSWORD,
+    url: process.env.REDIS_URL,
     socket: {
-      host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
-      port: 10627,
+      tls: process.env.REDIS_URL.startsWith("rediss"),
     },
   }),
   subscriber: createClient({
-    password: process.env.REDIS_PASSWORD,
+    url: process.env.REDIS_URL,
     socket: {
-      host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
-      port: 10627,
+      tls: process.env.REDIS_URL.startsWith("rediss"),
     },
   }),
+
+  // For local development
+
+  // code for Redis on my local
+  // const redisObj = {
+  //   publisher: createClient({
+  //     password: process.env.REDIS_PASSWORD,
+  //     socket: {
+  //       host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
+  //       port: 10627,
+  //     },
+  //   }),
+  //   subscriber: createClient({
+  //     password: process.env.REDIS_PASSWORD,
+  //     socket: {
+  //       host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
+  //       port: 10627,
+  //     },
+  //   }),
 
   publish: function (channel, message) {
     console.log(`Publishing ${message.event} to ${channel}`);
