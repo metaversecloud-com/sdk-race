@@ -14,6 +14,7 @@ await redis.connect();
 
 export const handleWaypointEntered = async (req, res) => {
   try {
+    console.log("handleWaypointEntered");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId } = req.body;
     const { assetId, isInteractive, position, uniqueName, sceneDropId } = req.body;
 

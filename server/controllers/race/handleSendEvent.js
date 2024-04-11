@@ -14,6 +14,7 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleSendEvent = async (req, res) => {
   try {
+    console.log("handleSendEvent");
     const { profileId, message } = req.body;
     await redis.publish(`events:${profileId}`, JSON.stringify(message));
     return res.send({ status: "Event Sent" });

@@ -3,6 +3,7 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleCancelRace = async (req, res) => {
   try {
+    console.log("handleCancelRace");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
 
     const credentials = {

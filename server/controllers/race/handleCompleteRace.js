@@ -7,6 +7,7 @@ import { errorHandler } from "../../utils/index.js";
  */
 export const handleCompleteRace = async (req, res) => {
   try {
+    console.log("handleCompleteRace");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, username } = req.query;
     const { elapsedTime } = req.body;
 

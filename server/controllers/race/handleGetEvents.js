@@ -3,6 +3,7 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleGetEvents = async (req, res) => {
   try {
+    console.log("handleGetEvents");
     const profileId = req.query.profileId;
     if (!profileId) {
       return res.status(400).send("ProfileId required");
