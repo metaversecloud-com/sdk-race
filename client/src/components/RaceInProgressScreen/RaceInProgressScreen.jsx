@@ -36,7 +36,7 @@ const RaceInProgressScreen = () => {
 
   useEffect(() => {
     if (profileId) {
-      const eventSource = new EventSource(`http://localhost:3000/api/events?profileId=${profileId}`);
+      const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
       eventSource.onmessage = function (event) {
         const newEvent = JSON.parse(event.data);
         setEvents((prevEvents) => [...prevEvents, newEvent]);
