@@ -1,5 +1,4 @@
 import { createClient } from "redis";
-import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
 const redis = createClient({

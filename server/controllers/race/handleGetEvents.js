@@ -29,6 +29,8 @@ export const handleGetEvents = async (req, res) => {
       sendEvent(message);
     });
 
+    subscriber.on("error", (err) => console.error("Subscriber Error", err));
+
     req.on("close", async () => {
       await subscriber.unsubscribe();
       await subscriber.quit();
