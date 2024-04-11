@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import router from "./routes.js";
+import { getVersion } from "./utils/getVersion.js";
 
 const app = express();
 
@@ -62,5 +63,5 @@ if (process.env.NODE_ENV !== "development") {
 }
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port: ${PORT}`);
+  console.log(`Server is running on port: ${PORT}, version: ${getVersion()}`);
 });

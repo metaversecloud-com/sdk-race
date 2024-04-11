@@ -1,7 +1,16 @@
-import Redis from "ioredis";
+import { createClient } from "redis";
 import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
-const redis = new Redis();
+
+const redis = createClient({
+  url: process.env.REDIS_URL,
+  socket: {
+    tls: process.env.REDIS_URL?.startsWith("rediss"),
+  },
+});
+
+redis.on("error", (err) => console.log("Redis Client Error", err));
+await redis.connect();
 
 export const handleWaypointEntered = async (req, res) => {
   try {
@@ -16,47 +25,9 @@ export const handleWaypointEntered = async (req, res) => {
     };
 
     const waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
-
-    redis.publish(`events:${profileId}`, JSON.stringify({ profileId, waypointNumber }));
+    await redis.publish(`events:${profileId}`, JSON.stringify({ profileId, waypointNumber }));
 
     return res.status(200).json({ success: true });
-    // const world = World.create(urlSlug, { credentials });
-
-    // const dataObject = await world.fetchDataObject();
-
-    // const raceObject = dataObject.race || {};
-    // const profilesObject = raceObject.profiles || {};
-    // const profileObject = profilesObject[profileId] || {};
-    // const waypointsCompleted = (profileObject.waypoints || []).slice();
-
-    // if (waypointsCompleted.length < waypointNumber - 1 || waypointsCompleted[waypointNumber - 1]) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Wrong waypoint order. You need to enter the waypoints in the correct order" });
-    // }
-
-    // waypointsCompleted[waypointNumber - 1] = true;
-
-    // if (!dataObject.race) dataObject.race = {};
-    // if (!dataObject.race.profiles) dataObject.race.profiles = {};
-
-    // // User didn't start the race didn't start
-    // if (!dataObject.race.profiles[profileId]) {
-    //   const visitor = Visitor.create(urlSlug, { credentials });
-
-    //   const droppedAsset = DroppedAsset.create();
-    //   dataObject.race.profiles[profileId] = {};
-    // }
-
-    // dataObject.race.profiles[profileId].waypoints = waypointsCompleted;
-
-    // await world.updateDataObject(dataObject);
-
-    // return res.json({
-    //   waypointsCompleted,
-    //   startTimestamp: dataObject.race.profiles[profileId].startTimestamp,
-    //   success: true,
-    // });
   } catch (error) {
     return errorHandler({
       error,
