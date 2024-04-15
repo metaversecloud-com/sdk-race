@@ -42,6 +42,8 @@ function Home() {
     }
   };
 
+  const sortedLeaderboard = Object.entries(leaderboard || {}).sort(([, a], [, b]) => a.elapsedTime - b.elapsedTime);
+
   if (loading) {
     return (
       <div className="loader">
@@ -66,12 +68,12 @@ function Home() {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(leaderboard || {}).length === 0 ? (
+            {sortedLeaderboard.length === 0 ? (
               <tr>
                 <td colSpan="3">There are no race finishes yet.</td>
               </tr>
             ) : (
-              Object.entries(leaderboard || {}).map(([userId, entry], index) => (
+              sortedLeaderboard.map(([userId, entry], index) => (
                 <tr key={userId}>
                   <td>{index + 1}</td>
                   <td>{entry.username}</td>

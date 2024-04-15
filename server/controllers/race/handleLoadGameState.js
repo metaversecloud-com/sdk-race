@@ -15,7 +15,9 @@ export const handleLoadGameState = async (req, res) => {
 
     const world = await World.create(urlSlug, { credentials });
 
-    await world.fetchDataObject();
+    const result = await Promise.all([world.fetchDataObject(), Visitor.get(visitorId, urlSlug, { credentials })]);
+    const visitor = result?.[1];
+
     const race = world?.dataObject?.race;
 
     if (!race) {
@@ -37,7 +39,7 @@ export const handleLoadGameState = async (req, res) => {
     const leaderboard = world?.dataObject?.race?.leaderboard;
     const numberOfWaypoints = world?.dataObject?.race?.numberOfWaypoints;
 
-    return res.json({ waypointsCompleted, startTimestamp, leaderboard, numberOfWaypoints, success: true });
+    return res.json({ waypointsCompleted, startTimestamp, leaderboard, numberOfWaypoints, visitor, success: true });
   } catch (error) {
     return errorHandler({
       error,

@@ -9,11 +9,14 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 import RaceInProgressScreen from "../components/RaceInProgressScreen/RaceInProgressScreen";
 import NewGameScreen from "../components/NewGameScreen/NewGameScreen";
 import RaceCompletedScreen from "../components/RaceCompletedScreen/RaceCompletedScreen";
+import AdminGear from "../components/Admin/AdminGear";
+import AdminView from "../components/Admin/AdminView";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { screenManager, waypointsCompleted } = useContext(GlobalStateContext);
+  const { screenManager, waypointsCompleted, visitor } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const fetchGameState = async () => {
@@ -38,6 +41,7 @@ function Home() {
             waypointsCompleted: result.data.waypointsCompleted,
             startTimestamp: result.data.startTimestamp,
             numberOfWaypoints: result.data.numberOfWaypoints,
+            visitor: result.data.visitor,
           },
         });
 
@@ -75,12 +79,20 @@ function Home() {
     );
   }
 
+  if (showSettings) {
+    return <AdminView setShowSettings={setShowSettings} />;
+  }
+
+  console.log("visitor?.isAdmin", visitor);
   return (
     <div className="app-wrapper">
-      {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
-      {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
-      {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
-      {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
+      {visitor?.isAdmin ? AdminGear(setShowSettings) : <></>}
+      <div className={`app-wrapper`} style={{ marginTop: visitor?.isAdmin ? "80px" : "0" }}>
+        {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
+        {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
+        {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
+        {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
+      </div>
     </div>
   );
 }

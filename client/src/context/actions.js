@@ -11,9 +11,9 @@ export const loadGameState = async ({ dispatch }) => {
           waypointsCompleted: result.data.waypointsCompleted,
           startTimestamp: result.data.startTimestamp,
           numberOfWaypoints: result.data.numberOfWaypoints,
+          visitor: result.data.visitor,
         },
       });
-      console.log("result.data.numberOfWaypoints!!", result.data.numberOfWaypoints);
       if (result.data.startTimestamp) {
         dispatch({
           type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN,

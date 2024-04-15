@@ -20,7 +20,6 @@ const RaceInProgressScreen = () => {
   const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
   const { completedWaypoints, startTimestamp, numberOfWaypoints } = useContext(GlobalStateContext);
-  console.log("numberOfWaypoints", numberOfWaypoints);
   const [searchParams] = useSearchParams();
   const [events, setEvents] = useState(["event1"]);
 
