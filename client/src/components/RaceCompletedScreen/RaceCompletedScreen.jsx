@@ -5,11 +5,9 @@ import "./RaceCompletedScreen.scss";
 
 const RaceCompletedScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
-  const { completedWaypoints, startTimestamp, endTimestamp } = useContext(GlobalStateContext);
+  const { completedWaypoints, startTimestamp, endTimestamp, elapsedTime } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
   const profileId = searchParams.get("profileId");
-
-  const elapsedTime = Math.floor((endTimestamp - startTimestamp) / 1000);
 
   const minutes = Math.floor(elapsedTime / 60);
   const seconds = elapsedTime % 60;

@@ -10,8 +10,10 @@ export const loadGameState = async ({ dispatch }) => {
         payload: {
           waypointsCompleted: result.data.waypointsCompleted,
           startTimestamp: result.data.startTimestamp,
+          numberOfWaypoints: result.data.numberOfWaypoints,
         },
       });
+      console.log("result.data.numberOfWaypoints!!", result.data.numberOfWaypoints);
       if (result.data.startTimestamp) {
         dispatch({
           type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN,
@@ -46,9 +48,14 @@ export const startRace = async ({ dispatch, navigate }) => {
 export const completeRace = async ({ dispatch, elapsedTime }) => {
   try {
     const result = await backendAPI.post("/race/complete-race", { elapsedTime });
-    dispatch({
-      type: COMPLETE_RACE,
-    });
+    if (result.status === 200) {
+      dispatch({
+        type: COMPLETE_RACE,
+        payload: {
+          endTimestamp,
+        },
+      });
+    }
   } catch (error) {
     console.error("error in startRace action");
     console.error(error);

@@ -5,48 +5,48 @@ const shouldSendEvent = (data, profileId) => {
 };
 
 // Code for Redis in AWS
+// const redisObj = {
+//   publisher: createClient({
+//     url: process.env.REDIS_URL,
+//     socket: {
+//       tls: process.env.REDIS_URL.startsWith("rediss"),
+//     },
+//   }),
+//   subscriber: createClient({
+//     url: process.env.REDIS_URL,
+//     socket: {
+//       tls: process.env.REDIS_URL.startsWith("rediss"),
+//     },
+//   }),
+
+// For local development
+
+// code for Redis on my local
 const redisObj = {
   publisher: createClient({
-    url: process.env.REDIS_URL,
+    password: process.env.REDIS_PASSWORD,
     socket: {
-      tls: process.env.REDIS_URL.startsWith("rediss"),
+      host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
+      port: 10627,
     },
   }),
   subscriber: createClient({
-    url: process.env.REDIS_URL,
+    password: process.env.REDIS_PASSWORD,
     socket: {
-      tls: process.env.REDIS_URL.startsWith("rediss"),
+      host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
+      port: 10627,
     },
   }),
 
-  // For local development
-
-  // code for Redis on my local
-  // const redisObj = {
-  //   publisher: createClient({
-  //     password: process.env.REDIS_PASSWORD,
-  //     socket: {
-  //       host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
-  //       port: 10627,
-  //     },
-  //   }),
-  //   subscriber: createClient({
-  //     password: process.env.REDIS_PASSWORD,
-  //     socket: {
-  //       host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
-  //       port: 10627,
-  //     },
-  //   }),
-
   publish: function (channel, message) {
-    console.log(`Publishing ${message.event} to ${channel}`);
+    // console.log(`Publishing ${message.event} to ${channel}`);
     this.publisher.publish(channel, JSON.stringify(message));
   },
   subscribe: function (channel) {
     this.subscriber.subscribe(channel, (message) => {
       const data = JSON.parse(message);
       const { profileId, waypointNumber } = data;
-      console.log(`Event '${data.event}' received on ${channel}`);
+      // console.log(`Event '${data.event}' received on ${channel}`);
       let dataToSend = null;
       if (data.event === "waypoint-entered") {
         dataToSend = { profileId, waypointNumber };
@@ -83,14 +83,14 @@ const redisObj = {
     } else {
       this.connections.push(connection);
     }
-    console.log(`Connection ${interactiveNonce} added. Length is ${this.connections.length}`);
+    // console.log(`Connection ${interactiveNonce} added. Length is ${this.connections.length}`);
   },
   deleteConn: function () {
     // Remove inactive connections older than 30 minutes
     this.connections = this.connections.filter(({ res, lastHeartbeatTime }) => {
       const isActive = lastHeartbeatTime > Date.now() - 30 * 60 * 1000;
       if (!isActive) {
-        console.log(`Connection to ${res.req.query.interactiveNonce} deleted`);
+        // console.log(`Connection to ${res.req.query.interactiveNonce} deleted`);
       }
       return isActive;
     });

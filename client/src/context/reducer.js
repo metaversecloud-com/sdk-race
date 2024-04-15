@@ -48,7 +48,7 @@ const globalReducer = (state, action) => {
       return {
         ...state,
         screenManager: SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN,
-        endTimestamp: Date.now(),
+        elapsedTime: payload.elapsedTime,
       };
     case CANCEL_RACE:
       return {
@@ -62,6 +62,7 @@ const globalReducer = (state, action) => {
         waypointsCompleted: payload.waypointsCompleted,
         startTimestamp: payload.startTimestamp,
         leaderboard: payload.leaderboard,
+        numberOfWaypoints: payload.numberOfWaypoints,
       };
     default: {
       throw new Error(`Unhandled action type: ${type}`);

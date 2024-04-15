@@ -43,7 +43,7 @@ export const handleCompleteRace = async (req, res) => {
       [`race.leaderboard.${profileId}`]: { username, elapsedTime },
     });
 
-    return res.json({ success: true, leaderboard });
+    return res.json({ success: true, leaderboard, elapsedTime });
   } catch (error) {
     return errorHandler({
       error,

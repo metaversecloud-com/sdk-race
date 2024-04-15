@@ -37,6 +37,7 @@ function Home() {
           payload: {
             waypointsCompleted: result.data.waypointsCompleted,
             startTimestamp: result.data.startTimestamp,
+            numberOfWaypoints: result.data.numberOfWaypoints,
           },
         });
 

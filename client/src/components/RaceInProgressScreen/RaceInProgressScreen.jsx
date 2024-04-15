@@ -19,7 +19,8 @@ const Waypoint = ({ number, completed }) => {
 const RaceInProgressScreen = () => {
   const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
-  const { completedWaypoints, startTimestamp } = useContext(GlobalStateContext);
+  const { completedWaypoints, startTimestamp, numberOfWaypoints } = useContext(GlobalStateContext);
+  console.log("numberOfWaypoints", numberOfWaypoints);
   const [searchParams] = useSearchParams();
   const [events, setEvents] = useState(["event1"]);
 
@@ -28,20 +29,14 @@ const RaceInProgressScreen = () => {
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
   const [elapsedTime, setElapsedTime] = useState("...");
 
-  const [waypoints, setWaypoints] = useState([
-    { id: 1, completed: false },
-    { id: 2, completed: false },
-    { id: 3, completed: false },
-    { id: 4, completed: false },
-    { id: 5, completed: false },
-    { id: 6, completed: false },
-    { id: 7, completed: false },
-    { id: 8, completed: false },
-    { id: 9, completed: false },
-    { id: 10, completed: false },
-    { id: 11, completed: false },
-    { id: 12, completed: false },
-  ]);
+  const [waypoints, setWaypoints] = useState(
+    numberOfWaypoints
+      ? Array.from({ length: numberOfWaypoints }, (_, index) => ({
+          id: index + 1,
+          completed: false,
+        }))
+      : null,
+  );
 
   useEffect(() => {
     if (profileId) {
@@ -69,7 +64,6 @@ const RaceInProgressScreen = () => {
     const allCompleted = waypoints.every((waypoint) => waypoint.completed);
     if (allCompleted) {
       completeRace({ dispatch, elapsedTime });
-      // showRaceCompletedScreen(dispatch);
     }
   }, [waypoints, dispatch]);
 
