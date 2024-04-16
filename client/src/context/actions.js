@@ -1,31 +1,6 @@
 import { backendAPI } from "@utils/backendAPI";
 import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER, COMPLETE_RACE } from "./types";
 
-export const loadGameState = async ({ dispatch }) => {
-  try {
-    const result = await backendAPI.get("/race/game-state");
-    if (result.status === 200) {
-      dispatch({
-        type: LOAD_GAME_STATE,
-        payload: {
-          waypointsCompleted: result.data.waypointsCompleted,
-          startTimestamp: result.data.startTimestamp,
-          numberOfWaypoints: result.data.numberOfWaypoints,
-          visitor: result.data.visitor,
-        },
-      });
-      if (result.data.startTimestamp) {
-        dispatch({
-          type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN,
-        });
-      }
-    }
-  } catch (error) {
-    console.error("error in loadGameState action");
-    console.error(error);
-  }
-};
-
 export const startRace = async ({ dispatch, navigate }) => {
   try {
     const result = await backendAPI.post("/race/start-race");

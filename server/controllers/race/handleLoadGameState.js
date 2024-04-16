@@ -35,9 +35,18 @@ export const handleLoadGameState = async (req, res) => {
     }
 
     const waypointsCompleted = world?.dataObject?.race?.profiles[profileId]?.waypoints;
-    const startTimestamp = world?.dataObject?.race?.profiles[profileId]?.startTimestamp;
+    let startTimestamp = world?.dataObject?.race?.profiles[profileId]?.startTimestamp;
     const leaderboard = world?.dataObject?.race?.leaderboard;
     const numberOfWaypoints = world?.dataObject?.race?.numberOfWaypoints;
+
+    // restart client race if the elapsed time is higher than 3 minutes
+    const now = Date.now();
+    if (startTimestamp && now - startTimestamp > 180000) {
+      startTimestamp = now;
+      await world.updateDataObject({
+        [`race.profiles.${profileId}`]: null,
+      });
+    }
 
     return res.json({ waypointsCompleted, startTimestamp, leaderboard, numberOfWaypoints, visitor, success: true });
   } catch (error) {
