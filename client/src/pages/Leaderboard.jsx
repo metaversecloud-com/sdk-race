@@ -42,7 +42,16 @@ function Home() {
     }
   };
 
-  const sortedLeaderboard = Object.entries(leaderboard || {}).sort(([, a], [, b]) => a.elapsedTime - b.elapsedTime);
+  const sortedLeaderboard = Object.entries(leaderboard || {})
+    .sort(([, a], [, b]) => {
+      const [aMinutes, aSeconds] = a.elapsedTime.split(":").map(Number);
+      const [bMinutes, bSeconds] = b.elapsedTime.split(":").map(Number);
+      if (aMinutes === bMinutes) {
+        return aSeconds - bSeconds;
+      }
+      return aMinutes - bMinutes;
+    })
+    .slice(0, 20);
 
   if (loading) {
     return (
