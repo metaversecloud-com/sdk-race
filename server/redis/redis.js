@@ -4,6 +4,25 @@ const shouldSendEvent = (data, profileId) => {
   return data.profileId === profileId;
 };
 
+const getRedisConfig = () => {
+  if (process.env.IS_LOCALHOST) {
+    return {
+      password: process.env.REDIS_PASSWORD,
+      socket: {
+        host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
+        port: 10627,
+      },
+    };
+  } else {
+    return {
+      url: process.env.REDIS_URL,
+      socket: {
+        tls: process.env.REDIS_URL.startsWith("rediss"),
+      },
+    };
+  }
+};
+
 // Code for Redis in AWS
 // const redisObj = {
 //   publisher: createClient({
@@ -23,20 +42,8 @@ const shouldSendEvent = (data, profileId) => {
 
 // code for Redis on my local
 const redisObj = {
-  publisher: createClient({
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-      host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
-      port: 10627,
-    },
-  }),
-  subscriber: createClient({
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-      host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
-      port: 10627,
-    },
-  }),
+  publisher: createClient(getRedisConfig()),
+  subscriber: createClient(getRedisConfig()),
 
   publish: function (channel, message) {
     // console.log(`Publishing ${message.event} to ${channel}`);
