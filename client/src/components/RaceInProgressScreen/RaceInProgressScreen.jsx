@@ -44,8 +44,8 @@ const RaceInProgressScreen = () => {
         const newEvent = JSON.parse(event.data);
         setEvents((prevEvents) => [...prevEvents, newEvent]);
         setWaypoints((prevWaypoints) => {
-          const updatedWaypoints = prevWaypoints.map((waypoint, index) => {
-            if (waypoint.id === newEvent.waypointNumber && (index === 0 || prevWaypoints[index - 1].completed)) {
+          const updatedWaypoints = prevWaypoints?.map((waypoint, index) => {
+            if (waypoint?.id === newEvent?.waypointNumber && (index === 0 || prevWaypoints?.[index - 1]?.completed)) {
               return { ...waypoint, completed: true };
             }
             return waypoint;
@@ -124,7 +124,7 @@ const RaceInProgressScreen = () => {
           </div>
         </div>
         <div className="waypoints">
-          {waypoints.map((waypoint) => (
+          {waypoints?.map((waypoint) => (
             <Waypoint key={waypoint.id} number={waypoint.id} completed={waypoint.completed} />
           ))}
         </div>

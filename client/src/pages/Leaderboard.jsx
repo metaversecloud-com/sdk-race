@@ -44,8 +44,8 @@ function Home() {
 
   const sortedLeaderboard = Object.entries(leaderboard || {})
     .sort(([, a], [, b]) => {
-      const [aMinutes, aSeconds] = a.elapsedTime.split(":").map(Number);
-      const [bMinutes, bSeconds] = b.elapsedTime.split(":").map(Number);
+      const [aMinutes, aSeconds] = a.elapsedTime.split(":")?.map(Number);
+      const [bMinutes, bSeconds] = b.elapsedTime.split(":")?.map(Number);
       if (aMinutes === bMinutes) {
         return aSeconds - bSeconds;
       }
@@ -77,12 +77,12 @@ function Home() {
             </tr>
           </thead>
           <tbody>
-            {sortedLeaderboard.length === 0 ? (
+            {sortedLeaderboard?.length === 0 ? (
               <tr>
                 <td colSpan="3">There are no race finishes yet.</td>
               </tr>
             ) : (
-              sortedLeaderboard.map(([userId, entry], index) => (
+              sortedLeaderboard?.map(([userId, entry], index) => (
                 <tr key={userId}>
                   <td>{index + 1}</td>
                   <td>{entry.username}</td>

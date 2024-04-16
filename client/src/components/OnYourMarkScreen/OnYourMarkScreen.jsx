@@ -35,7 +35,7 @@ const OnYourMarkScreen = () => {
     <div className="container">
       {!isRunDisplayed && (
         <div style={{ paddingBottom: "50px" }}>
-          {initialMessages.map((message, index) => (
+          {initialMessages?.map((message, index) => (
             <div key={index} className="initialMessage">
               {message}
             </div>
