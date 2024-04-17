@@ -6,5 +6,6 @@ ADD server ./server
 ADD client ./client
 ADD package* ./
 ADD node_modules ./node_modules
+echo $REF >> ref.txt
 EXPOSE 3000
 ENTRYPOINT [ "npm", "start" ]
