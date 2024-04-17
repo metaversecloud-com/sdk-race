@@ -24,10 +24,11 @@ export const completeRace = async ({ dispatch, elapsedTime }) => {
   try {
     const result = await backendAPI.post("/race/complete-race", { elapsedTime });
     if (result.status === 200) {
+      console.log("race completed0", result);
       dispatch({
         type: COMPLETE_RACE,
         payload: {
-          endTimestamp,
+          elapsedTime,
         },
       });
     }

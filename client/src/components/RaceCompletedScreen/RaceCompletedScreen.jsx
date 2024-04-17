@@ -1,18 +1,9 @@
-import React, { useState, useContext, useEffect } from "react";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
-import { useSearchParams } from "react-router-dom";
+import React, { useContext } from "react";
+import { GlobalStateContext } from "@context/GlobalContext";
 import "./RaceCompletedScreen.scss";
 
 const RaceCompletedScreen = () => {
-  const dispatch = useContext(GlobalDispatchContext);
-  const { completedWaypoints, startTimestamp, endTimestamp, elapsedTime } = useContext(GlobalStateContext);
-  const [searchParams] = useSearchParams();
-  const profileId = searchParams.get("profileId");
-
-  const minutes = Math.floor(elapsedTime / 60);
-  const seconds = elapsedTime % 60;
-
-  const timeDisplay = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  const { elapsedTime } = useContext(GlobalStateContext);
 
   return (
     <div className="race-completed-wrapper">
@@ -20,7 +11,7 @@ const RaceCompletedScreen = () => {
         <h2>Congratulations!</h2>
         <p>You have successfully completed the race.</p>
         <div className="elapsed-time">
-          <h3>Elapsed Time: {timeDisplay}</h3>
+          <h3>Elapsed Time: {elapsedTime}</h3>
           <p></p>
         </div>
         <p>Thank you for participating and pushing yourself to the limit!</p>

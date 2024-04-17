@@ -45,6 +45,7 @@ const globalReducer = (state, action) => {
         startTimestamp: payload.startTimestamp,
       };
     case COMPLETE_RACE:
+      console.log("race completed1");
       return {
         ...state,
         screenManager: SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN,
