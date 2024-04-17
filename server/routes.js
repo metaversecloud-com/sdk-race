@@ -30,6 +30,7 @@ router.get("/system/health", (req, res) => {
     INTERACTIVE_KEY: process.env.INTERACTIVE_KEY,
     REDIS_URL: process.env.REDIS_URL,
     REF: process.env.REF,
+    COMMIT_HASH: process.env.COMMIT_HASH,
   });
 });
 
