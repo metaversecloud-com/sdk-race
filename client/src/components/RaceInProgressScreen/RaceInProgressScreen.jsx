@@ -60,7 +60,7 @@ const RaceInProgressScreen = () => {
   }, []);
 
   useEffect(() => {
-    const allCompleted = waypoints.every((waypoint) => waypoint.completed);
+    const allCompleted = waypoints?.every((waypoint) => waypoint.completed);
     if (allCompleted) {
       completeRace({ dispatch, elapsedTime });
     }
