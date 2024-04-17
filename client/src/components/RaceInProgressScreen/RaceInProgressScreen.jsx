@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { backendAPI } from "@utils/backendAPI";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
@@ -11,7 +11,7 @@ const Waypoint = ({ number, completed }) => {
   return (
     <div className={`waypoint ${completed ? "completed" : ""}`}>
       <span className="indicator">{completed ? "🟢" : "🔴"}</span>
-      Waypoint {number}
+      {number === "Finish" ? "Finish" : `Waypoint ${number}`}
     </div>
   );
 };
@@ -22,6 +22,7 @@ const RaceInProgressScreen = () => {
   const { completedWaypoints, startTimestamp, numberOfWaypoints } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
   const [events, setEvents] = useState(["event1"]);
+  const [isFinishComplete, setIsFinishComplete] = useState(false);
 
   const profileId = searchParams.get("profileId");
 
@@ -45,11 +46,17 @@ const RaceInProgressScreen = () => {
         setEvents((prevEvents) => [...prevEvents, newEvent]);
         setWaypoints((prevWaypoints) => {
           const updatedWaypoints = prevWaypoints?.map((waypoint, index) => {
-            if (waypoint?.id === newEvent?.waypointNumber && (index === 0 || prevWaypoints?.[index - 1]?.completed)) {
+            if (waypoint?.id === newEvent?.waypointNumber) {
               return { ...waypoint, completed: true };
             }
             return waypoint;
           });
+
+          const allWaypointsCompleted = updatedWaypoints?.every((waypoint) => waypoint.completed);
+          if (newEvent?.waypointNumber === 0 && allWaypointsCompleted) {
+            setIsFinishComplete(true);
+          }
+
           return updatedWaypoints;
         });
       };
@@ -57,14 +64,17 @@ const RaceInProgressScreen = () => {
         eventSource.close();
       };
     }
-  }, []);
+  }, [profileId]);
+
+  const completeRaceCalledRef = useRef(false);
 
   useEffect(() => {
-    const allCompleted = waypoints?.every((waypoint) => waypoint.completed);
-    if (allCompleted) {
+    const allCompleted = waypoints?.every((waypoint) => waypoint.completed) && isFinishComplete;
+    if (allCompleted && !completeRaceCalledRef.current) {
+      completeRaceCalledRef.current = true;
       completeRace({ dispatch, elapsedTime });
     }
-  }, [waypoints, dispatch]);
+  }, [waypoints, isFinishComplete, dispatch, elapsedTime]);
 
   // Timer
   useEffect(() => {
@@ -127,6 +137,7 @@ const RaceInProgressScreen = () => {
           {waypoints?.map((waypoint) => (
             <Waypoint key={waypoint.id} number={waypoint.id} completed={waypoint.completed} />
           ))}
+          <Waypoint key="finish" number="Finish" completed={isFinishComplete} />
         </div>
       </div>
       <Footer />

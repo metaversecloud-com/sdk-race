@@ -15,6 +15,7 @@
   "license": "ISC",
   "main": "./server/index.js",
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "prettier": "3.2.5"
   },
   "workspaces": [
@@ -29,10 +30,10 @@
     "server": "npm run start --prefix server",
     "client": "npm start --prefix client",
     "start": "source ref.txt && npm start -w server",
-    "dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
+    "dev": "npm start -w server",
     "dev-server": "npm run dev --prefix server",
     "dev-client": "npm run start --prefix client"
   },
   "type": "module",
-  "version": "1.0.9"
+  "version": "1.0.10"
 }

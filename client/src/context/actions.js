@@ -23,6 +23,7 @@ export const startRace = async ({ dispatch, navigate }) => {
 
 export const completeRace = async ({ dispatch, elapsedTime }) => {
   try {
+    console.log("completeRace");
     const result = await backendAPI.post("/race/complete-race", { elapsedTime });
     if (result.status === 200) {
       dispatch({
