@@ -83,16 +83,13 @@ function Home() {
     return <AdminView setShowSettings={setShowSettings} />;
   }
 
-  console.log("visitor?.isAdmin", visitor);
   return (
     <div className="app-wrapper">
       {visitor?.isAdmin ? AdminGear(setShowSettings) : <></>}
-      <div className={`app-wrapper`} style={{ marginTop: visitor?.isAdmin ? "80px" : "0" }}>
-        {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
-        {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
-        {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
-        {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
-      </div>
+      {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
+      {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
+      {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
+      {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
     </div>
   );
 }

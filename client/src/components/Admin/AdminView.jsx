@@ -27,7 +27,7 @@ function AdminView({ setShowSettings }) {
   return (
     <div className="app-wrapper">
       <BackArrow setShowSettings={setShowSettings} />
-      <div className="admin-wrapper" style={{ marginTop: "80px", padding: "16px 24px" }}>
+      <div className="admin-wrapper" style={{ padding: "16px 24px" }}>
         <div style={{ textAlign: "center" }}>
           <button disabled={areAllButtonsDisabled} onClick={() => handleResetGame()}>
             Reset Game

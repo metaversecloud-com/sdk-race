@@ -3,7 +3,7 @@ import backArrow from "../../assets/backArrow.svg";
 function BackArrow({ setShowSettings }) {
   return (
     <div
-      style={{ position: "absolute", left: "16px", top: "24px" }}
+      style={{ marginLeft: "16px", marginTop: "24px", marginBottom: "20px" }}
       className="icon-with-rounded-border"
       onClick={() => {
         setShowSettings(false);
