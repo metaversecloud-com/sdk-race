@@ -25,8 +25,12 @@ export const handleWaypointEntered = async (req, res) => {
       visitorId,
     };
 
-    const waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
-    // await redis.publish(`events:${profileId}`, JSON.stringify({ profileId, waypointNumber }));
+    let waypointNumber;
+    if (uniqueName === "race-track-start") {
+      waypointNumber = 0;
+    } else {
+      waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
+    }
 
     redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
       profileId,
