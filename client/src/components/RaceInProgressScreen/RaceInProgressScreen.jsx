@@ -129,7 +129,7 @@ const RaceInProgressScreen = () => {
           >
             Run!
           </div>
-          <div className="timer" style={{ display: "flex", alignItems: "center" }}>
+          <div className="timer" style={{ display: "flex", alignItems: "center", marginTop: "11px" }}>
             ⌛ {elapsedTime}
           </div>
         </div>

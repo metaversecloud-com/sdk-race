@@ -5,6 +5,7 @@ const shouldSendEvent = (data, profileId) => {
 };
 
 const getRedisConfig = () => {
+  // Cloud Redis in Localhost
   if (process.env.IS_LOCALHOST) {
     return {
       password: process.env.REDIS_PASSWORD,
@@ -14,6 +15,7 @@ const getRedisConfig = () => {
       },
     };
   } else {
+    // Redis in AWS
     return {
       url: process.env.REDIS_URL,
       socket: {
@@ -23,24 +25,6 @@ const getRedisConfig = () => {
   }
 };
 
-// Code for Redis in AWS
-// const redisObj = {
-//   publisher: createClient({
-//     url: process.env.REDIS_URL,
-//     socket: {
-//       tls: process.env.REDIS_URL.startsWith("rediss"),
-//     },
-//   }),
-//   subscriber: createClient({
-//     url: process.env.REDIS_URL,
-//     socket: {
-//       tls: process.env.REDIS_URL.startsWith("rediss"),
-//     },
-//   }),
-
-// For local development
-
-// code for Redis on my local
 const redisObj = {
   publisher: createClient(getRedisConfig()),
   subscriber: createClient(getRedisConfig()),

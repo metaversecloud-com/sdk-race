@@ -10,8 +10,12 @@
   border-radius: 10px;
 }
 
-.waypoints {
+.waypoint {
   padding: 0 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  font-size: 20px;
 }
 
 .race-tracker h2 {
@@ -26,13 +30,6 @@
   margin-bottom: 10px;
   text-align: center;
   border-radius: 10px;
-}
-
-.waypoint {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-  font-size: 24px;
 }
 
 .indicator {
