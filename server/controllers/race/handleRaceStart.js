@@ -5,6 +5,7 @@ export const handleRaceStart = async (req, res) => {
   try {
     console.log("handleRaceStart");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId } = req.query;
+    const { startTimestamp } = req.body;
 
     const visitor = await Visitor.get(visitorId, urlSlug, {
       credentials: {
@@ -37,7 +38,6 @@ export const handleRaceStart = async (req, res) => {
     if (!dataObject.race.profiles) dataObject.race.profiles = {};
     if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
 
-    const startTimestamp = Date.now();
     dataObject.race.profiles[profileId].startTimestamp = startTimestamp;
     dataObject.race.profiles[profileId].waypoints = [];
 
@@ -45,9 +45,6 @@ export const handleRaceStart = async (req, res) => {
       world.updateDataObject(dataObject),
       visitor.moveVisitor({ shouldTeleportVisitor: true, x: droppedAsset?.position?.x, y: droppedAsset?.position?.y }),
     ]);
-
-    // await world.updateDataObject(dataObject);
-    // await visitor.moveVisitor({ shouldTeleportVisitor: true, x: 0, y: 0 });
 
     return res.json({ startTimestamp, success: true });
   } catch (error) {

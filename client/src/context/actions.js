@@ -3,13 +3,14 @@ import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER, COMPLETE_RACE } from "./ty
 
 export const startRace = async ({ dispatch, navigate }) => {
   try {
-    const result = await backendAPI.post("/race/start-race");
+    const startTimestamp = Date.now();
+    const result = await backendAPI.post("/race/start-race", { startTimestamp });
     if (result.status === 200) {
       dispatch({
         type: START_RACE,
         payload: {
           raceStarted: true,
-          startTimestamp: result.data.startTimestamp,
+          startTimestamp,
         },
       });
       showRaceInProgressScreen(dispatch);
