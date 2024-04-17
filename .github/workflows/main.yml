@@ -60,7 +60,7 @@ jobs:
 
       - name: Build and  tag
         run: |
-          docker build -t ${{ steps.metadata.outputs.tags }} .
+          docker build --build-arg REF=${{ github.ref }} -t ${{ steps.metadata.outputs.tags }} .
           
       - name: push docker image to Amazon ECR
         run: |
