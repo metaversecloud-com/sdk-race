@@ -46,7 +46,7 @@ export const handleRaceStart = async (req, res) => {
       visitor.moveVisitor({ shouldTeleportVisitor: true, x: droppedAsset?.position?.x, y: droppedAsset?.position?.y }),
     ]);
 
-    return res.json({ startTimestamp, success: true });
+    return res.json({ success: true });
   } catch (error) {
     return errorHandler({
       error,

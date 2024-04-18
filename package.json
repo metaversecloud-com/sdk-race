@@ -35,5 +35,5 @@
     "dev-client": "npm run start --prefix client"
   },
   "type": "module",
-  "version": "1.0.11"
+  "version": "1.0.12"
 }
