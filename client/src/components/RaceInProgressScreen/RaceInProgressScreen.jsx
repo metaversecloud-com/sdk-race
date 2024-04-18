@@ -117,6 +117,8 @@ const RaceInProgressScreen = () => {
     );
   }
 
+  console.log("startTimestamp", startTimestamp);
+
   return (
     <div className="race-in-progress-wrapper">
       <div className="waypoints-container">
