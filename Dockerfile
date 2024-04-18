@@ -7,6 +7,6 @@ ADD server ./server
 ADD client ./client
 ADD package* ./
 ADD node_modules ./node_modules
-RUN echo REF=$REF >> ref.txt && echo COMMIT_HASH=$COMMIT_HASH >> ref.txt
+RUN echo "REF=$REF" >> commit_info.txt && echo "COMMIT_HASH=$COMMIT_HASH" >> commit_info.txt
 EXPOSE 3000
 ENTRYPOINT [ "npm", "start" ]
