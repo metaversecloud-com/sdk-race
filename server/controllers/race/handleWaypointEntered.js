@@ -1,6 +1,7 @@
 import { createClient } from "redis";
 import { errorHandler } from "../../utils/index.js";
 import redisObj from "../../redis/redis.js";
+import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 
 const redis = createClient({
   url: process.env.REDIS_URL,
@@ -38,6 +39,12 @@ export const handleWaypointEntered = async (req, res) => {
       event: "waypoint-entered",
     });
 
+    // registerWaypointToWorldToDataObject({ req, res, urlSlug, profileId, waypointNumber, credentials })
+    //   .then(() => {})
+    //   .catch((error) => {
+    //     console.error(JSON.stringify(error));
+    //   });
+
     return res.status(200).json({ success: true });
   } catch (error) {
     return errorHandler({
@@ -49,3 +56,31 @@ export const handleWaypointEntered = async (req, res) => {
     });
   }
 };
+
+async function registerWaypointToWorldToDataObject({ req, res, urlSlug, profileId, waypointNumber, credentials }) {
+  const world = World.create(urlSlug, { credentials });
+  const dataObject = await world.fetchDataObject();
+
+  const raceObject = dataObject.race || {};
+  const profilesObject = raceObject.profiles || {};
+  const profileObject = profilesObject[profileId] || {};
+  const waypoints = (profileObject.waypoints || []).slice();
+
+  if (waypoints.length < waypointNumber - 1 || waypoints[waypointNumber - 1]) {
+    return;
+  }
+
+  waypoints[waypointNumber - 1] = true;
+
+  if (!dataObject.race) dataObject.race = {};
+  if (!dataObject.race.profiles) dataObject.race.profiles = {};
+
+  // User didn't start the race didn't start
+  if (!dataObject.race.profiles?.[profileId]) {
+    dataObject.race.profiles[profileId] = {};
+  }
+
+  dataObject.race.profiles[profileId].waypoints = waypoints;
+
+  await world.updateDataObject(dataObject);
+}

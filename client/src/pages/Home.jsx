@@ -33,7 +33,7 @@ function Home() {
   const loadGameState = async ({ dispatch }) => {
     try {
       setLoading(true);
-      const result = await backendAPI.get("/race/game-state");
+      const result = await backendAPI.post("/race/game-state", { now: Date.now() });
       if (result.data.success) {
         await dispatch({
           type: LOAD_GAME_STATE,

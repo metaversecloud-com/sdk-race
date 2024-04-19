@@ -2,7 +2,7 @@ import fs from "fs";
 
 export const getVersion = () => {
   try {
-    const packageJsonContent = fs.readFileSync("./package.json", "utf8");
+    const packageJsonContent = fs.readFileSync("../package.json", "utf8");
     const packageJson = JSON.parse(packageJsonContent);
     const version = packageJson.version;
     return version;

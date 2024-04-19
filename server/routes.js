@@ -49,7 +49,7 @@ router.get("/world", handleGetWorldDetails);
 router.put("/world/data-object", handleUpdateWorldDataObject);
 
 // Race
-router.get("/race/game-state", handleLoadGameState);
+router.post("/race/game-state", handleLoadGameState);
 router.post("/race/start-race", handleRaceStart);
 router.post("/race/waypoint-entered", handleWaypointEntered);
 router.post("/race/cancel-race", handleCancelRace);
