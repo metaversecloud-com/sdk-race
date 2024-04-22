@@ -5,7 +5,7 @@ export const handleRaceStart = async (req, res) => {
   try {
     console.log("handleRaceStart");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId } = req.query;
-    const { startTimestamp } = req.body;
+    const startTimestamp = Date.now();
 
     const visitor = await Visitor.get(visitorId, urlSlug, {
       credentials: {
@@ -34,7 +34,9 @@ export const handleRaceStart = async (req, res) => {
 
     const dataObject = await world.fetchDataObject();
 
-    if (!dataObject.race) dataObject.race = {};
+    if (!dataObject.race) {
+      dataObject.race = {};
+    }
     if (!dataObject.race.profiles) dataObject.race.profiles = {};
     if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
 

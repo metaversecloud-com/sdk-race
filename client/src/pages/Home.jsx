@@ -33,8 +33,8 @@ function Home() {
   const loadGameState = async ({ dispatch }) => {
     try {
       setLoading(true);
-      const result = await backendAPI.post("/race/game-state", { now: Date.now() });
-      if (result.data.success) {
+      const result = await backendAPI?.post("/race/game-state");
+      if (result?.data?.success) {
         await dispatch({
           type: LOAD_GAME_STATE,
           payload: {
@@ -42,6 +42,7 @@ function Home() {
             startTimestamp: result.data.startTimestamp,
             numberOfWaypoints: result.data.numberOfWaypoints,
             visitor: result.data.visitor,
+            elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
           },
         });
 

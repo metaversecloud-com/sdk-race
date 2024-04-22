@@ -4,7 +4,7 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { showRaceCompletedScreen, completeRace } from "../../context/actions";
+import { completeRace } from "../../context/actions";
 import "./RaceInProgressScreen.scss";
 
 const Waypoint = ({ number, completed }) => {
@@ -19,7 +19,8 @@ const Waypoint = ({ number, completed }) => {
 const RaceInProgressScreen = () => {
   const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
-  const { completedWaypoints, startTimestamp, numberOfWaypoints } = useContext(GlobalStateContext);
+  const { waypointsCompleted, startTimestamp, numberOfWaypoints, elapsedTimeInSeconds } =
+    useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
   const [events, setEvents] = useState(["event1"]);
   const [isFinishComplete, setIsFinishComplete] = useState(false);
@@ -27,16 +28,24 @@ const RaceInProgressScreen = () => {
   const profileId = searchParams.get("profileId");
 
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState("...");
+  const [elapsedTime, setElapsedTime] = useState("00:00");
+  const [counter, setCounter] = useState(0);
 
   const [waypoints, setWaypoints] = useState(
-    numberOfWaypoints
-      ? Array.from({ length: numberOfWaypoints }, (_, index) => ({
-          id: index + 1,
-          completed: false,
-        }))
-      : null,
+    Array.from({ length: numberOfWaypoints }, (_, index) => ({
+      id: index + 1,
+      completed: waypointsCompleted?.[index] || false,
+    })),
   );
+
+  useEffect(() => {
+    setWaypoints((prevWaypoints) =>
+      prevWaypoints?.map((waypoint, index) => ({
+        ...waypoint,
+        completed: waypointsCompleted?.[index] || false,
+      })),
+    );
+  }, [waypointsCompleted]);
 
   useEffect(() => {
     if (profileId) {
@@ -78,17 +87,17 @@ const RaceInProgressScreen = () => {
 
   // Timer
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const diff = now - startTimestamp;
-      const seconds = Math.floor((diff / 1000) % 60);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    let elapsedSeconds = elapsedTimeInSeconds;
 
+    const interval = setInterval(() => {
+      elapsedSeconds++;
+      const minutes = Math.floor(elapsedSeconds / 60);
+      const seconds = elapsedSeconds % 60;
       setElapsedTime(`${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [startTimestamp]);
+  }, []);
 
   const handleCancelRace = async () => {
     try {
@@ -116,8 +125,6 @@ const RaceInProgressScreen = () => {
       </div>
     );
   }
-
-  console.log("startTimestamp", startTimestamp);
 
   return (
     <div className="race-in-progress-wrapper">

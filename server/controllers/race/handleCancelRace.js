@@ -15,13 +15,15 @@ export const handleCancelRace = async (req, res) => {
 
     const world = await World.create(urlSlug, { credentials });
 
-    await world.fetchDataObject();
+    // await world.fetchDataObject();
 
     if (profileId) {
-      world.dataObject.race.profiles[profileId].startTimestamp = null;
-      world.dataObject.race.profiles[profileId].waypoints = [];
-      world.dataObject.race.profiles[profileId] = {};
-      await world.updateDataObject({ race: world.dataObject.race });
+      world
+        .updateDataObject({
+          [`race.profiles.${profileId}`]: null,
+        })
+        .then()
+        .catch();
     }
 
     return res.json({ success: true });

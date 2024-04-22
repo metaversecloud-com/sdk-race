@@ -5,7 +5,7 @@ export const handleLoadGameState = async (req, res) => {
   try {
     console.log("handleLoadGameState");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
-    const { now } = req.body;
+    const now = Date.now();
 
     const credentials = {
       interactiveNonce,
@@ -48,7 +48,17 @@ export const handleLoadGameState = async (req, res) => {
       });
     }
 
-    return res.json({ waypointsCompleted, startTimestamp, leaderboard, numberOfWaypoints, visitor, success: true });
+    const elapsedTimeInSeconds = startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0;
+
+    return res.json({
+      waypointsCompleted,
+      startTimestamp,
+      leaderboard,
+      numberOfWaypoints,
+      visitor,
+      elapsedTimeInSeconds,
+      success: true,
+    });
   } catch (error) {
     return errorHandler({
       error,

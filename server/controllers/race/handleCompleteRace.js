@@ -1,7 +1,6 @@
 import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
-// Função auxiliar para converter o tempo de string para valor numérico
 function timeToValue(timeString) {
   const [minutes, seconds] = timeString.split(":");
   return parseInt(minutes, 10) * 60 + parseInt(seconds, 10);
@@ -37,23 +36,30 @@ export const handleCompleteRace = async (req, res) => {
       world.dataObject.race.leaderboard[profileId] = { username, elapsedTime };
       world
         .updateDataObject({
-          [`race.profiles.${profileId}`]: null,
           [`race.leaderboard.${profileId}`]: { username, elapsedTime },
         })
         .then()
         .catch();
     }
 
+    // Reset user time
+    // world
+    //   .updateDataObject({
+    //     [`race.profiles.${profileId}`]: null,
+    //   })
+    //   .then()
+    //   .catch();
+
     const leaderboard = world.dataObject.race.leaderboard;
 
-    visitor
-      .fireToast({
-        groupId: "race",
-        title: "Finish",
-        text: `You finished the race! Your time: ${elapsedTime}`,
-      })
-      .then()
-      .catch();
+    // visitor
+    //   .fireToast({
+    //     groupId: "race",
+    //     title: "Finish",
+    //     text: `You finished the race! Your time: ${elapsedTime}`,
+    //   })
+    //   .then()
+    //   .catch();
 
     return res.json({ success: true, leaderboard, elapsedTime });
   } catch (error) {

@@ -43,6 +43,7 @@ const globalReducer = (state, action) => {
         raceStarted: payload.raceStarted,
         waypoints: [],
         startTimestamp: payload.startTimestamp,
+        waypointsCompleted: [],
       };
     case COMPLETE_RACE:
       return {
@@ -64,6 +65,7 @@ const globalReducer = (state, action) => {
         leaderboard: payload.leaderboard,
         numberOfWaypoints: payload.numberOfWaypoints,
         visitor: payload.visitor,
+        elapsedTimeInSeconds: payload.elapsedTimeInSeconds,
       };
     default: {
       throw new Error(`Unhandled action type: ${type}`);
