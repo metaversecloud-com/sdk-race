@@ -49,7 +49,11 @@ export const handleRaceStart = async (req, res) => {
 
     await Promise.all([
       world.updateDataObject(dataObject),
-      visitor.moveVisitor({ shouldTeleportVisitor: true, x: startWaypoint?.position?.x, y: droppedAsset?.position?.y }),
+      visitor.moveVisitor({
+        shouldTeleportVisitor: true,
+        x: startWaypoint?.position?.x,
+        y: startWaypoint?.position?.y,
+      }),
     ]);
 
     return res.json({ startTimestamp, success: true });
