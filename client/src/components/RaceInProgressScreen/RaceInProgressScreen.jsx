@@ -24,6 +24,7 @@ const RaceInProgressScreen = () => {
   const [searchParams] = useSearchParams();
   const [events, setEvents] = useState(["event1"]);
   const [isFinishComplete, setIsFinishComplete] = useState(false);
+  const [currentFinishedElapsedTime, setCurrentFinishedElapsedTime] = useState(null);
 
   const profileId = searchParams.get("profileId");
 
@@ -62,8 +63,10 @@ const RaceInProgressScreen = () => {
           });
 
           const allWaypointsCompleted = updatedWaypoints?.every((waypoint) => waypoint.completed);
-          if (newEvent?.waypointNumber === 0 && allWaypointsCompleted) {
+          console.log("newEvent?.currentFinishedElapsedTime", newEvent);
+          if (newEvent?.waypointNumber === 0 && allWaypointsCompleted && newEvent?.currentRaceFinishedElapsedTime) {
             setIsFinishComplete(true);
+            setCurrentFinishedElapsedTime(newEvent.currentRaceFinishedElapsedTime);
           }
 
           return updatedWaypoints;
@@ -81,9 +84,9 @@ const RaceInProgressScreen = () => {
     const allCompleted = waypoints?.every((waypoint) => waypoint.completed) && isFinishComplete;
     if (allCompleted && !completeRaceCalledRef.current) {
       completeRaceCalledRef.current = true;
-      completeRace({ dispatch, elapsedTime });
+      completeRace({ dispatch, currentFinishedElapsedTime });
     }
-  }, [waypoints, isFinishComplete, dispatch, elapsedTime]);
+  }, [waypoints, isFinishComplete, currentFinishedElapsedTime, dispatch]);
 
   // Timer
   useEffect(() => {

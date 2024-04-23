@@ -33,17 +33,42 @@ export const handleWaypointEntered = async (req, res) => {
       waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
     }
 
+    let currentElapsedTime = null;
+    if (waypointNumber === 0) {
+      const world = World.create(urlSlug, { credentials });
+      const dataObject = await world.fetchDataObject();
+      const raceObject = dataObject.race || {};
+      const profilesObject = raceObject.profiles || {};
+      const profileObject = profilesObject[profileId] || {};
+      const waypoints = (profileObject.waypoints || []).slice();
+
+      // Calculate and store the current elapsed time
+      const currentTimestamp = Date.now();
+      const startTimestamp = profileObject.startTimestamp || currentTimestamp;
+      const elapsedMilliseconds = currentTimestamp - startTimestamp;
+
+      const minutes = Math.floor(elapsedMilliseconds / 60000);
+      const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
+
+      currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    }
+
     redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
       profileId,
       waypointNumber,
+      currentRaceFinishedElapsedTime: currentElapsedTime,
       event: "waypoint-entered",
     });
 
-    registerWaypointToWorldToDataObject({ req, res, urlSlug, profileId, waypointNumber, username, credentials })
-      .then(() => {})
-      .catch((error) => {
-        console.error(JSON.stringify(error));
-      });
+    await registerWaypointToWorldToDataObject({
+      req,
+      res,
+      urlSlug,
+      profileId,
+      waypointNumber,
+      username,
+      credentials,
+    });
 
     return res.status(200).json({ success: true });
   } catch (error) {
@@ -73,6 +98,17 @@ async function registerWaypointToWorldToDataObject({
   const profileObject = profilesObject[profileId] || {};
   const waypoints = (profileObject.waypoints || []).slice();
 
+  // Calculate and store the current elapsed time
+  const currentTimestamp = Date.now();
+  const startTimestamp = profileObject.startTimestamp || currentTimestamp;
+  const elapsedMilliseconds = currentTimestamp - startTimestamp;
+
+  const minutes = Math.floor(elapsedMilliseconds / 60000);
+  const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
+
+  const currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+  // Waypoint is the finish line, but users could enter the finish line without having finished the race
   if (waypointNumber === 0) {
     const allWaypointsCompleted = raceObject.numberOfWaypoints === waypoints.length;
 
@@ -82,24 +118,17 @@ async function registerWaypointToWorldToDataObject({
       if (!dataObject.race.profiles) dataObject.race.profiles = {};
       if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
 
-      dataObject.race.profiles[profileId].waypoints = waypoints;
-
-      // TODO: Calculate elapsedTime
-      const startTimestamp = dataObject.race.profiles[profileId].startTimestamp;
-      const currentTimestamp = Date.now();
-      const elapsedMilliseconds = currentTimestamp - startTimestamp;
-
-      const minutes = Math.floor(elapsedMilliseconds / 60000);
-      const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
-
-      const elapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      dataObject.race.profiles[profileId] = {
+        waypoints,
+        elapsedTime: currentElapsedTime,
+      };
 
       const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
       visitor
         .fireToast({
           groupId: "race",
           title: "Finish",
-          text: `You finished the race! Your time: ${elapsedTime}`,
+          text: `You finished the race! Your time: ${currentElapsedTime}`,
         })
         .then()
         .catch(() => {
@@ -108,36 +137,9 @@ async function registerWaypointToWorldToDataObject({
 
       // Update the leaderboard with best time
       const currentBestTime = world.dataObject.race.leaderboard?.[profileId]?.elapsedTime;
-      if (!currentBestTime || timeToValue(elapsedTime) < timeToValue(currentBestTime)) {
-        world.dataObject.race.leaderboard[profileId] = { username, elapsedTime };
-        world
-          .updateDataObject({
-            [`race.leaderboard.${profileId}`]: { username, elapsedTime },
-          })
-          .then()
-          .catch(() => {
-            console.error(error);
-          });
+      if (!currentBestTime || timeToValue(currentElapsedTime) < timeToValue(currentBestTime)) {
+        world.dataObject.race.leaderboard[profileId] = { username, elapsedTime: currentElapsedTime };
       }
-
-      dataObject.race.profiles[profileId] = null;
-      // Reset user time
-      world
-        .updateDataObject({
-          [`race.profiles.${profileId}`]: null,
-        })
-        .then()
-        .catch(() => {
-          console.error(error);
-        });
-    } else {
-      waypoints[0] = true;
-
-      if (!dataObject.race) dataObject.race = {};
-      if (!dataObject.race.profiles) dataObject.race.profiles = {};
-      if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
-
-      dataObject.race.profiles[profileId].waypoints = waypoints;
     }
   } else {
     if (waypoints.length < waypointNumber - 1 || waypoints[waypointNumber - 1]) {
@@ -152,10 +154,20 @@ async function registerWaypointToWorldToDataObject({
       dataObject.race.profiles[profileId] = {};
     }
 
-    dataObject.race.profiles[profileId].waypoints = waypoints;
+    dataObject.race.profiles[profileId] = {
+      ...dataObject.race.profiles[profileId],
+      waypoints,
+      startTimestamp,
+      currentElapsedTime,
+    };
   }
 
-  await world.updateDataObject(dataObject);
+  world
+    .updateDataObject(dataObject)
+    .then()
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 function timeToValue(timeString) {

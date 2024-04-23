@@ -21,15 +21,15 @@ export const startRace = async ({ dispatch, navigate }) => {
   }
 };
 
-export const completeRace = async ({ dispatch, elapsedTime }) => {
+export const completeRace = async ({ dispatch, currentFinishedElapsedTime }) => {
   try {
-    console.log("completeRace");
-    const result = await backendAPI.post("/race/complete-race", { elapsedTime });
+    console.log("completeRace", currentFinishedElapsedTime);
+    const result = await backendAPI.post("/race/complete-race");
     if (result.status === 200) {
       dispatch({
         type: COMPLETE_RACE,
         payload: {
-          elapsedTime,
+          elapsedTime: currentFinishedElapsedTime,
         },
       });
     }

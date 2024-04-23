@@ -32,6 +32,10 @@ export const handleRaceStart = async (req, res) => {
       },
     });
 
+    const startWaypoint = (
+      await world.fetchDroppedAssetsWithUniqueName({ uniqueName: "race-track-start", isPartial: false })
+    )?.[0];
+
     const dataObject = await world.fetchDataObject();
 
     if (!dataObject.race) {
@@ -45,7 +49,7 @@ export const handleRaceStart = async (req, res) => {
 
     await Promise.all([
       world.updateDataObject(dataObject),
-      visitor.moveVisitor({ shouldTeleportVisitor: true, x: droppedAsset?.position?.x, y: droppedAsset?.position?.y }),
+      visitor.moveVisitor({ shouldTeleportVisitor: true, x: startWaypoint?.position?.x, y: droppedAsset?.position?.y }),
     ]);
 
     return res.json({ startTimestamp, success: true });

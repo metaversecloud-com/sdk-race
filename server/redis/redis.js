@@ -36,11 +36,11 @@ const redisObj = {
   subscribe: function (channel) {
     this.subscriber.subscribe(channel, (message) => {
       const data = JSON.parse(message);
-      const { profileId, waypointNumber } = data;
+      const { profileId, waypointNumber, currentRaceFinishedElapsedTime } = data;
       // console.log(`Event '${data.event}' received on ${channel}`);
       let dataToSend = null;
       if (data.event === "waypoint-entered") {
-        dataToSend = { profileId, waypointNumber };
+        dataToSend = { profileId, waypointNumber, currentRaceFinishedElapsedTime };
       }
       this.connections.forEach(({ res: existingConnection }) => {
         const { profileId } = existingConnection.req.query;
