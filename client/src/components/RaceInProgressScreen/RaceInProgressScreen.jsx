@@ -63,7 +63,6 @@ const RaceInProgressScreen = () => {
           });
 
           const allWaypointsCompleted = updatedWaypoints?.every((waypoint) => waypoint.completed);
-          console.log("newEvent?.currentFinishedElapsedTime", newEvent);
           if (newEvent?.waypointNumber === 0 && allWaypointsCompleted && newEvent?.currentRaceFinishedElapsedTime) {
             setIsFinishComplete(true);
             setCurrentFinishedElapsedTime(newEvent.currentRaceFinishedElapsedTime);

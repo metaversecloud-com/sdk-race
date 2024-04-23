@@ -34,6 +34,7 @@ export const handleWaypointEntered = async (req, res) => {
     }
 
     let currentElapsedTime = null;
+    const currentTimestamp = Date.now();
     if (waypointNumber === 0) {
       const world = World.create(urlSlug, { credentials });
       const dataObject = await world.fetchDataObject();
@@ -43,7 +44,7 @@ export const handleWaypointEntered = async (req, res) => {
       const waypoints = (profileObject.waypoints || []).slice();
 
       // Calculate and store the current elapsed time
-      const currentTimestamp = Date.now();
+
       const startTimestamp = profileObject.startTimestamp || currentTimestamp;
       const elapsedMilliseconds = currentTimestamp - startTimestamp;
 
@@ -67,6 +68,7 @@ export const handleWaypointEntered = async (req, res) => {
       profileId,
       waypointNumber,
       username,
+      currentTimestamp,
       credentials,
     });
 
@@ -89,6 +91,7 @@ async function registerWaypointToWorldToDataObject({
   profileId,
   waypointNumber,
   username,
+  currentTimestamp,
   credentials,
 }) {
   const world = World.create(urlSlug, { credentials });
@@ -99,7 +102,6 @@ async function registerWaypointToWorldToDataObject({
   const waypoints = (profileObject.waypoints || []).slice();
 
   // Calculate and store the current elapsed time
-  const currentTimestamp = Date.now();
   const startTimestamp = profileObject.startTimestamp || currentTimestamp;
   const elapsedMilliseconds = currentTimestamp - startTimestamp;
 

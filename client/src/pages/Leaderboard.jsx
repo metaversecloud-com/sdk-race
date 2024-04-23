@@ -26,7 +26,6 @@ function Home() {
       setLoading(true);
       const result = await backendAPI?.post("/race/game-state");
       if (result?.data?.success) {
-        console.log("result", result);
         await dispatch({
           type: LOAD_GAME_STATE,
           payload: {
