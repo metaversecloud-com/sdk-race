@@ -56,7 +56,11 @@ const RaceInProgressScreen = () => {
         setEvents((prevEvents) => [...prevEvents, newEvent]);
         setWaypoints((prevWaypoints) => {
           const updatedWaypoints = prevWaypoints?.map((waypoint, index) => {
-            if (waypoint?.id === newEvent?.waypointNumber) {
+            if (
+              waypoint?.id === newEvent?.waypointNumber &&
+              newEvent?.waypointNumber === index + 1 &&
+              (index === 0 || prevWaypoints[index - 1].completed)
+            ) {
               return { ...waypoint, completed: true };
             }
             return waypoint;
@@ -126,6 +130,10 @@ const RaceInProgressScreen = () => {
         </div>
       </div>
     );
+  }
+
+  if (elapsedTime == "00:00") {
+    return <div>Loading...</div>;
   }
 
   return (
