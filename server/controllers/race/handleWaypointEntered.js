@@ -77,7 +77,7 @@ export const handleWaypointEntered = async (req, res) => {
     return errorHandler({
       error,
       functionName: "handleWaypointEntered",
-      message: "Erro ao entrar no waypoint",
+      message: "Erro when entering in the waypoint",
       req,
       res,
     });
@@ -102,7 +102,7 @@ async function registerWaypointToWorldToDataObject({
   const waypoints = (profileObject.waypoints || []).slice();
 
   // Calculate and store the current elapsed time
-  const startTimestamp = profileObject.startTimestamp || currentTimestamp;
+  const startTimestamp = profileObject.startTimestamp;
   const elapsedMilliseconds = currentTimestamp - startTimestamp;
 
   const minutes = Math.floor(elapsedMilliseconds / 60000);
@@ -116,14 +116,12 @@ async function registerWaypointToWorldToDataObject({
 
     // Race Finished
     if (allWaypointsCompleted) {
-      if (!dataObject.race) dataObject.race = {};
-      if (!dataObject.race.profiles) dataObject.race.profiles = {};
-      if (!dataObject.race.profiles[profileId]) dataObject.race.profiles[profileId] = {};
-
-      dataObject.race.profiles[profileId] = {
-        waypoints,
-        elapsedTime: currentElapsedTime,
-      };
+      await world.updateDataObject({
+        [`race.profiles.${profileId}`]: {
+          waypoints,
+          elapsedTime: currentElapsedTime,
+        },
+      });
 
       const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
       visitor
@@ -138,9 +136,15 @@ async function registerWaypointToWorldToDataObject({
         });
 
       // Update the leaderboard with best time
-      const currentBestTime = world.dataObject.race.leaderboard?.[profileId]?.elapsedTime;
-      if (!currentBestTime || timeToValue(currentElapsedTime) < timeToValue(currentBestTime)) {
-        world.dataObject.race.leaderboard[profileId] = { username, elapsedTime: currentElapsedTime };
+      const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;
+      if (
+        !currentBestTime ||
+        timeToValue(currentElapsedTime) < timeToValue(currentBestTime) ||
+        currentElapsedTime === "00:00"
+      ) {
+        await world.updateDataObject({
+          [`race.leaderboard.${profileId}`]: { username, elapsedTime: currentElapsedTime },
+        });
       }
     }
   } else {
@@ -150,26 +154,14 @@ async function registerWaypointToWorldToDataObject({
 
     waypoints[waypointNumber - 1] = true;
 
-    if (!dataObject.race) dataObject.race = {};
-    if (!dataObject.race.profiles) dataObject.race.profiles = {};
-    if (!dataObject.race.profiles[profileId]) {
-      dataObject.race.profiles[profileId] = {};
-    }
-
-    dataObject.race.profiles[profileId] = {
-      ...dataObject.race.profiles[profileId],
-      waypoints,
-      startTimestamp,
-      currentElapsedTime,
-    };
-  }
-
-  world
-    .updateDataObject(dataObject)
-    .then()
-    .catch((error) => {
-      console.error(error);
+    await world.updateDataObject({
+      [`race.profiles.${profileId}`]: {
+        waypoints,
+        startTimestamp,
+        currentElapsedTime,
+      },
     });
+  }
 }
 
 function timeToValue(timeString) {
