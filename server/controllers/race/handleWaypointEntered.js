@@ -148,7 +148,23 @@ async function registerWaypointToWorldToDataObject({
       }
     }
   } else {
-    if (waypoints.length < waypointNumber - 1 || waypoints[waypointNumber - 1]) {
+    if (waypoints[waypointNumber - 1]) {
+      return;
+    }
+
+    // Verifica se o waypoint anterior não foi visitado
+    if (waypointNumber > 1 && !waypoints[waypointNumber - 2]) {
+      const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
+      visitor
+        .fireToast({
+          groupId: "race",
+          title: "❌ Wrong waypoint",
+          text: "Oops! Go back. You missed a waypoint!",
+        })
+        .then()
+        .catch((error) => {
+          console.error(error);
+        });
       return;
     }
 
