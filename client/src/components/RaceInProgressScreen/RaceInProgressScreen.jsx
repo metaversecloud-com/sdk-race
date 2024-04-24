@@ -5,6 +5,7 @@ import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { completeRace } from "../../context/actions";
+import { ClipLoader } from "react-spinners";
 import "./RaceInProgressScreen.scss";
 
 const Waypoint = ({ number, completed }) => {
@@ -154,7 +155,11 @@ const RaceInProgressScreen = () => {
   }
 
   if (elapsedTime == "00:00") {
-    return <div>Loading...</div>;
+    return (
+      <div className="loader">
+        <ClipLoader color={"#123abc"} loading={true} size={150} />
+      </div>
+    );
   }
 
   return (
