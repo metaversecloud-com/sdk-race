@@ -17,6 +17,15 @@ const Waypoint = ({ number, completed }) => {
 };
 
 const RaceInProgressScreen = () => {
+  const positiveAudioRef = useRef(null);
+  const negativeAudioRef = useRef(null);
+  const successAudioRef = useRef(null);
+
+  useEffect(() => {
+    positiveAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/positive.mp3");
+    negativeAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/negative.mp3");
+    successAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/success.mp3");
+  }, []);
   const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
   const { waypointsCompleted, startTimestamp, numberOfWaypoints, elapsedTimeInSeconds } =
@@ -55,12 +64,17 @@ const RaceInProgressScreen = () => {
         const newEvent = JSON.parse(event.data);
         setEvents((prevEvents) => [...prevEvents, newEvent]);
         setWaypoints((prevWaypoints) => {
+          const currentWaypointIndex = prevWaypoints.findIndex((waypoint) => waypoint?.id === newEvent?.waypointNumber);
+          const isWaypointInCorrectOrder =
+            currentWaypointIndex !== -1 &&
+            newEvent?.waypointNumber === currentWaypointIndex + 1 &&
+            (currentWaypointIndex === 0 || prevWaypoints[currentWaypointIndex - 1].completed);
+
           const updatedWaypoints = prevWaypoints?.map((waypoint, index) => {
-            if (
-              waypoint?.id === newEvent?.waypointNumber &&
-              newEvent?.waypointNumber === index + 1 &&
-              (index === 0 || prevWaypoints[index - 1].completed)
-            ) {
+            if (waypoint?.id === newEvent?.waypointNumber && isWaypointInCorrectOrder) {
+              if (newEvent?.waypointNumber !== undefined && newEvent?.waypointNumber !== 0 && !waypoint.completed) {
+                positiveAudioRef.current.play();
+              }
               return { ...waypoint, completed: true };
             }
             return waypoint;
@@ -70,6 +84,12 @@ const RaceInProgressScreen = () => {
           if (newEvent?.waypointNumber === 0 && allWaypointsCompleted && newEvent?.currentRaceFinishedElapsedTime) {
             setIsFinishComplete(true);
             setCurrentFinishedElapsedTime(newEvent.currentRaceFinishedElapsedTime);
+          }
+
+          if (!isWaypointInCorrectOrder) {
+            if (newEvent?.waypointNumber !== undefined && newEvent?.waypointNumber !== 0) {
+              negativeAudioRef.current.play();
+            }
           }
 
           return updatedWaypoints;
@@ -87,6 +107,7 @@ const RaceInProgressScreen = () => {
     const allCompleted = waypoints?.every((waypoint) => waypoint.completed) && isFinishComplete;
     if (allCompleted && !completeRaceCalledRef.current) {
       completeRaceCalledRef.current = true;
+      successAudioRef.current.play();
       completeRace({ dispatch, currentFinishedElapsedTime });
     }
   }, [waypoints, isFinishComplete, currentFinishedElapsedTime, dispatch]);
