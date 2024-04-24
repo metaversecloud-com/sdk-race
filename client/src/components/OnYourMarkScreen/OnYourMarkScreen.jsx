@@ -19,11 +19,19 @@ const OnYourMarkScreen = () => {
   useEffect(() => {
     beepAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/beep1.mp3");
     beep2AudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/beep2.mp3");
+
+    beepAudioRef.current.addEventListener("canplaythrough", () => {
+      beepAudioRef.current.play();
+    });
   }, []);
 
   useEffect(() => {
     if (currentMessage < countdown.length) {
-      beepAudioRef.current.play();
+      if (currentMessage === 0) {
+        beepAudioRef.current.load();
+      } else {
+        beepAudioRef.current.play();
+      }
       const timerId = setTimeout(() => {
         setCurrentMessage(currentMessage + 1);
       }, 1000);
