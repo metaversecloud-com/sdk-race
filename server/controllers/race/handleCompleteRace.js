@@ -18,45 +18,7 @@ export const handleCompleteRace = async (req, res) => {
 
     const elapsedTime = world?.dataObject?.race?.profiles?.[profileId]?.elapsedTime;
 
-    // if (!world?.dataObject?.race) {
-    //   world.dataObject.race = {};
-    // }
-
-    // if (!world?.dataObject?.race?.leaderboard) {
-    //   world.dataObject.race.leaderboard = {};
-    //   await world.updateDataObject({ race });
-    // }
-
-    // const currentBestTime = world.dataObject.race.leaderboard?.[profileId]?.elapsedTime;
-
-    // if (!currentBestTime || timeToValue(elapsedTime) < timeToValue(currentBestTime)) {
-    //   world.dataObject.race.leaderboard[profileId] = { username, elapsedTime };
-    //   world
-    //     .updateDataObject({
-    //       [`race.leaderboard.${profileId}`]: { username, elapsedTime },
-    //     })
-    //     .then()
-    //     .catch();
-    // }
-
-    // Reset user time
-    // world
-    //   .updateDataObject({
-    //     [`race.profiles.${profileId}`]: null,
-    //   })
-    //   .then()
-    //   .catch();
-
     const leaderboard = world.dataObject.race.leaderboard;
-
-    // visitor
-    //   .fireToast({
-    //     groupId: "race",
-    //     title: "Finish",
-    //     text: `You finished the race! Your time: ${elapsedTime}`,
-    //   })
-    //   .then()
-    //   .catch();
 
     return res.json({ success: true, leaderboard, elapsedTime });
   } catch (error) {

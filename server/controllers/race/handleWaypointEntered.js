@@ -103,6 +103,10 @@ async function registerWaypointToWorldToDataObject({
 
   // Calculate and store the current elapsed time
   const startTimestamp = profileObject.startTimestamp;
+
+  // if (!startTimestamp) {
+  // }
+
   const elapsedMilliseconds = currentTimestamp - startTimestamp;
 
   const minutes = Math.floor(elapsedMilliseconds / 60000);
@@ -118,7 +122,7 @@ async function registerWaypointToWorldToDataObject({
     if (allWaypointsCompleted) {
       await world.updateDataObject({
         [`race.profiles.${profileId}`]: {
-          waypoints,
+          waypoints: [],
           elapsedTime: currentElapsedTime,
         },
       });
