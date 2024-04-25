@@ -104,8 +104,9 @@ async function registerWaypointToWorldToDataObject({
   // Calculate and store the current elapsed time
   const startTimestamp = profileObject.startTimestamp;
 
-  // if (!startTimestamp) {
-  // }
+  if (!startTimestamp) {
+    return;
+  }
 
   const elapsedMilliseconds = currentTimestamp - startTimestamp;
 
