@@ -37,7 +37,6 @@ const redisObj = {
     this.subscriber.subscribe(channel, (message) => {
       const data = JSON.parse(message);
       const { profileId, waypointNumber, currentRaceFinishedElapsedTime } = data;
-      // console.log(`Event '${data.event}' received on ${channel}`);
       let dataToSend = null;
       if (data.event === "waypoint-entered") {
         dataToSend = { profileId, waypointNumber, currentRaceFinishedElapsedTime };
@@ -52,13 +51,13 @@ const redisObj = {
   },
   connections: [],
   addConn: function (connection) {
-    const { visitorId, interactiveNonce } = connection.res.req.query;
+    const { profileId, interactiveNonce } = connection.res.req.query;
 
     if (
       this.connections.some(
         ({ res: existingConnection }) =>
           existingConnection.req.query.interactiveNonce === interactiveNonce &&
-          existingConnection.req.query.visitorId === visitorId,
+          existingConnection.req.query.profileId === profileId,
       )
     ) {
       // Replace old connection with new one
@@ -66,7 +65,7 @@ const redisObj = {
         this.connections.findIndex(
           ({ res: existingConnection }) =>
             existingConnection.req.query.interactiveNonce === interactiveNonce &&
-            existingConnection.req.query.visitorId === visitorId,
+            existingConnection.req.query.profileId === profileId,
         ),
         1,
         connection,

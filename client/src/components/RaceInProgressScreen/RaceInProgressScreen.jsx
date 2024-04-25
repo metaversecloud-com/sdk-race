@@ -62,6 +62,7 @@ const RaceInProgressScreen = () => {
     if (profileId) {
       const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
       eventSource.onmessage = function (event) {
+        console.log("hey");
         const newEvent = JSON.parse(event.data);
         setEvents((prevEvents) => [...prevEvents, newEvent]);
         setWaypoints((prevWaypoints) => {
@@ -95,6 +96,9 @@ const RaceInProgressScreen = () => {
 
           return updatedWaypoints;
         });
+      };
+      eventSource.onerror = (event) => {
+        console.error("Server Event error:", event);
       };
       return () => {
         eventSource.close();

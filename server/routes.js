@@ -13,7 +13,6 @@ import {
   handleWaypointEntered,
   handleLoadGameState,
   handleCancelRace,
-  handleSendEvent,
   handleGetEvents,
   handleCompleteRace,
   handleResetGame,
@@ -57,7 +56,6 @@ router.post("/race/complete-race", handleCompleteRace);
 router.post("/race/reset-game", handleResetGame);
 
 // Events
-router.post("/send-event", handleSendEvent);
 router.get("/events", handleGetEvents);
 
 export default router;
