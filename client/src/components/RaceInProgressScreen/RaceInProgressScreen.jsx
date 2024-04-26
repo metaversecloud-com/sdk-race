@@ -8,11 +8,11 @@ import { completeRace } from "../../context/actions";
 import { ClipLoader } from "react-spinners";
 import "./RaceInProgressScreen.scss";
 
-const Waypoint = ({ number, completed }) => {
+const Checkpoint = ({ number, completed }) => {
   return (
-    <div className={`waypoint ${completed ? "completed" : ""}`}>
+    <div className={`checkpoint ${completed ? "completed" : ""}`}>
       <span className="indicator">{completed ? "🟢" : "🔴"}</span>
-      {number === "Finish" ? "Finish" : `Waypoint ${number}`}
+      {number === "Finish" ? "Finish" : `Checkpoint ${number}`}
     </div>
   );
 };
@@ -29,7 +29,7 @@ const RaceInProgressScreen = () => {
   }, []);
   const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
-  const { waypointsCompleted, startTimestamp, numberOfWaypoints, elapsedTimeInSeconds } =
+  const { checkpointsCompleted, startTimestamp, numberOfCheckpoints, elapsedTimeInSeconds } =
     useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
   const [events, setEvents] = useState(["event1"]);
@@ -42,21 +42,21 @@ const RaceInProgressScreen = () => {
   const [elapsedTime, setElapsedTime] = useState("00:00");
   const [counter, setCounter] = useState(0);
 
-  const [waypoints, setWaypoints] = useState(
-    Array.from({ length: numberOfWaypoints }, (_, index) => ({
+  const [checkpoints, setCheckpoints] = useState(
+    Array.from({ length: numberOfCheckpoints }, (_, index) => ({
       id: index + 1,
-      completed: waypointsCompleted?.[index] || false,
+      completed: checkpointsCompleted?.[index] || false,
     })),
   );
 
   useEffect(() => {
-    setWaypoints((prevWaypoints) =>
-      prevWaypoints?.map((waypoint, index) => ({
-        ...waypoint,
-        completed: waypointsCompleted?.[index] || false,
+    setCheckpoints((prevCheckpoints) =>
+      prevCheckpoints?.map((checkpoint, index) => ({
+        ...checkpoint,
+        completed: checkpointsCompleted?.[index] || false,
       })),
     );
-  }, [waypointsCompleted]);
+  }, [checkpointsCompleted]);
 
   useEffect(() => {
     if (profileId) {
@@ -65,36 +65,42 @@ const RaceInProgressScreen = () => {
         console.log("hey");
         const newEvent = JSON.parse(event.data);
         setEvents((prevEvents) => [...prevEvents, newEvent]);
-        setWaypoints((prevWaypoints) => {
-          const currentWaypointIndex = prevWaypoints.findIndex((waypoint) => waypoint?.id === newEvent?.waypointNumber);
-          const isWaypointInCorrectOrder =
-            currentWaypointIndex !== -1 &&
-            newEvent?.waypointNumber === currentWaypointIndex + 1 &&
-            (currentWaypointIndex === 0 || prevWaypoints[currentWaypointIndex - 1].completed);
+        setCheckpoints((prevCheckpoints) => {
+          const currentCheckpointIndex = prevCheckpoints.findIndex(
+            (checkpoint) => checkpoint?.id === newEvent?.checkpointNumber,
+          );
+          const isCheckpointInCorrectOrder =
+            currentCheckpointIndex !== -1 &&
+            newEvent?.checkpointNumber === currentCheckpointIndex + 1 &&
+            (currentCheckpointIndex === 0 || prevCheckpoints[currentCheckpointIndex - 1].completed);
 
-          const updatedWaypoints = prevWaypoints?.map((waypoint, index) => {
-            if (waypoint?.id === newEvent?.waypointNumber && isWaypointInCorrectOrder) {
-              if (newEvent?.waypointNumber !== undefined && newEvent?.waypointNumber !== 0 && !waypoint.completed) {
+          const updatedCheckpoints = prevCheckpoints?.map((checkpoint, index) => {
+            if (checkpoint?.id === newEvent?.checkpointNumber && isCheckpointInCorrectOrder) {
+              if (
+                newEvent?.checkpointNumber !== undefined &&
+                newEvent?.checkpointNumber !== 0 &&
+                !checkpoint.completed
+              ) {
                 positiveAudioRef.current.play();
               }
-              return { ...waypoint, completed: true };
+              return { ...checkpoint, completed: true };
             }
-            return waypoint;
+            return checkpoint;
           });
 
-          const allWaypointsCompleted = updatedWaypoints?.every((waypoint) => waypoint.completed);
-          if (newEvent?.waypointNumber === 0 && allWaypointsCompleted && newEvent?.currentRaceFinishedElapsedTime) {
+          const allCheckpointsCompleted = updatedCheckpoints?.every((checkpoint) => checkpoint.completed);
+          if (newEvent?.checkpointNumber === 0 && allCheckpointsCompleted && newEvent?.currentRaceFinishedElapsedTime) {
             setIsFinishComplete(true);
             setCurrentFinishedElapsedTime(newEvent.currentRaceFinishedElapsedTime);
           }
 
-          if (!isWaypointInCorrectOrder) {
-            if (newEvent?.waypointNumber !== undefined && newEvent?.waypointNumber !== 0) {
+          if (!isCheckpointInCorrectOrder) {
+            if (newEvent?.checkpointNumber !== undefined && newEvent?.checkpointNumber !== 0) {
               negativeAudioRef.current.play();
             }
           }
 
-          return updatedWaypoints;
+          return updatedCheckpoints;
         });
       };
       eventSource.onerror = (event) => {
@@ -109,13 +115,13 @@ const RaceInProgressScreen = () => {
   const completeRaceCalledRef = useRef(false);
 
   useEffect(() => {
-    const allCompleted = waypoints?.every((waypoint) => waypoint.completed) && isFinishComplete;
+    const allCompleted = checkpoints?.every((checkpoint) => checkpoint.completed) && isFinishComplete;
     if (allCompleted && !completeRaceCalledRef.current) {
       completeRaceCalledRef.current = true;
       successAudioRef.current.play();
       completeRace({ dispatch, currentFinishedElapsedTime });
     }
-  }, [waypoints, isFinishComplete, currentFinishedElapsedTime, dispatch]);
+  }, [checkpoints, isFinishComplete, currentFinishedElapsedTime, dispatch]);
 
   // Timer
   useEffect(() => {
@@ -168,7 +174,7 @@ const RaceInProgressScreen = () => {
 
   return (
     <div className="race-in-progress-wrapper">
-      <div className="waypoints-container">
+      <div className="checkpoints-container">
         <h2 style={{ textAlign: "center" }}>Race in progress!</h2>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "16px" }}>
           <div
@@ -182,11 +188,11 @@ const RaceInProgressScreen = () => {
             ⌛ {elapsedTime}
           </div>
         </div>
-        <div className="waypoints">
-          {waypoints?.map((waypoint) => (
-            <Waypoint key={waypoint.id} number={waypoint.id} completed={waypoint.completed} />
+        <div className="checkpoints">
+          {checkpoints?.map((checkpoint) => (
+            <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
           ))}
-          <Waypoint key="finish" number="Finish" completed={isFinishComplete} />
+          <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
         </div>
       </div>
       <Footer />

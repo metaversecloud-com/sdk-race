@@ -22,23 +22,23 @@ export const handleLoadGameState = async (req, res) => {
     const race = world?.dataObject?.race;
 
     if (!race) {
-      const numberOfWaypoints = await world.fetchDroppedAssetsWithUniqueName({
-        uniqueName: "race-track-waypoint",
+      const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
+        uniqueName: "race-track-checkpoint",
         isPartial: true,
       });
       await world.updateDataObject({
         race: {
           leaderboard: {},
           profiles: {},
-          numberOfWaypoints: numberOfWaypoints?.length,
+          numberOfCheckpoints: numberOfCheckpoints?.length,
         },
       });
     }
 
-    const waypointsCompleted = world?.dataObject?.race?.profiles[profileId]?.waypoints;
+    const checkpointsCompleted = world?.dataObject?.race?.profiles[profileId]?.checkpoints;
     let startTimestamp = world?.dataObject?.race?.profiles[profileId]?.startTimestamp;
     const leaderboard = world?.dataObject?.race?.leaderboard;
-    const numberOfWaypoints = world?.dataObject?.race?.numberOfWaypoints;
+    const numberOfCheckpoints = world?.dataObject?.race?.numberOfCheckpoints;
 
     // restart client race if the elapsed time is higher than 3 minutes
     if (startTimestamp && now - startTimestamp > 180000) {
@@ -51,10 +51,10 @@ export const handleLoadGameState = async (req, res) => {
     const elapsedTimeInSeconds = startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0;
 
     return res.json({
-      waypointsCompleted,
+      checkpointsCompleted,
       startTimestamp,
       leaderboard,
-      numberOfWaypoints,
+      numberOfCheckpoints,
       visitor,
       elapsedTimeInSeconds,
       success: true,

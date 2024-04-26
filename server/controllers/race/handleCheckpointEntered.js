@@ -13,9 +13,9 @@ const redis = createClient({
 redis.on("error", (err) => console.log("Redis Client Error", err));
 await redis.connect();
 
-export const handleWaypointEntered = async (req, res) => {
+export const handleCheckpointEntered = async (req, res) => {
   try {
-    console.log("handleWaypointEntered");
+    console.log("handleCheckpointEntered");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, username } = req.body;
     const { assetId, isInteractive, position, uniqueName, sceneDropId } = req.body;
 
@@ -26,22 +26,22 @@ export const handleWaypointEntered = async (req, res) => {
       visitorId,
     };
 
-    let waypointNumber;
+    let checkpointNumber;
     if (uniqueName === "race-track-start") {
-      waypointNumber = 0;
+      checkpointNumber = 0;
     } else {
-      waypointNumber = parseInt(uniqueName.split("-").pop(), 10);
+      checkpointNumber = parseInt(uniqueName.split("-").pop(), 10);
     }
 
     let currentElapsedTime = null;
     const currentTimestamp = Date.now();
-    if (waypointNumber === 0) {
+    if (checkpointNumber === 0) {
       const world = World.create(urlSlug, { credentials });
       const dataObject = await world.fetchDataObject();
       const raceObject = dataObject.race || {};
       const profilesObject = raceObject.profiles || {};
       const profileObject = profilesObject[profileId] || {};
-      const waypoints = (profileObject.waypoints || []).slice();
+      const checkpoints = (profileObject.checkpoints || []).slice();
 
       // Calculate and store the current elapsed time
 
@@ -56,17 +56,17 @@ export const handleWaypointEntered = async (req, res) => {
 
     redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
       profileId,
-      waypointNumber,
+      checkpointNumber,
       currentRaceFinishedElapsedTime: currentElapsedTime,
-      event: "waypoint-entered",
+      event: "checkpoint-entered",
     });
 
-    await registerWaypointToWorldToDataObject({
+    await registerCheckpointToWorldToDataObject({
       req,
       res,
       urlSlug,
       profileId,
-      waypointNumber,
+      checkpointNumber,
       username,
       currentTimestamp,
       credentials,
@@ -76,20 +76,20 @@ export const handleWaypointEntered = async (req, res) => {
   } catch (error) {
     return errorHandler({
       error,
-      functionName: "handleWaypointEntered",
-      message: "Erro when entering in the waypoint",
+      functionName: "handleCheckpointEntered",
+      message: "Erro when entering in the checkpoint",
       req,
       res,
     });
   }
 };
 
-async function registerWaypointToWorldToDataObject({
+async function registerCheckpointToWorldToDataObject({
   req,
   res,
   urlSlug,
   profileId,
-  waypointNumber,
+  checkpointNumber,
   username,
   currentTimestamp,
   credentials,
@@ -99,7 +99,7 @@ async function registerWaypointToWorldToDataObject({
   const raceObject = dataObject.race || {};
   const profilesObject = raceObject.profiles || {};
   const profileObject = profilesObject[profileId] || {};
-  const waypoints = (profileObject.waypoints || []).slice();
+  const checkpoints = (profileObject.checkpoints || []).slice();
 
   // Calculate and store the current elapsed time
   const startTimestamp = profileObject.startTimestamp;
@@ -115,15 +115,15 @@ async function registerWaypointToWorldToDataObject({
 
   const currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-  // Waypoint is the finish line, but users could enter the finish line without having finished the race
-  if (waypointNumber === 0) {
-    const allWaypointsCompleted = raceObject.numberOfWaypoints === waypoints.length;
+  // Checkpoint is the finish line, but users could enter the finish line without having finished the race
+  if (checkpointNumber === 0) {
+    const allCheckpointsCompleted = raceObject.numberOfCheckpoints === checkpoints.length;
 
     // Race Finished
-    if (allWaypointsCompleted) {
+    if (allCheckpointsCompleted) {
       await world.updateDataObject({
         [`race.profiles.${profileId}`]: {
-          waypoints: [],
+          checkpoints: [],
           elapsedTime: currentElapsedTime,
         },
       });
@@ -132,7 +132,7 @@ async function registerWaypointToWorldToDataObject({
       visitor
         .fireToast({
           groupId: "race",
-          title: "Finish",
+          title: "🏁 Finish",
           text: `You finished the race! Your time: ${currentElapsedTime}`,
         })
         .then()
@@ -153,18 +153,19 @@ async function registerWaypointToWorldToDataObject({
       }
     }
   } else {
-    if (waypoints[waypointNumber - 1]) {
+    if (checkpoints[checkpointNumber - 1]) {
       return;
     }
 
-    // Verifica se o waypoint anterior não foi visitado
-    if (waypointNumber > 1 && !waypoints[waypointNumber - 2]) {
-      const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
+    const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
+
+    // Verifica se o checkpoint anterior não foi visitado
+    if (checkpointNumber > 1 && !checkpoints[checkpointNumber - 2]) {
       visitor
         .fireToast({
           groupId: "race",
-          title: "❌ Wrong waypoint",
-          text: "Oops! Go back. You missed a waypoint!",
+          title: "❌ Wrong checkpoint",
+          text: "Oops! Go back. You missed a checkpoint!",
         })
         .then()
         .catch((error) => {
@@ -173,11 +174,22 @@ async function registerWaypointToWorldToDataObject({
       return;
     }
 
-    waypoints[waypointNumber - 1] = true;
+    checkpoints[checkpointNumber - 1] = true;
+
+    visitor
+      .fireToast({
+        groupId: "race",
+        title: `✅ Checkpoint ${checkpointNumber}`,
+        text: "Keep going!",
+      })
+      .then()
+      .catch((error) => {
+        console.error(error);
+      });
 
     await world.updateDataObject({
       [`race.profiles.${profileId}`]: {
-        waypoints,
+        checkpoints,
         startTimestamp,
         currentElapsedTime,
       },

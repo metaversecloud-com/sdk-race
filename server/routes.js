@@ -10,7 +10,7 @@ import {
   moveVisitor,
   handleRemoveDroppedAssets,
   handleRaceStart,
-  handleWaypointEntered,
+  handleCheckpointEntered,
   handleLoadGameState,
   handleCancelRace,
   handleGetEvents,
@@ -50,7 +50,7 @@ router.put("/world/data-object", handleUpdateWorldDataObject);
 // Race
 router.post("/race/game-state", handleLoadGameState);
 router.post("/race/start-race", handleRaceStart);
-router.post("/race/waypoint-entered", handleWaypointEntered);
+router.post("/race/checkpoint-entered", handleCheckpointEntered);
 router.post("/race/cancel-race", handleCancelRace);
 router.post("/race/complete-race", handleCompleteRace);
 router.post("/race/reset-game", handleResetGame);

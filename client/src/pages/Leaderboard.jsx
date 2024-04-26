@@ -29,7 +29,7 @@ function Home() {
         await dispatch({
           type: LOAD_GAME_STATE,
           payload: {
-            waypointsCompleted: result.data.waypointsCompleted,
+            checkpointsCompleted: result.data.checkpointsCompleted,
             startTimestamp: result.data.startTimestamp,
             leaderboard: result.data.leaderboard,
           },

@@ -24,15 +24,7 @@ export const handleRaceStart = async (req, res) => {
       },
     });
 
-    const droppedAsset = await DroppedAsset.get(assetId, urlSlug, {
-      credentials: {
-        interactiveNonce,
-        interactivePublicKey,
-        visitorId,
-      },
-    });
-
-    const startWaypoint = (
+    const startCheckpoint = (
       await world.fetchDroppedAssetsWithUniqueName({
         uniqueName: "race-track-start",
         isPartial: false,
@@ -42,12 +34,12 @@ export const handleRaceStart = async (req, res) => {
     await Promise.all([
       world.updateDataObject({
         [`race.profiles.${profileId}.startTimestamp`]: startTimestamp,
-        [`race.profiles.${profileId}.waypoints`]: [],
+        [`race.profiles.${profileId}.checkpoints`]: [],
       }),
       visitor.moveVisitor({
         shouldTeleportVisitor: true,
-        x: startWaypoint?.position?.x,
-        y: startWaypoint?.position?.y,
+        x: startCheckpoint?.position?.x,
+        y: startCheckpoint?.position?.y,
       }),
     ]);
 

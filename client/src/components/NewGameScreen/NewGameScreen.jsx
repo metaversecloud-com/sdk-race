@@ -24,7 +24,7 @@ const NewGameScreen = () => {
             Click <b style={{ color: "green" }}>Start Race</b> to begin..
           </li>
           <li>
-            🏁 Run through all <strong>waypoints</strong> in the correct order to complete the race!
+            🏁 Run through all <strong>checkpoints</strong> in the correct order to complete the race!
           </li>
         </ol>
 

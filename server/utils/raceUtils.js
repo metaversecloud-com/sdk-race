@@ -48,7 +48,7 @@ export const completeRace = async (req, res) => {
   visitor
     .fireToast({
       groupId: "race",
-      title: "Finish",
+      title: "🏁 Finish",
       text: `You finished the race! Your time: ${elapsedTime}`,
     })
     .then()

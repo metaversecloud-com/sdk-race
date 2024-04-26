@@ -14,7 +14,7 @@ import AdminView from "../components/Admin/AdminView";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { screenManager, waypointsCompleted, visitor } = useContext(GlobalStateContext);
+  const { screenManager, checkpointsCompleted, visitor } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -38,9 +38,9 @@ function Home() {
         await dispatch({
           type: LOAD_GAME_STATE,
           payload: {
-            waypointsCompleted: result.data.waypointsCompleted,
+            checkpointsCompleted: result.data.checkpointsCompleted,
             startTimestamp: result.data.startTimestamp,
-            numberOfWaypoints: result.data.numberOfWaypoints,
+            numberOfCheckpoints: result.data.numberOfCheckpoints,
             visitor: result.data.visitor,
             elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
           },

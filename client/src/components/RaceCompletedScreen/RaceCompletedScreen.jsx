@@ -8,7 +8,7 @@ const RaceCompletedScreen = () => {
   return (
     <div className="race-completed-wrapper">
       <div className="race-completed-content">
-        <h2>Congratulations!</h2>
+        <h2>🏆 Congratulations!</h2>
         <p>You have successfully completed the race.</p>
         <div className="elapsed-time">
           <h3>Elapsed Time: {elapsedTime}</h3>
