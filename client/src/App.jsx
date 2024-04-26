@@ -1,7 +1,6 @@
 import { Route, Routes, useSearchParams } from "react-router-dom";
 
 import Home from "@pages/Home";
-import Events from "@pages/Events";
 import Leaderboard from "@pages/Leaderboard";
 import Error from "@pages/Error";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -81,9 +80,7 @@ const App = () => {
 
   return (
     <Routes>
-      {/* <Route path="/" element={<Home />} /> */}
       <Route path="/start" element={<Home />} />
-      <Route path="/events" element={<Events />} />
       <Route path="/leaderboard" element={<Leaderboard />} />
       <Route path="*" element={<Error />} />
     </Routes>

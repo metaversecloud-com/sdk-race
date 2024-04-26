@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { startRace, showRaceInProgressScreen } from "../../context/actions";
+import { startRace } from "../../context/actions";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import "./OnYourMarkScreen.scss";

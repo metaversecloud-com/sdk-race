@@ -1,9 +1,8 @@
-import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
+import { Visitor, World } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
 export const handleRaceStart = async (req, res) => {
   try {
-    console.log("handleRaceStart");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId } = req.query;
     const startTimestamp = Date.now();
 

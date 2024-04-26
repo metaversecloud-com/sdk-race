@@ -3,7 +3,6 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleLoadGameState = async (req, res) => {
   try {
-    console.log("handleLoadGameState");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
     const now = Date.now();
 

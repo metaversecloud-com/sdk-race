@@ -18,7 +18,7 @@ function checkEnvVariables() {
   if (missingVariables.length > 0) {
     throw new Error(`Missing required environment variables in the .env file: ${missingVariables.join(", ")}`);
   } else {
-    console.log("All required environment variables provided.");
+    console.info("All required environment variables provided.");
   }
 }
 checkEnvVariables();
@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
         res.send = ogSend;
         return res.send(cleanData);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         next();
       }
     }
@@ -63,5 +63,5 @@ if (process.env.NODE_ENV !== "development") {
 }
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port: ${PORT}, version: ${getVersion()}`);
+  console.info(`Server is running on port: ${PORT}, version: ${getVersion()}`);
 });

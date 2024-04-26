@@ -1,23 +1,11 @@
-import { createClient } from "redis";
 import { errorHandler } from "../../utils/index.js";
 import redisObj from "../../redis/redis.js";
-import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
-
-const redis = createClient({
-  url: process.env.REDIS_URL,
-  socket: {
-    tls: process.env.REDIS_URL?.startsWith("rediss"),
-  },
-});
-
-redis.on("error", (err) => console.log("Redis Client Error", err));
-await redis.connect();
+import { Visitor, World } from "../../utils/topiaInit.js";
 
 export const handleCheckpointEntered = async (req, res) => {
   try {
-    console.log("handleCheckpointEntered");
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, username } = req.body;
-    const { assetId, isInteractive, position, uniqueName, sceneDropId } = req.body;
+    const { assetId, uniqueName } = req.body;
 
     const credentials = {
       assetId,
@@ -44,7 +32,6 @@ export const handleCheckpointEntered = async (req, res) => {
       const checkpoints = (profileObject.checkpoints || []).slice();
 
       // Calculate and store the current elapsed time
-
       const startTimestamp = profileObject.startTimestamp || currentTimestamp;
       const elapsedMilliseconds = currentTimestamp - startTimestamp;
 

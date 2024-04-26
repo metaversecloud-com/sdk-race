@@ -1,11 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import React, { useState } from "react";
 import { backendAPI } from "@utils/backendAPI";
 import BackArrow from "./BackArrow";
 
 function AdminView({ setShowSettings }) {
-  const dispatch = useContext(GlobalDispatchContext);
-  const { visitor } = useContext(GlobalStateContext);
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
   const [message, setMessage] = useState(false);
 

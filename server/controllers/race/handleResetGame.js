@@ -1,9 +1,9 @@
-import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
+import { World } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
 export const handleResetGame = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId } = req.query;
     const credentials = {
       interactiveNonce,
       interactivePublicKey,

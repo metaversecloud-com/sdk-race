@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import React, { useContext } from "react";
+import { GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER } from "@context/types";
 import racingMap from "../../assets/racingMap.png";
 

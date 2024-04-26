@@ -30,7 +30,6 @@ const redisObj = {
   subscriber: createClient(getRedisConfig()),
 
   publish: function (channel, message) {
-    // console.log(`Publishing ${message.event} to ${channel}`);
     this.publisher.publish(channel, JSON.stringify(message));
   },
   subscribe: function (channel) {
@@ -73,14 +72,12 @@ const redisObj = {
     } else {
       this.connections.push(connection);
     }
-    // console.log(`Connection ${interactiveNonce} added. Length is ${this.connections.length}`);
   },
   deleteConn: function () {
     // Remove inactive connections older than 30 minutes
     this.connections = this.connections.filter(({ res, lastHeartbeatTime }) => {
       const isActive = lastHeartbeatTime > Date.now() - 30 * 60 * 1000;
       if (!isActive) {
-        // console.log(`Connection to ${res.req.query.interactiveNonce} deleted`);
       }
       return isActive;
     });

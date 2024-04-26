@@ -23,7 +23,6 @@ export const startRace = async ({ dispatch, navigate }) => {
 
 export const completeRace = async ({ dispatch, currentFinishedElapsedTime }) => {
   try {
-    console.log("completeRace", currentFinishedElapsedTime);
     const result = await backendAPI.post("/race/complete-race");
     if (result.status === 200) {
       dispatch({
@@ -45,4 +44,43 @@ export const showRaceInProgressScreen = (dispatch) => {
 
 export const showRaceCompletedScreen = (dispatch) => {
   dispatch({ type: SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN });
+};
+
+export const loadGameState = async (dispatch) => {
+  try {
+    const result = await backendAPI?.post("/race/game-state");
+    if (result?.data?.success) {
+      await dispatch({
+        type: LOAD_GAME_STATE,
+        payload: {
+          checkpointsCompleted: result.data.checkpointsCompleted,
+          startTimestamp: result.data.startTimestamp,
+          numberOfCheckpoints: result.data.numberOfCheckpoints,
+          visitor: result.data.visitor,
+          elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
+        },
+      });
+
+      if (result.data.startTimestamp && !result.data.endTimestamp) {
+        await dispatch({
+          type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN,
+        });
+      }
+
+      if (result.data.startTimestamp && result.data.endTimestamp) {
+        await dispatch({
+          type: SCREEN_MANAGER.SHOW_RACE_COMPLETED,
+        });
+      }
+
+      if (!result.data.startTimestamp) {
+        await dispatch({
+          type: SCREEN_MANAGER.SHOW_HOME_SCREEN,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("error in startRace action");
+    console.error(error);
+  }
 };

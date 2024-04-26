@@ -3,7 +3,7 @@ import { backendAPI } from "@utils/backendAPI";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
 import { useSearchParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+
 import { completeRace } from "../../context/actions";
 import { ClipLoader } from "react-spinners";
 import "./RaceInProgressScreen.scss";
@@ -27,12 +27,9 @@ const RaceInProgressScreen = () => {
     negativeAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/negative.mp3");
     successAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/success.mp3");
   }, []);
-  const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
-  const { checkpointsCompleted, startTimestamp, numberOfCheckpoints, elapsedTimeInSeconds } =
-    useContext(GlobalStateContext);
+  const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
-  const [events, setEvents] = useState(["event1"]);
   const [isFinishComplete, setIsFinishComplete] = useState(false);
   const [currentFinishedElapsedTime, setCurrentFinishedElapsedTime] = useState(null);
 
@@ -40,7 +37,6 @@ const RaceInProgressScreen = () => {
 
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
   const [elapsedTime, setElapsedTime] = useState("00:00");
-  const [counter, setCounter] = useState(0);
 
   const [checkpoints, setCheckpoints] = useState(
     Array.from({ length: numberOfCheckpoints }, (_, index) => ({
@@ -62,9 +58,7 @@ const RaceInProgressScreen = () => {
     if (profileId) {
       const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
       eventSource.onmessage = function (event) {
-        console.log("hey");
         const newEvent = JSON.parse(event.data);
-        setEvents((prevEvents) => [...prevEvents, newEvent]);
         setCheckpoints((prevCheckpoints) => {
           const currentCheckpointIndex = prevCheckpoints.findIndex(
             (checkpoint) => checkpoint?.id === newEvent?.checkpointNumber,

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 import { backendAPI } from "@utils/backendAPI";
-import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER } from "../context/types";
+import { SCREEN_MANAGER } from "../context/types";
 
 import OnYourMarkScreen from "../components/OnYourMarkScreen/OnYourMarkScreen";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
@@ -11,66 +11,28 @@ import NewGameScreen from "../components/NewGameScreen/NewGameScreen";
 import RaceCompletedScreen from "../components/RaceCompletedScreen/RaceCompletedScreen";
 import AdminGear from "../components/Admin/AdminGear";
 import AdminView from "../components/Admin/AdminView";
+import { loadGameState } from "../context/actions";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { screenManager, checkpointsCompleted, visitor } = useContext(GlobalStateContext);
+  const { screenManager, visitor } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const fetchGameState = async () => {
       try {
-        await loadGameState({ dispatch });
+        setLoading(true);
+        await loadGameState(dispatch);
       } catch (error) {
         console.error("error in loadGameState action");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchGameState();
   }, [dispatch, backendAPI]);
-
-  const loadGameState = async ({ dispatch }) => {
-    try {
-      setLoading(true);
-      const result = await backendAPI?.post("/race/game-state");
-      if (result?.data?.success) {
-        await dispatch({
-          type: LOAD_GAME_STATE,
-          payload: {
-            checkpointsCompleted: result.data.checkpointsCompleted,
-            startTimestamp: result.data.startTimestamp,
-            numberOfCheckpoints: result.data.numberOfCheckpoints,
-            visitor: result.data.visitor,
-            elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
-          },
-        });
-
-        if (result.data.startTimestamp && !result.data.endTimestamp) {
-          await dispatch({
-            type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN,
-          });
-        }
-
-        if (result.data.startTimestamp && result.data.endTimestamp) {
-          await dispatch({
-            type: SCREEN_MANAGER.SHOW_RACE_COMPLETED,
-          });
-        }
-
-        if (!result.data.startTimestamp) {
-          await dispatch({
-            type: SCREEN_MANAGER.SHOW_HOME_SCREEN,
-          });
-        }
-
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("error in loadGameState action");
-      console.error(error);
-    }
-  };
 
   if (loading) {
     return (
