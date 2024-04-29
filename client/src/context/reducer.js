@@ -5,6 +5,7 @@ import {
   COMPLETE_RACE,
   CANCEL_RACE,
   LOAD_GAME_STATE,
+  RESET_GAME,
 } from "./types";
 
 const globalReducer = (state, action) => {
@@ -52,6 +53,13 @@ const globalReducer = (state, action) => {
         elapsedTime: payload.elapsedTime,
       };
     case CANCEL_RACE:
+      return {
+        ...state,
+        checkpoints: [],
+        startTimestamp: null,
+      };
+    case RESET_GAME:
+      console.log("reset game reducer");
       return {
         ...state,
         checkpoints: [],

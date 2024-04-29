@@ -3,16 +3,31 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleResetGame = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
+    const now = Date.now();
+
     const credentials = {
       interactiveNonce,
       interactivePublicKey,
       visitorId,
       assetId,
     };
+
     const world = await World.create(urlSlug, { credentials });
 
-    await world.setDataObject({});
+    await world.fetchDataObject();
+
+    const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
+      uniqueName: "race-track-checkpoint",
+      isPartial: true,
+    });
+    await world.updateDataObject({
+      race: {
+        leaderboard: {},
+        profiles: {},
+        numberOfCheckpoints: numberOfCheckpoints?.length,
+      },
+    });
 
     return res.json({ success: true });
   } catch (error) {

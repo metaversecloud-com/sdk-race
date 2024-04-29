@@ -51,6 +51,18 @@ export const cancelRace = async (dispatch) => {
   }
 };
 
+export const resetGame = async () => {
+  try {
+    const result = await backendAPI.post("/race/reset-game");
+    if (result?.data?.success) {
+      return true;
+    }
+  } catch (error) {
+    console.error("error in cancel action");
+    console.error(error);
+  }
+};
+
 export const loadGameState = async (dispatch) => {
   try {
     const result = await backendAPI?.post("/race/game-state");

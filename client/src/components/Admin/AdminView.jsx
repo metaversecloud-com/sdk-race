@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { backendAPI } from "@utils/backendAPI";
 import BackArrow from "./BackArrow";
+import { RESET_GAME, SCREEN_MANAGER } from "../../context/types";
+import { GlobalDispatchContext } from "@context/GlobalContext";
 
 function AdminView({ setShowSettings }) {
+  const dispatch = useContext(GlobalDispatchContext);
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
   const [message, setMessage] = useState(false);
 
@@ -10,7 +13,9 @@ function AdminView({ setShowSettings }) {
     try {
       setAreAllButtonsDisabled(true);
       const result = await backendAPI.post("/race/reset-game");
-      if (result?.data?.success) {
+      if (result.data.success) {
+        dispatch({ type: RESET_GAME });
+        dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
         setMessage("The game reset successfully");
       }
     } catch (error) {
