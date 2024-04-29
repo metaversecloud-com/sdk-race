@@ -1,10 +1,8 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { backendAPI } from "@utils/backendAPI";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
-import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
 import { useSearchParams } from "react-router-dom";
 
-import { completeRace } from "../../context/actions";
+import { cancelRace, completeRace } from "../../context/actions";
 import { ClipLoader } from "react-spinners";
 import "./RaceInProgressScreen.scss";
 
@@ -134,11 +132,7 @@ const RaceInProgressScreen = () => {
   const handleCancelRace = async () => {
     try {
       setAreAllButtonsDisabled(true);
-      const result = await backendAPI.post("/race/cancel-race");
-      if (result.data.success) {
-        dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
-        dispatch({ type: CANCEL_RACE });
-      }
+      cancelRace(dispatch);
     } catch (error) {
       console.error(error);
     } finally {

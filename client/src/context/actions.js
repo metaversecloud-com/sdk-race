@@ -1,5 +1,5 @@
 import { backendAPI } from "@utils/backendAPI";
-import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER, COMPLETE_RACE } from "./types";
+import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER, COMPLETE_RACE, CANCEL_RACE } from "./types";
 
 export const startRace = async ({ dispatch, navigate }) => {
   try {
@@ -38,12 +38,17 @@ export const completeRace = async ({ dispatch, currentFinishedElapsedTime }) => 
   }
 };
 
-export const showRaceInProgressScreen = (dispatch) => {
-  dispatch({ type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN });
-};
-
-export const showRaceCompletedScreen = (dispatch) => {
-  dispatch({ type: SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN });
+export const cancelRace = async (dispatch) => {
+  try {
+    const result = await backendAPI.post("/race/cancel-race");
+    if (result.data.success) {
+      dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
+      dispatch({ type: CANCEL_RACE });
+    }
+  } catch (error) {
+    console.error("error in cancel action");
+    console.error(error);
+  }
 };
 
 export const loadGameState = async (dispatch) => {
@@ -83,4 +88,12 @@ export const loadGameState = async (dispatch) => {
     console.error("error in startRace action");
     console.error(error);
   }
+};
+
+export const showRaceInProgressScreen = (dispatch) => {
+  dispatch({ type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN });
+};
+
+export const showRaceCompletedScreen = (dispatch) => {
+  dispatch({ type: SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN });
 };

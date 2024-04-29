@@ -10,7 +10,7 @@ function AdminView({ setShowSettings }) {
     try {
       setAreAllButtonsDisabled(true);
       const result = await backendAPI.post("/race/reset-game");
-      if (result.data.success) {
+      if (result?.data?.success) {
         setMessage("The game reset successfully");
       }
     } catch (error) {
