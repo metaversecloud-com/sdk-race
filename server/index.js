@@ -1,8 +1,11 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import router from "./routes.js";
 import path from "path";
+import router from "./routes.js";
+import { getVersion } from "./utils/getVersion.js";
+
+const app = express();
 
 import { cleanReturnPayload } from "./utils/cleanReturnPayload.js";
 import { fileURLToPath } from "url";
@@ -15,40 +18,29 @@ function checkEnvVariables() {
   if (missingVariables.length > 0) {
     throw new Error(`Missing required environment variables in the .env file: ${missingVariables.join(", ")}`);
   } else {
-    console.log("All required environment variables provided.");
+    console.info("All required environment variables provided.");
   }
 }
 checkEnvVariables();
 
 const PORT = process.env.PORT || 3000;
-const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-if (process.env.NODE_ENV === "development") {
-  const corsOptions = {
-    origin: "http://localhost:3000",
-    credentials: true, //access-control-allow-credentials:true
-    optionSuccessStatus: 200,
-  };
-  app.use(cors(corsOptions));
-}
+app.use(cors());
 
 app.use(function (req, res, next) {
   const ogSend = res.send;
   res.send = function (data) {
     if (data) {
       try {
-        const cleanData = cleanReturnPayload(
-          typeof data === "string" ? JSON.parse(data) : data,
-          "topia"
-        );
+        const cleanData = cleanReturnPayload(typeof data === "string" ? JSON.parse(data) : data, "topia");
         res.send = ogSend;
         return res.send(cleanData);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         next();
       }
     }
@@ -71,5 +63,5 @@ if (process.env.NODE_ENV !== "development") {
 }
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port: ${PORT}`);
+  console.info(`Server is running on port: ${PORT}, version: ${getVersion()}`);
 });

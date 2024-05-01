@@ -1,58 +1,60 @@
-import { GlobalStateContext } from "@context/GlobalContext";
+import React, { useContext, useState, useEffect } from "react";
+import { ClipLoader } from "react-spinners";
 import { backendAPI } from "@utils/backendAPI";
-import React, { useContext, useState } from "react";
+import { SCREEN_MANAGER } from "../context/types";
 
-const Home = () => {
-  const [droppedAsset, setDroppedAsset] = useState();
+import OnYourMarkScreen from "../components/OnYourMarkScreen/OnYourMarkScreen";
+import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 
-  const { hasInteractiveParams } = useContext(GlobalStateContext);
+import RaceInProgressScreen from "../components/RaceInProgressScreen/RaceInProgressScreen";
+import NewGameScreen from "../components/NewGameScreen/NewGameScreen";
+import RaceCompletedScreen from "../components/RaceCompletedScreen/RaceCompletedScreen";
+import AdminGear from "../components/Admin/AdminGear";
+import AdminView from "../components/Admin/AdminView";
+import { loadGameState } from "../context/actions";
 
-  const handleGetDroppedAsset = async () => {
-    try {
-      const result = await backendAPI.get("/dropped-asset");
-      if (result.data.success) {
-        setDroppedAsset(result.data.droppedAsset);
-      } else return console.log("Error getting data object");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+function Home() {
+  const dispatch = useContext(GlobalDispatchContext);
+  const { screenManager, visitor } = useContext(GlobalStateContext);
+  const [loading, setLoading] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+
+  useEffect(() => {
+    const fetchGameState = async () => {
+      try {
+        setLoading(true);
+        await loadGameState(dispatch);
+      } catch (error) {
+        console.error("error in loadGameState action");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGameState();
+  }, [dispatch, backendAPI]);
+
+  if (loading) {
+    return (
+      <div className="loader">
+        <ClipLoader color={"#123abc"} loading={loading} size={150} />
+      </div>
+    );
+  }
+
+  if (showSettings) {
+    return <AdminView setShowSettings={setShowSettings} />;
+  }
 
   return (
-    <div className="container p-24 flex items-center justify-start">
-      <div className="flex flex-col">
-        <h1 className="h2 font-semibold">Server side example using interactive parameters</h1>
-        <div className="max-w-screen-lg">
-          {!hasInteractiveParams ? (
-            <p className="p1 my-4">
-              Edit an asset in your world and open the Links page in the Modify Asset drawer and add a link to your
-              website or use &quot;http://localhost:3000&quot; for testing locally. You can also add assetId,
-              interactiveNonce, interactivePublicKey, urlSlug, and visitorId directly to the URL as search parameters to
-              use this feature.
-            </p>
-          ) : (
-            <p className="p1 my-4">Interactive parameters found, nice work!</p>
-          )}
-        </div>
-
-        <button className="btn w-fit" onClick={handleGetDroppedAsset}>
-          Get Dropped Asset Details
-        </button>
-        {droppedAsset && (
-          <div className="flex flex-col w-full items-start">
-            <p className="p1 mt-4 mb-2">
-              You have successfully retrieved the dropped asset details for {droppedAsset.assetName}!
-            </p>
-            <img
-              className="w-96 h-96 object-cover rounded-2xl my-4"
-              alt="preview"
-              src={droppedAsset.topLayerURL || droppedAsset.bottomLayerURL}
-            />
-          </div>
-        )}
-      </div>
+    <div className="app-wrapper">
+      {visitor?.isAdmin ? AdminGear(setShowSettings) : <></>}
+      {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
+      {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
+      {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
+      {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
     </div>
   );
-};
+}
 
 export default Home;

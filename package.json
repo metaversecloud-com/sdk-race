@@ -3,18 +3,25 @@
   "author": "metaversecloud.com | topia.io",
   "description": "",
   "dependencies": {
-    "@rtsdk/topia": "^0.8.5",
+    "@rtsdk/topia": "^0.9.1",
     "axios": "^1.6.7",
+    "body-parser": "^1.20.2",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
+    "redis": "^4.6.13",
     "yalc": "^1.0.0-pre.53"
   },
   "keywords": [],
   "license": "ISC",
   "main": "./server/index.js",
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "prettier": "3.2.5"
   },
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "private": true,
   "scripts": {
     "build": "npm run build -w client",
@@ -22,15 +29,11 @@
     "unlink-sdk": "yalc remove @rtsdk/topia",
     "server": "npm run start --prefix server",
     "client": "npm start --prefix client",
-    "start": "npm start --workspace=server",
+    "start": "source commit_info.txt && npm start -w server",
     "dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
     "dev-server": "npm run dev --prefix server",
     "dev-client": "npm run start --prefix client"
   },
   "type": "module",
-  "version": "1.0.0",
-  "workspaces": [
-    "client",
-    "server"
-  ]
+  "version": "1.0.17"
 }

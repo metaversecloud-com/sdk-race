@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "@/App.jsx";
 import GlobalProvider from "@context/GlobalProvider.jsx";
 
-import "@/index.css";
+import "@/index.scss";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <GlobalProvider>

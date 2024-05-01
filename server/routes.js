@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   handleDropAsset,
   handleGetDroppedAssetsWithUniqueName,
@@ -8,6 +9,13 @@ import {
   handleUpdateWorldDataObject,
   moveVisitor,
   handleRemoveDroppedAssets,
+  handleRaceStart,
+  handleCheckpointEntered,
+  handleLoadGameState,
+  handleCancelRace,
+  handleGetEvents,
+  handleCompleteRace,
+  handleResetGame,
 } from "./controllers/index.js";
 import { getVersion } from "./utils/getVersion.js";
 
@@ -17,6 +25,11 @@ router.get("/system/health", (req, res) => {
   return res.json({
     appVersion: getVersion(),
     status: "OK",
+    INSTANCE_DOMAIN: process.env.INSTANCE_DOMAIN,
+    INTERACTIVE_KEY: process.env.INTERACTIVE_KEY,
+    REDIS_URL: process.env.REDIS_URL,
+    REF: process.env.REF,
+    COMMIT_HASH: process.env.COMMIT_HASH,
   });
 });
 
@@ -33,5 +46,16 @@ router.put("/visitor/move", moveVisitor);
 // World
 router.get("/world", handleGetWorldDetails);
 router.put("/world/data-object", handleUpdateWorldDataObject);
+
+// Race
+router.post("/race/game-state", handleLoadGameState);
+router.post("/race/start-race", handleRaceStart);
+router.post("/race/checkpoint-entered", handleCheckpointEntered);
+router.post("/race/cancel-race", handleCancelRace);
+router.post("/race/complete-race", handleCompleteRace);
+router.post("/race/reset-game", handleResetGame);
+
+// Events
+router.get("/events", handleGetEvents);
 
 export default router;
