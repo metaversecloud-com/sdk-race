@@ -83,6 +83,7 @@ const RaceInProgressScreen = () => {
           const allCheckpointsCompleted = updatedCheckpoints?.every((checkpoint) => checkpoint.completed);
           if (newEvent?.checkpointNumber === 0 && allCheckpointsCompleted && newEvent?.currentRaceFinishedElapsedTime) {
             setIsFinishComplete(true);
+            console.log("newEvent.currentRaceFinishedElapsedTime", newEvent.currentRaceFinishedElapsedTime);
             setCurrentFinishedElapsedTime(newEvent.currentRaceFinishedElapsedTime);
           }
 
