@@ -9,8 +9,8 @@ import "./RaceInProgressScreen.scss";
 const Checkpoint = ({ number, completed }) => {
   return (
     <div className={`checkpoint ${completed ? "completed" : ""}`}>
-      <span className="indicator">{completed ? "🟢" : "🔴"}</span>
-      {number === "Finish" ? "Finish" : `Checkpoint ${number}`}
+      <span className="indicator">{completed ? "🟢" : "⚪"}</span>
+      <span className="checkpoint-text">{number === "Finish" ? "Finish" : `Checkpoint ${number}`}</span>
     </div>
   );
 };
@@ -179,17 +179,21 @@ const RaceInProgressScreen = () => {
   return (
     <div className="race-in-progress-wrapper">
       <div className="checkpoints-container">
-        <h2 style={{ textAlign: "center" }}>Race in progress!</h2>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "16px" }}>
+        <div style={{ textAlign: "center" }}>
+          <div className="timer" style={{ margin: "0 auto", textAlign: "center", marginBottom: "10px" }}>
+            ⌛ {elapsedTime}
+          </div>
+        </div>
+        <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
+          <b>Race in progress!</b>
+        </h2>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
           <div
             key={"run"}
             className={`countdown heartbeat`}
             style={{ marginRight: "16px", display: "flex", alignItems: "center" }}
           >
             Run!
-          </div>
-          <div className="timer" style={{ display: "flex", alignItems: "center", marginTop: "11px" }}>
-            ⌛ {elapsedTime}
           </div>
         </div>
         <div className="checkpoints">

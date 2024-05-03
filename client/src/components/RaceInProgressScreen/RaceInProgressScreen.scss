@@ -3,10 +3,11 @@
 }
 
 .checkpoints-container {
-  padding: 16px;
-  padding-top: 24px;
+  padding: 22px;
+  // padding-top: 24px;
   margin: 16px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 0px;
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
 
@@ -39,7 +40,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 16px;
+  margin-right: 10px;
 }
 
 .cancel-button {
@@ -79,6 +80,15 @@
     color: #e74c3c;
     animation: heartbeat 1.5s infinite;
   }
+}
+
+.checkpoint-text {
+  font-family: "Open Sans";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0.035px;
 }
 
 @keyframes grow {
