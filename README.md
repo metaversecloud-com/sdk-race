@@ -1,84 +1,55 @@
-# README Template
+# Race App
 
-Please update the following in each of your SDK application.
+Race App is an exciting racing game built with Node.js and React. Players compete to complete a virtual race course in the fastest time possible by navigating through a series of waypoints. The app features a leaderboard that displays the top 20 fastest race times, allowing players to compare their performance with others.
 
-## Introduction / Summary
+## Features
 
-This boilerplate is meant to give you a simple starting point to build new features in Topia using our Javascript SDK. Please reference the [documentation](https://metaversecloud-com.github.io/mc-sdk-js/index.html) for a more detailed breakdown of what the SDK is capable of and how to use it!
+- Interactive race course with a visual racetrack loop and multiple waypoints
+- Timed races with a live timer that starts when the player begins the race
+- Chronological order of waypoints to ensure players follow the correct path
+- Notifications and alerts for missed waypoints and race completion
+- Leaderboard displaying the player's fastest race time and the top 20 fastest times
+- Admin functionality to reset race stats to default unplayed state
 
-## Key Features
+## Prerequisites
 
-### Canvas elements & interactions
+- Node.js (version 20)
 
-- Key Asset: When clicked this asset will open the drawer and allow users and admins to start interacting with the app.
+## Getting Started
 
-### Drawer content
+1. Install the dependencies for both the server and client:
 
-- How to play instructions
-- Leaderboard
-- Admin features (see below)
+```bash
+cd server
+npm install
 
-### Admin features
+cd ../client
+npm install
 
-_Does your app have special admin functionality? If so your key features may looks something like this:_
+Start the server:
 
-- Access: Click on the key asset to open the drawer and then select the Admin tab. Any changes you make here will only affect this instance of the application and will not impact other instances dropped in this or other worlds.
-- Theme selection: Use the dropdown to select a theme.
-- Reset: Click on the Reset button to clear the active game state and rebuild the game board in it's default state.
+cd server
+npm start
 
-### Themes description
+In a new terminal, start the client:
 
-- Winter (default): A snowy theme that when selected will drop snowflakes throughout the scene
-- Spring: A garden theme that when selected will drop flowers throughout the scene
-
-### Data objects
-
-_We use data objects to store information about each implementation of the app per world._
-
-- Key Asset: the data object attached to the dropped key asset will store information related to this specific implementation of the app and would be deleted if the key asset is removed from world. Example data:
-  - isResetInProgress
-  - lastInteraction
-  - lastPlayerTurn
-  - playerCount
-  - resetCount
-  - turnCount
-- World: the data object attached to the world will store analytics information for every instance of the app in a given world by keyAssetId and will persist even if a specific instance is removed from world. Example data:
-  - gamesPlayedByUser (`keyAssets.${assetId}.gamesPlayedByUser.${profileId}.count`)
-  - gamesWonByUser (`keyAssets.${keyAssetId}.gamesWonByUser.${profileId}.count`)
-  - totalGamesResetCount (`keyAssets.${assetId}.totalGamesResetCount`)
-  - totalGamesWonCount (`keyAssets.${assetId}.totalGamesWonCount`)
-
-## Developers:
-
-### Getting Started
-
-- Clone this repository
-- Run `npm i` in server
-- `cd client`
-- Run `npm i` in client
-- `cd ..` back to server
-
-### Add your .env environmental variables
-
-```json
-API_KEY=xxxxxxxxxxxxx
-INSTANCE_DOMAIN=api.topia.io
-INSTANCE_PROTOCOL=https
-INTERACTIVE_KEY=xxxxxxxxxxxxx
-INTERACTIVE_SECRET=xxxxxxxxxxxxxx
+cd client
+npm start
 ```
 
-### Where to find API_KEY, INTERACTIVE_KEY and INTERACTIVE_SECRET
+Open your browser and visit http://localhost:3001 to play the game.
 
-[Topia Dev Account Dashboard](https://dev.topia.io/t/dashboard/integrations)
+## How to Play
 
-[Topia Production Account Dashboard](https://topia.io/t/dashboard/integrations)
+Click the "Start" button on the intro/landing page to begin the race.
+Follow the racetrack and pass through all the waypoints in the correct order.
+If you miss a waypoint, go back and pass through it before proceeding.
+Upon completing the race, your race time will be displayed, and you can view the leaderboard to compare your time with other players.
+To play again, click the "Start" button on the leaderboard page.
 
-### Helpful links
+## Admin Functionality
 
-- [SDK Developer docs](https://metaversecloud-com.github.io/mc-sdk-js/index.html)
-- [View it in action!](topia.io/appname-prod)
-- [Notion One Pager](https://www.notion.so/topiaio/6257c74f9532449b842cfe557975c826?v=8cdffb024588478caeee0cecb8989e82&pvs=4)
-- To see an example of an on canvas turn based game check out TicTacToe:
-  - (github))[https://github.com/metaversecloud-com/sdk-tictactoe]
-  - (demo))[https://topia.io/tictactoe-prod]
+To reset the race stats to a default unplayed state:
+
+Click the "Admin" button in the drawer.
+On the admin page, click the "Reset Race Stats" button to remove all previously attained race times.
