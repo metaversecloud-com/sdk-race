@@ -9,8 +9,8 @@ import "./RaceInProgressScreen.scss";
 const Checkpoint = ({ number, completed }) => {
   return (
     <div className={`checkpoint ${completed ? "completed" : ""}`}>
-      <span className="indicator">{completed ? "🟢" : "🔴"}</span>
-      {number === "Finish" ? "Finish" : `Checkpoint ${number}`}
+      <span className="indicator">{completed ? "🟢" : "⚪"}</span>
+      <span className="checkpoint-text">{number === "Finish" ? "Finish" : `Checkpoint ${number}`}</span>
     </div>
   );
 };
@@ -25,8 +25,9 @@ const RaceInProgressScreen = () => {
     negativeAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/negative.mp3");
     successAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/success.mp3");
   }, []);
+
   const dispatch = useContext(GlobalDispatchContext);
-  const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds } = useContext(GlobalStateContext);
+  const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds, visitor } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
   const [isFinishComplete, setIsFinishComplete] = useState(false);
   const [currentFinishedElapsedTime, setCurrentFinishedElapsedTime] = useState(null);
@@ -35,6 +36,7 @@ const RaceInProgressScreen = () => {
 
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
   const [elapsedTime, setElapsedTime] = useState("00:00");
+  const [audioQueue, setAudioQueue] = useState([]);
 
   const [checkpoints, setCheckpoints] = useState(
     Array.from({ length: numberOfCheckpoints }, (_, index) => ({
@@ -73,7 +75,7 @@ const RaceInProgressScreen = () => {
                 newEvent?.checkpointNumber !== 0 &&
                 !checkpoint.completed
               ) {
-                positiveAudioRef.current.play();
+                setAudioQueue((prevQueue) => [...prevQueue, positiveAudioRef.current]);
               }
               return { ...checkpoint, completed: true };
             }
@@ -88,7 +90,7 @@ const RaceInProgressScreen = () => {
 
           if (!isCheckpointInCorrectOrder) {
             if (newEvent?.checkpointNumber !== undefined && newEvent?.checkpointNumber !== 0) {
-              negativeAudioRef.current.play();
+              setAudioQueue((prevQueue) => [...prevQueue, negativeAudioRef.current]);
             }
           }
 
@@ -129,6 +131,20 @@ const RaceInProgressScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const playAudioQueue = () => {
+    if (audioQueue.length > 0) {
+      const audio = audioQueue[0];
+      audio.play();
+      audio.onended = () => {
+        setAudioQueue((prevQueue) => prevQueue.slice(1));
+      };
+    }
+  };
+
+  useEffect(() => {
+    playAudioQueue();
+  }, [audioQueue]);
+
   const handleCancelRace = async () => {
     try {
       setAreAllButtonsDisabled(true);
@@ -160,31 +176,40 @@ const RaceInProgressScreen = () => {
     );
   }
 
+  {
+    console.log("isAdmin", visitor);
+  }
   return (
-    <div className="race-in-progress-wrapper">
-      <div className="checkpoints-container">
-        <h2 style={{ textAlign: "center" }}>Race in progress!</h2>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "16px" }}>
-          <div
-            key={"run"}
-            className={`countdown heartbeat`}
-            style={{ marginRight: "16px", display: "flex", alignItems: "center" }}
-          >
-            Run!
+    <>
+      <div className="race-in-progress-wrapper">
+        <div className="checkpoints-container">
+          <div style={{ textAlign: "center" }}>
+            <div className="timer" style={{ margin: "0 auto", textAlign: "center", marginBottom: "10px" }}>
+              ⌛ {elapsedTime}
+            </div>
           </div>
-          <div className="timer" style={{ display: "flex", alignItems: "center", marginTop: "11px" }}>
-            ⌛ {elapsedTime}
+          <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
+            <b>Race in progress!</b>
+          </h2>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
+            <div
+              key={"run"}
+              className={`countdown heartbeat`}
+              style={{ marginRight: "16px", display: "flex", alignItems: "center" }}
+            >
+              Run!
+            </div>
+          </div>
+          <div className="checkpoints">
+            {checkpoints?.map((checkpoint) => (
+              <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
+            ))}
+            <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
           </div>
         </div>
-        <div className="checkpoints">
-          {checkpoints?.map((checkpoint) => (
-            <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
-          ))}
-          <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
-        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 

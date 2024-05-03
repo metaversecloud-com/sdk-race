@@ -25,11 +25,14 @@ router.get("/system/health", (req, res) => {
   return res.json({
     appVersion: getVersion(),
     status: "OK",
+    NODE_ENV: process.env.NODE_ENV,
     INSTANCE_DOMAIN: process.env.INSTANCE_DOMAIN,
+    INSTANCE_PROTOCOL: process.env.INSTANCE_PROTOCOL,
     INTERACTIVE_KEY: process.env.INTERACTIVE_KEY,
-    REDIS_URL: process.env.REDIS_URL,
-    REF: process.env.REF,
+    INTERACTIVE_SECRET: process.env.INTERACTIVE_SECRET ? "SET" : "UNSET",
+    REDIS_URL: process.env.REDIS_URL ? "SET" : "UNSET",
     COMMIT_HASH: process.env.COMMIT_HASH,
+    IS_LOCALHOST: process.env.IS_LOCALHOST,
   });
 });
 

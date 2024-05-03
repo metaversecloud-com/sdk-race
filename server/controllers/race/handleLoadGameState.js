@@ -25,7 +25,7 @@ export const handleLoadGameState = async (req, res) => {
         uniqueName: "race-track-checkpoint",
         isPartial: true,
       });
-      await world.updateDataObject({
+      await world.setDataObject({
         race: {
           leaderboard: {},
           profiles: {},
