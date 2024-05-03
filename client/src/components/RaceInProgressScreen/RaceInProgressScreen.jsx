@@ -25,6 +25,7 @@ const RaceInProgressScreen = () => {
     negativeAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/negative.mp3");
     successAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/success.mp3");
   }, []);
+
   const dispatch = useContext(GlobalDispatchContext);
   const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
@@ -35,6 +36,7 @@ const RaceInProgressScreen = () => {
 
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
   const [elapsedTime, setElapsedTime] = useState("00:00");
+  const [audioQueue, setAudioQueue] = useState([]);
 
   const [checkpoints, setCheckpoints] = useState(
     Array.from({ length: numberOfCheckpoints }, (_, index) => ({
@@ -73,7 +75,7 @@ const RaceInProgressScreen = () => {
                 newEvent?.checkpointNumber !== 0 &&
                 !checkpoint.completed
               ) {
-                positiveAudioRef.current.play();
+                setAudioQueue((prevQueue) => [...prevQueue, positiveAudioRef.current]);
               }
               return { ...checkpoint, completed: true };
             }
@@ -88,7 +90,7 @@ const RaceInProgressScreen = () => {
 
           if (!isCheckpointInCorrectOrder) {
             if (newEvent?.checkpointNumber !== undefined && newEvent?.checkpointNumber !== 0) {
-              negativeAudioRef.current.play();
+              setAudioQueue((prevQueue) => [...prevQueue, negativeAudioRef.current]);
             }
           }
 
@@ -128,6 +130,20 @@ const RaceInProgressScreen = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const playAudioQueue = () => {
+    if (audioQueue.length > 0) {
+      const audio = audioQueue[0];
+      audio.play();
+      audio.onended = () => {
+        setAudioQueue((prevQueue) => prevQueue.slice(1));
+      };
+    }
+  };
+
+  useEffect(() => {
+    playAudioQueue();
+  }, [audioQueue]);
 
   const handleCancelRace = async () => {
     try {
