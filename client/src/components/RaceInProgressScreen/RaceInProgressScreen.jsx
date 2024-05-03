@@ -27,7 +27,7 @@ const RaceInProgressScreen = () => {
   }, []);
 
   const dispatch = useContext(GlobalDispatchContext);
-  const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds } = useContext(GlobalStateContext);
+  const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds, visitor } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
   const [isFinishComplete, setIsFinishComplete] = useState(false);
   const [currentFinishedElapsedTime, setCurrentFinishedElapsedTime] = useState(null);
@@ -176,35 +176,40 @@ const RaceInProgressScreen = () => {
     );
   }
 
+  {
+    console.log("isAdmin", visitor);
+  }
   return (
-    <div className="race-in-progress-wrapper">
-      <div className="checkpoints-container">
-        <div style={{ textAlign: "center" }}>
-          <div className="timer" style={{ margin: "0 auto", textAlign: "center", marginBottom: "10px" }}>
-            ⌛ {elapsedTime}
+    <>
+      <div className="race-in-progress-wrapper">
+        <div className="checkpoints-container">
+          <div style={{ textAlign: "center" }}>
+            <div className="timer" style={{ margin: "0 auto", textAlign: "center", marginBottom: "10px" }}>
+              ⌛ {elapsedTime}
+            </div>
+          </div>
+          <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
+            <b>Race in progress!</b>
+          </h2>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
+            <div
+              key={"run"}
+              className={`countdown heartbeat`}
+              style={{ marginRight: "16px", display: "flex", alignItems: "center" }}
+            >
+              Run!
+            </div>
+          </div>
+          <div className="checkpoints">
+            {checkpoints?.map((checkpoint) => (
+              <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
+            ))}
+            <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
           </div>
         </div>
-        <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
-          <b>Race in progress!</b>
-        </h2>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
-          <div
-            key={"run"}
-            className={`countdown heartbeat`}
-            style={{ marginRight: "16px", display: "flex", alignItems: "center" }}
-          >
-            Run!
-          </div>
-        </div>
-        <div className="checkpoints">
-          {checkpoints?.map((checkpoint) => (
-            <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
-          ))}
-          <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
-        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 
