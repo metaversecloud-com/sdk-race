@@ -34,20 +34,22 @@ export const handleLoadGameState = async (req, res) => {
       });
     }
 
-    const checkpointsCompleted = world?.dataObject?.race?.profiles[profileId]?.checkpoints;
+    let checkpointsCompleted = world?.dataObject?.race?.profiles[profileId]?.checkpoints;
     let startTimestamp = world?.dataObject?.race?.profiles[profileId]?.startTimestamp;
     const leaderboard = world?.dataObject?.race?.leaderboard;
     const numberOfCheckpoints = world?.dataObject?.race?.numberOfCheckpoints;
 
+    let elapsedTimeInSeconds = startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0;
+
     // restart client race if the elapsed time is higher than 3 minutes
     if (startTimestamp && now - startTimestamp > 180000) {
-      startTimestamp = now;
+      startTimestamp = null;
+      checkpointsCompleted = [];
+      elapsedTimeInSeconds = null;
       await world.updateDataObject({
         [`race.profiles.${profileId}`]: null,
       });
     }
-
-    const elapsedTimeInSeconds = startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0;
 
     return res.json({
       checkpointsCompleted,
