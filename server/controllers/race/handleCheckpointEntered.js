@@ -102,7 +102,7 @@ async function registerCheckpointToWorldToDataObject({
   const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
   const milliseconds = Math.floor((elapsedMilliseconds % 1000) / 10);
 
-  const currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`;
+  const currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}:${milliseconds.toString().padStart(2, "0")}`;
 
   // Checkpoint is the finish line, but users could enter the finish line without having finished the race
   if (checkpointNumber === 0) {
