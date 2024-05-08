@@ -33,7 +33,7 @@ const RaceCompletedScreen = () => {
             🏆 View Leaderboard
           </button>
           <button style={{ width: "94%" }} onClick={() => handlePlayAgain()}>
-            Pay Again
+            Play Again
           </button>
         </div>
       </div>
