@@ -39,7 +39,7 @@ export const handleCheckpointEntered = async (req, res) => {
       const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
       const milliseconds = Math.floor((elapsedMilliseconds % 1000) / 10);
 
-      currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`;
+      currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}:${milliseconds.toString().padStart(2, "0")}`;
     }
 
     redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
@@ -102,7 +102,7 @@ async function registerCheckpointToWorldToDataObject({
   const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
   const milliseconds = Math.floor((elapsedMilliseconds % 1000) / 10);
 
-  const currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}.${milliseconds.toString().padStart(2, "0")}`;
+  const currentElapsedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}:${milliseconds.toString().padStart(2, "0")}`;
 
   // Checkpoint is the finish line, but users could enter the finish line without having finished the race
   if (checkpointNumber === 0) {
@@ -134,7 +134,7 @@ async function registerCheckpointToWorldToDataObject({
       if (
         !currentBestTime ||
         timeToValue(currentElapsedTime) < timeToValue(currentBestTime) ||
-        currentElapsedTime === "00:00"
+        currentElapsedTime === "00:00:00"
       ) {
         await world.updateDataObject({
           [`race.leaderboard.${profileId}`]: { username, elapsedTime: currentElapsedTime },
@@ -187,7 +187,7 @@ async function registerCheckpointToWorldToDataObject({
 }
 
 function timeToValue(timeString) {
-  const [minutesSeconds, milliseconds] = timeString.split(".");
+  const [minutesSeconds, milliseconds] = timeString.split(":");
   const [minutes, seconds] = minutesSeconds.split(":");
   return parseInt(minutes, 10) * 60000 + parseInt(seconds, 10) * 1000 + parseInt(milliseconds, 10) * 10;
 }
