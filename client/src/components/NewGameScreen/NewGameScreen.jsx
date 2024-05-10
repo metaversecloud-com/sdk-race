@@ -28,7 +28,7 @@ const NewGameScreen = () => {
           </li>
         </ol>
 
-        <div className="rules">
+        <div className="rules" style={{ paddingBottom: "40px" }}>
           <div className="title">
             <b>Important Rules:</b>
           </div>
