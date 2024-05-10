@@ -187,7 +187,6 @@ async function registerCheckpointToWorldToDataObject({
 }
 
 function timeToValue(timeString) {
-  const [minutesSeconds, milliseconds] = timeString.split(":");
-  const [minutes, seconds] = minutesSeconds.split(":");
+  const [minutes, seconds, milliseconds] = timeString.split(":");
   return parseInt(minutes, 10) * 60000 + parseInt(seconds, 10) * 1000 + parseInt(milliseconds, 10) * 10;
 }
