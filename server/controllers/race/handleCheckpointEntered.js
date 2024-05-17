@@ -129,8 +129,6 @@ async function registerCheckpointToWorldToDataObject({
           console.error(error);
         });
 
-      // const { x, y } = visitor.moveTo;
-
       const finishLineAsset = await world.fetchDroppedAssetsWithUniqueName({ uniqueName: "race-track-start" });
 
       await world.triggerParticle({
