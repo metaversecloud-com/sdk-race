@@ -3,7 +3,7 @@
   "author": "metaversecloud.com | topia.io",
   "description": "",
   "dependencies": {
-    "@rtsdk/topia": "^0.9.1",
+    "@rtsdk/topia": "^0.11.1",
     "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "concurrently": "^8.2.2",

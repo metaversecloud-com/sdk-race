@@ -1,6 +1,6 @@
 import { errorHandler } from "../../utils/index.js";
 import redisObj from "../../redis/redis.js";
-import { Visitor, World } from "../../utils/topiaInit.js";
+import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 
 export const handleCheckpointEntered = async (req, res) => {
   try {
@@ -128,6 +128,18 @@ async function registerCheckpointToWorldToDataObject({
         .catch(() => {
           console.error(error);
         });
+
+      const finishLineAsset = await world.fetchDroppedAssetsWithUniqueName({ uniqueName: "race-track-start" });
+
+      await world.triggerParticle({
+        id: "8JQFPDmKqWeLQeCBep4e",
+        name: "Firework2_BlueGreen",
+        duration: 3,
+        position: {
+          x: finishLineAsset?.[0].position.x,
+          y: finishLineAsset?.[0].position.y,
+        },
+      });
 
       // Update the leaderboard with best time
       const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;

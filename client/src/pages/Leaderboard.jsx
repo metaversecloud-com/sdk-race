@@ -44,9 +44,13 @@ function Home() {
 
   const sortedLeaderboard = Object.entries(leaderboard || {})
     .sort(([, a], [, b]) => {
-      const [aMinutes, aSeconds] = a.elapsedTime.split(":")?.map(Number);
-      const [bMinutes, bSeconds] = b.elapsedTime.split(":")?.map(Number);
+      const [aMinutes, aSeconds, aMilliseconds] = a.elapsedTime.split(":").map(Number);
+      const [bMinutes, bSeconds, bMilliseconds] = b.elapsedTime.split(":").map(Number);
+
       if (aMinutes === bMinutes) {
+        if (aSeconds === bSeconds) {
+          return aMilliseconds - bMilliseconds;
+        }
         return aSeconds - bSeconds;
       }
       return aMinutes - bMinutes;
