@@ -117,7 +117,7 @@ async function registerCheckpointToWorldToDataObject({
         },
       });
 
-      const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
+      const visitor = await Visitor.get(credentials.visitorId, urlSlug, { credentials });
       visitor
         .fireToast({
           groupId: "race",
@@ -129,15 +129,16 @@ async function registerCheckpointToWorldToDataObject({
           console.error(error);
         });
 
-      const finishLineAsset = await world.fetchDroppedAssetsWithUniqueName({ uniqueName: "race-track-start" });
+      // const finishLineAsset = await world.fetchDroppedAssetsWithUniqueName({ uniqueName: "race-track-start" });
+      const { x, y } = visitor.moveTo;
 
-      await world.triggerParticle({
+      await visitor.triggerParticle({
         id: "8JQFPDmKqWeLQeCBep4e",
         name: "Firework2_BlueGreen",
         duration: 3,
         position: {
-          x: finishLineAsset?.[0].position.x,
-          y: finishLineAsset?.[0].position.y,
+          x,
+          y,
         },
       });
 
