@@ -129,7 +129,7 @@ async function registerCheckpointToWorldToDataObject({
           console.error(error);
         });
 
-      const { x, y } = visitor.moveTo;
+      // const { x, y } = visitor.moveTo;
 
       // await visitor.triggerParticle({
       //   id: "8JQFPDmKqWeLQeCBep4e",
