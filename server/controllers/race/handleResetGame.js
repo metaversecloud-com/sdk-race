@@ -21,12 +21,17 @@ export const handleResetGame = async (req, res) => {
       uniqueName: "race-track-checkpoint",
       isPartial: true,
     });
+    // await world.updateDataObject({
+    //   race: {
+    //     leaderboard: {},
+    //     profiles: {},
+    //     numberOfCheckpoints: numberOfCheckpoints?.length,
+    //   },
+    // });
+
     await world.updateDataObject({
-      race: {
-        leaderboard: {},
-        profiles: {},
-        numberOfCheckpoints: numberOfCheckpoints?.length,
-      },
+      [`race.leaderboard`]: {},
+      [`race.numberOfCheckpoints`]: numberOfCheckpoints?.length,
     });
 
     return res.json({ success: true });
