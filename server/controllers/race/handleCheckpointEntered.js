@@ -129,18 +129,17 @@ async function registerCheckpointToWorldToDataObject({
           console.error(error);
         });
 
-      // const finishLineAsset = await world.fetchDroppedAssetsWithUniqueName({ uniqueName: "race-track-start" });
       const { x, y } = visitor.moveTo;
 
-      await visitor.triggerParticle({
-        id: "8JQFPDmKqWeLQeCBep4e",
-        name: "Firework2_BlueGreen",
-        duration: 3,
-        position: {
-          x,
-          y,
-        },
-      });
+      // await visitor.triggerParticle({
+      //   id: "8JQFPDmKqWeLQeCBep4e",
+      //   name: "Firework2_BlueGreen",
+      //   duration: 3,
+      //   position: {
+      //     x,
+      //     y,
+      //   },
+      // });
 
       // Update the leaderboard with best time
       const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;
