@@ -110,12 +110,15 @@ async function registerCheckpointToWorldToDataObject({
 
     // Race Finished
     if (allCheckpointsCompleted) {
-      await world.updateDataObject({
-        [`race.profiles.${profileId}`]: {
-          checkpoints: [],
-          elapsedTime: currentElapsedTime,
+      await world.updateDataObject(
+        {
+          [`race.profiles.${profileId}`]: {
+            checkpoints: [],
+            elapsedTime: currentElapsedTime,
+          },
         },
-      });
+        { analytics: ["completions"], uniqueKey: profileId },
+      );
 
       const visitor = await Visitor.get(credentials.visitorId, urlSlug, { credentials });
       visitor
@@ -131,6 +134,7 @@ async function registerCheckpointToWorldToDataObject({
 
       // const { x, y } = visitor.moveTo;
 
+      // TODO: particle effects
       // await visitor.triggerParticle({
       //   id: "8JQFPDmKqWeLQeCBep4e",
       //   name: "Firework2_BlueGreen",

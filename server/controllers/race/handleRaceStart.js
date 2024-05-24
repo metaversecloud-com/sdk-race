@@ -31,10 +31,13 @@ export const handleRaceStart = async (req, res) => {
     )?.[0];
 
     await Promise.all([
-      world.updateDataObject({
-        [`race.profiles.${profileId}.startTimestamp`]: startTimestamp,
-        [`race.profiles.${profileId}.checkpoints`]: [],
-      }),
+      world.updateDataObject(
+        {
+          [`race.profiles.${profileId}.startTimestamp`]: startTimestamp,
+          [`race.profiles.${profileId}.checkpoints`]: [],
+        },
+        { analytics: ["starts"], uniqueKey: profileId },
+      ),
       visitor.moveVisitor({
         shouldTeleportVisitor: true,
         x: startCheckpoint?.position?.x,
