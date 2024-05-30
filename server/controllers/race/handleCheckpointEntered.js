@@ -1,6 +1,6 @@
 import { errorHandler } from "../../utils/index.js";
 import redisObj from "../../redis/redis.js";
-import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
+import { Visitor, World } from "../../utils/topiaInit.js";
 
 export const handleCheckpointEntered = async (req, res) => {
   try {
@@ -110,6 +110,8 @@ async function registerCheckpointToWorldToDataObject({
 
     // Race Finished
     if (allCheckpointsCompleted) {
+      const visitor = await Visitor.get(credentials.visitorId, urlSlug, { credentials });
+
       await world.updateDataObject(
         {
           [`race.profiles.${profileId}`]: {
@@ -120,7 +122,6 @@ async function registerCheckpointToWorldToDataObject({
         { analytics: ["completions"], uniqueKey: profileId },
       );
 
-      const visitor = await Visitor.get(credentials.visitorId, urlSlug, { credentials });
       visitor
         .fireToast({
           groupId: "race",

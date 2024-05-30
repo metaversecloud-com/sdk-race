@@ -24,6 +24,7 @@ const setupBackendAPI = (interactiveParams) => {
       config.params["urlSlug"] = interactiveParams.urlSlug;
       config.params["username"] = interactiveParams.username;
       config.params["visitorId"] = interactiveParams.visitorId;
+      config.params["identityId"] = interactiveParams.identityId;
       return config;
     });
   }

@@ -1,5 +1,6 @@
 import { Visitor, World } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
+import { addNewRowToGoogleSheets } from "../../utils/addNewRowToGoogleSheets.js";
 
 export const handleRaceStart = async (req, res) => {
   try {
@@ -44,6 +45,20 @@ export const handleRaceStart = async (req, res) => {
         y: startCheckpoint?.position?.y,
       }),
     ]);
+
+    const now = new Date();
+    const formattedDate = now.toISOString().split("T")[0];
+    const formattedTime = now.toISOString().split("T")[1].split(".")[0];
+    const identityId = req?.query?.identityId;
+    const displayName = req?.query?.displayName;
+
+    addNewRowToGoogleSheets({
+      req,
+      visitor,
+      dataRowToBeInsertedInGoogleSheets: [formattedDate, formattedTime, identityId, displayName, "Race", "starts"],
+    })
+      .then()
+      .catch();
 
     return res.json({ startTimestamp, success: true });
   } catch (error) {

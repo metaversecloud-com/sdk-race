@@ -33,6 +33,9 @@ router.get("/system/health", (req, res) => {
     REDIS_URL: process.env.REDIS_URL ? "SET" : "UNSET",
     COMMIT_HASH: process.env.COMMIT_HASH,
     IS_LOCALHOST: process.env.IS_LOCALHOST,
+    GOOGLESHEETS_CLIENT_EMAIL: process.env.CLIENT_EMAIL ? "SET" : "UNSET",
+    GOOGLESHEETS_SHEET_ID: process.env.SHEET_ID ? "SET" : "UNSET",
+    GOOGLESHEETS_PRIVATE_KEY: process.env.PRIVATE_KEY ? "SET" : "UNSET",
   });
 });
 
