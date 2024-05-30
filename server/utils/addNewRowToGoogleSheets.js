@@ -17,27 +17,36 @@ const sheets = google.sheets({ version: "v4", auth });
  *
  * @usage
  * ```js
- *   const now = new Date();
- *     const formattedDate = now.toISOString().split("T")[0];
- *     const formattedTime = now.toISOString().split("T")[1].split(".")[0];
- *     const identityId = req?.query?.identityId;
- *     const displayName = req?.query?.displayName;
- *
- *     addNewRowToGoogleSheets({
- *       req,
- *       visitor,
- *       dataRowToBeInsertedInGoogleSheets: [formattedDate, formattedTime, identityId, displayName, "Race", "starts"],
- *     })
- *       .then()
- *       .catch();
+ *   addNewRowToGoogleSheets({
+ *         identityId: req?.query?.identityId,
+ *         displayName: req?.query?.displayName,
+ *         appName: "Race",
+ *         event: "starts",
+ *       })
+ *         .then()
+ *         .catch();
  * ```
  */
-export const addNewRowToGoogleSheets = async ({ dataRowToBeInsertedInGoogleSheets }) => {
+export const addNewRowToGoogleSheets = async ({ identityId, displayName, username, appName, event }) => {
   try {
     // Only execute this function if we have GOOGLESHEETS_SHEET_ID in the environment variables.
     if (!process.env.GOOGLESHEETS_SHEET_ID) {
       return;
     }
+
+    const now = new Date();
+    const formattedDate = now.toISOString().split("T")[0];
+    const formattedTime = now.toISOString().split("T")[1].split(".")[0];
+
+    const dataRowToBeInsertedInGoogleSheets = [
+      formattedDate,
+      formattedTime,
+      identityId,
+      displayName || username,
+      appName,
+      event,
+    ];
+
     sheets.spreadsheets.values.append(
       {
         spreadsheetId: process.env.GOOGLESHEETS_SHEET_ID,

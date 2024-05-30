@@ -46,16 +46,11 @@ export const handleRaceStart = async (req, res) => {
       }),
     ]);
 
-    const now = new Date();
-    const formattedDate = now.toISOString().split("T")[0];
-    const formattedTime = now.toISOString().split("T")[1].split(".")[0];
-    const identityId = req?.query?.identityId;
-    const displayName = req?.query?.displayName;
-
     addNewRowToGoogleSheets({
-      req,
-      visitor,
-      dataRowToBeInsertedInGoogleSheets: [formattedDate, formattedTime, identityId, displayName, "Race", "starts"],
+      identityId: req?.query?.identityId,
+      displayName: req?.query?.displayName,
+      appName: "Race",
+      event: "starts",
     })
       .then()
       .catch();
