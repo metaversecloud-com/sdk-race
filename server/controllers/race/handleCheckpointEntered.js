@@ -133,18 +133,17 @@ async function registerCheckpointToWorldToDataObject({
           console.error(error);
         });
 
-      // const { x, y } = visitor.moveTo;
+      const { x, y } = visitor.moveTo;
 
       // TODO: particle effects
-      // await visitor.triggerParticle({
-      //   id: "8JQFPDmKqWeLQeCBep4e",
-      //   name: "Firework2_BlueGreen",
-      //   duration: 3,
-      //   position: {
-      //     x,
-      //     y,
-      //   },
-      // });
+      await visitor.triggerParticle({
+        name: "Firework2_BlueGreen",
+        duration: 3,
+        position: {
+          x,
+          y,
+        },
+      });
 
       // Update the leaderboard with best time
       const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;
