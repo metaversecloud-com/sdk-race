@@ -1,13 +1,16 @@
-import { google } from "googleapis";
+import { JWT } from "google-auth-library";
+import sheets from "@googleapis/sheets";
 
 // Configure the Google Sheets client
 const privateKey = process.env.GOOGLESHEETS_PRIVATE_KEY.replace(/\\n/g, "\n");
 
-const auth = new google.auth.JWT(process.env.GOOGLESHEETS_CLIENT_EMAIL, null, privateKey, [
-  "https://www.googleapis.com/auth/spreadsheets",
-]);
+const auth = new JWT({
+  email: process.env.GOOGLESHEETS_CLIENT_EMAIL,
+  key: privateKey,
+  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+});
 
-const sheets = google.sheets({ version: "v4", auth });
+const sheetsClient = sheets.sheets({ version: "v4", auth });
 
 /**
  * @summary
@@ -47,22 +50,15 @@ export const addNewRowToGoogleSheets = async ({ identityId, displayName, usernam
       event,
     ];
 
-    sheets.spreadsheets.values.append(
-      {
-        spreadsheetId: process.env.GOOGLESHEETS_SHEET_ID,
-        range: "Sheet1",
-        valueInputOption: "RAW",
-        insertDataOption: "INSERT_ROWS",
-        resource: {
-          values: [dataRowToBeInsertedInGoogleSheets],
-        },
+    await sheetsClient.spreadsheets.values.append({
+      spreadsheetId: process.env.GOOGLESHEETS_SHEET_ID,
+      range: "Sheet1",
+      valueInputOption: "RAW",
+      insertDataOption: "INSERT_ROWS",
+      resource: {
+        values: [dataRowToBeInsertedInGoogleSheets],
       },
-      (err, result) => {
-        if (err) {
-          console.error("Error inserting data in the SpreadSheet: ", JSON.stringify(err));
-        }
-      },
-    );
+    });
   } catch (error) {
     console.error(JSON.stringify(error));
   }
