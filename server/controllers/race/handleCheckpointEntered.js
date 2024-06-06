@@ -119,7 +119,7 @@ async function registerCheckpointToWorldToDataObject({
             elapsedTime: currentElapsedTime,
           },
         },
-        { analytics: ["completions"], uniqueKey: profileId },
+        { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
       );
 
       visitor
@@ -135,7 +135,6 @@ async function registerCheckpointToWorldToDataObject({
 
       const { x, y } = visitor.moveTo;
 
-      // TODO: particle effects
       await visitor.triggerParticle({
         name: "Firework2_BlueGreen",
         duration: 3,

@@ -37,7 +37,7 @@ export const handleRaceStart = async (req, res) => {
           [`race.profiles.${profileId}.startTimestamp`]: startTimestamp,
           [`race.profiles.${profileId}.checkpoints`]: [],
         },
-        { analytics: ["starts"], uniqueKey: profileId },
+        { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
       ),
       visitor.moveVisitor({
         shouldTeleportVisitor: true,
