@@ -26,6 +26,7 @@ const App = () => {
       urlSlug: searchParams.get("urlSlug"),
       username: searchParams.get("username"),
       visitorId: searchParams.get("visitorId"),
+      identityId: searchParams.get("identityId"),
     };
   }, [searchParams]);
 
@@ -41,6 +42,7 @@ const App = () => {
       urlSlug,
       username,
       visitorId,
+      identityId,
     }) => {
       const isInteractiveIframe = visitorId && interactiveNonce && interactivePublicKey && assetId;
       dispatch({
@@ -57,6 +59,7 @@ const App = () => {
           urlSlug,
           username,
           visitorId,
+          identityId,
         },
       });
     },

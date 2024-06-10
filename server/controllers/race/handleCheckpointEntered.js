@@ -1,6 +1,6 @@
 import { errorHandler } from "../../utils/index.js";
 import redisObj from "../../redis/redis.js";
-import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
+import { Visitor, World } from "../../utils/topiaInit.js";
 
 export const handleCheckpointEntered = async (req, res) => {
   try {
@@ -110,14 +110,18 @@ async function registerCheckpointToWorldToDataObject({
 
     // Race Finished
     if (allCheckpointsCompleted) {
-      await world.updateDataObject({
-        [`race.profiles.${profileId}`]: {
-          checkpoints: [],
-          elapsedTime: currentElapsedTime,
-        },
-      });
-
       const visitor = await Visitor.get(credentials.visitorId, urlSlug, { credentials });
+
+      await world.updateDataObject(
+        {
+          [`race.profiles.${profileId}`]: {
+            checkpoints: [],
+            elapsedTime: currentElapsedTime,
+          },
+        },
+        { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
+      );
+
       visitor
         .fireToast({
           groupId: "race",
@@ -129,17 +133,16 @@ async function registerCheckpointToWorldToDataObject({
           console.error(error);
         });
 
-      // const { x, y } = visitor.moveTo;
+      const { x, y } = visitor.moveTo;
 
-      // await visitor.triggerParticle({
-      //   id: "8JQFPDmKqWeLQeCBep4e",
-      //   name: "Firework2_BlueGreen",
-      //   duration: 3,
-      //   position: {
-      //     x,
-      //     y,
-      //   },
-      // });
+      await visitor.triggerParticle({
+        name: "Firework2_BlueGreen",
+        duration: 3,
+        position: {
+          x,
+          y,
+        },
+      });
 
       // Update the leaderboard with best time
       const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;

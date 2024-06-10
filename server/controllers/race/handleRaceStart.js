@@ -1,5 +1,6 @@
 import { Visitor, World } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
+import { addNewRowToGoogleSheets } from "../../utils/addNewRowToGoogleSheets.js";
 
 export const handleRaceStart = async (req, res) => {
   try {
@@ -31,16 +32,28 @@ export const handleRaceStart = async (req, res) => {
     )?.[0];
 
     await Promise.all([
-      world.updateDataObject({
-        [`race.profiles.${profileId}.startTimestamp`]: startTimestamp,
-        [`race.profiles.${profileId}.checkpoints`]: [],
-      }),
+      world.updateDataObject(
+        {
+          [`race.profiles.${profileId}.startTimestamp`]: startTimestamp,
+          [`race.profiles.${profileId}.checkpoints`]: [],
+        },
+        { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
+      ),
       visitor.moveVisitor({
         shouldTeleportVisitor: true,
         x: startCheckpoint?.position?.x,
         y: startCheckpoint?.position?.y,
       }),
     ]);
+
+    addNewRowToGoogleSheets({
+      identityId: req?.query?.identityId,
+      displayName: req?.query?.displayName,
+      appName: "Race",
+      event: "starts",
+    })
+      .then()
+      .catch();
 
     return res.json({ startTimestamp, success: true });
   } catch (error) {

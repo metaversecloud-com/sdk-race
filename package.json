@@ -3,11 +3,13 @@
   "author": "metaversecloud.com | topia.io",
   "description": "",
   "dependencies": {
-    "@rtsdk/topia": "^0.11.1",
+    "@googleapis/sheets": "^7.0.0",
+    "@rtsdk/topia": "^0.11.8",
     "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
+    "google-auth-library": "^9.10.0",
     "redis": "^4.6.13",
     "yalc": "^1.0.0-pre.53"
   },
