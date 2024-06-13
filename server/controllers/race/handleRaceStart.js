@@ -51,6 +51,7 @@ export const handleRaceStart = async (req, res) => {
       displayName: req?.query?.displayName,
       appName: "Race",
       event: "starts",
+      urlSlug,
     })
       .then()
       .catch();

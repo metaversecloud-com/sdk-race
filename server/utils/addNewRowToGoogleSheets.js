@@ -10,27 +10,28 @@ const auth = new JWT({
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
-const sheetsClient = sheets.sheets({ version: "v4", auth });
+const sheetsClient = sheets?.sheets({ version: "v4", auth });
 
 /**
  * @summary
  * Insert a new row into a spreadsheet.
  * Currently this is being used for SpreadSheet in:
- * https://docs.google.com/spreadsheets/d/1BDUgJ1WJufqXlFqyfBO-12345/edit#gid=0
+ * https://docs.google.com/spreadsheets/d/{SHEET_ID_EXAMPLE}/edit#gid=0
  *
  * @usage
  * ```js
  *   addNewRowToGoogleSheets({
  *         identityId: req?.query?.identityId,
  *         displayName: req?.query?.displayName,
- *         appName: "Race",
- *         event: "starts",
+ *         appName: "App Name Example",
+ *         event: "starts example event name",
+ *         urlSlug
  *       })
  *         .then()
  *         .catch();
  * ```
  */
-export const addNewRowToGoogleSheets = async ({ identityId, displayName, username, appName, event }) => {
+export const addNewRowToGoogleSheets = async ({ identityId, displayName, username, appName, event, urlSlug }) => {
   try {
     // Only execute this function if we have GOOGLESHEETS_SHEET_ID in the environment variables.
     if (!process.env.GOOGLESHEETS_SHEET_ID) {
@@ -44,10 +45,11 @@ export const addNewRowToGoogleSheets = async ({ identityId, displayName, usernam
     const dataRowToBeInsertedInGoogleSheets = [
       formattedDate,
       formattedTime,
-      identityId,
-      displayName || username,
+      sanitizeString(identityId),
+      sanitizeString(displayName) || username,
       appName,
       event,
+      urlSlug,
     ];
 
     await sheetsClient.spreadsheets.values.append({
@@ -55,7 +57,7 @@ export const addNewRowToGoogleSheets = async ({ identityId, displayName, usernam
       range: "Sheet1",
       valueInputOption: "RAW",
       insertDataOption: "INSERT_ROWS",
-      resource: {
+      requestBody: {
         values: [dataRowToBeInsertedInGoogleSheets],
       },
     });
@@ -63,3 +65,7 @@ export const addNewRowToGoogleSheets = async ({ identityId, displayName, usernam
     console.error(JSON.stringify(error));
   }
 };
+
+function sanitizeString(input) {
+  return input && input !== "null" ? input : "";
+}
