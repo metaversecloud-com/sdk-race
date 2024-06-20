@@ -2,6 +2,14 @@ import { errorHandler } from "../../utils/index.js";
 import redisObj from "../../redis/redis.js";
 import { Visitor, World } from "../../utils/topiaInit.js";
 
+const messages = [
+  "Keep going! 🏁",
+  "You're doing great! 🌟",
+  "Stay strong! 💪",
+  "Keep pushing! 🔥",
+  "Stay focused! 🚀",
+];
+
 export const handleCheckpointEntered = async (req, res) => {
   try {
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, username } = req.body;
@@ -155,6 +163,14 @@ async function registerCheckpointToWorldToDataObject({
           [`race.leaderboard.${profileId}`]: { username, elapsedTime: currentElapsedTime },
         });
       }
+
+      // Save the highscore
+      const highscore = profilesObject[profileId]?.highscore || null;
+      if (!highscore || timeToValue(currentElapsedTime) < timeToValue(highscore)) {
+        await world.updateDataObject({
+          [`race.profiles.${profileId}.highscore`]: currentElapsedTime,
+        });
+      }
     }
   } else {
     if (checkpoints[checkpointNumber - 1]) {
@@ -180,11 +196,13 @@ async function registerCheckpointToWorldToDataObject({
 
     checkpoints[checkpointNumber - 1] = true;
 
+    const text = messages?.[checkpointNumber % messages?.length];
+
     visitor
       .fireToast({
         groupId: "race",
         title: `✅ Checkpoint ${checkpointNumber}`,
-        text: "Keep going!",
+        text,
       })
       .then()
       .catch((error) => {

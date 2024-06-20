@@ -7,7 +7,7 @@ import "./Leaderboard.scss";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard } = useContext(GlobalStateContext);
+  const { leaderboard, profile } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ function Home() {
             checkpointsCompleted: result.data.checkpointsCompleted,
             startTimestamp: result.data.startTimestamp,
             leaderboard: result.data.leaderboard,
+            profile: result.data.profile,
           },
         });
         setLoading(false);
@@ -68,6 +69,13 @@ function Home() {
   return (
     <>
       <div className="app-wrapper leaderboard-container">
+        <div className="highscore-container">
+          <div className="medal">
+            <h2>🏅</h2>
+          </div>
+          <h2>Personal Best</h2>
+          <p>{profile?.highscore || "No highscore available"}</p>
+        </div>
         <h1 className="trophy">🏆</h1>
         <div style={{ marginBottom: "20px" }}>
           <h3>Leaderboard</h3>

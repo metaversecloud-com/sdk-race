@@ -37,6 +37,7 @@ export const handleLoadGameState = async (req, res) => {
     let checkpointsCompleted = world?.dataObject?.race?.profiles[profileId]?.checkpoints;
     let startTimestamp = world?.dataObject?.race?.profiles[profileId]?.startTimestamp;
     const leaderboard = world?.dataObject?.race?.leaderboard;
+    const profile = world?.dataObject?.race?.profiles?.[profileId];
     const numberOfCheckpoints = world?.dataObject?.race?.numberOfCheckpoints;
 
     let elapsedTimeInSeconds = startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0;
@@ -58,6 +59,7 @@ export const handleLoadGameState = async (req, res) => {
       numberOfCheckpoints,
       visitor,
       elapsedTimeInSeconds,
+      profile,
       success: true,
     });
   } catch (error) {
