@@ -24,6 +24,7 @@ export const handleResetGame = async (req, res) => {
 
     await world.updateDataObject({
       [`race.leaderboard`]: {},
+      [`race.profiles`]: {},
       [`race.numberOfCheckpoints`]: numberOfCheckpoints?.length,
     });
 

@@ -16,6 +16,7 @@ import {
   handleGetEvents,
   handleCompleteRace,
   handleResetGame,
+  handleSwitchTrack,
 } from "./controllers/index.js";
 import { getVersion } from "./utils/getVersion.js";
 
@@ -64,6 +65,7 @@ router.post("/race/checkpoint-entered", handleCheckpointEntered);
 router.post("/race/cancel-race", handleCancelRace);
 router.post("/race/complete-race", handleCompleteRace);
 router.post("/race/reset-game", handleResetGame);
+router.post("/race/switch-track", handleSwitchTrack);
 
 // Events
 router.get("/events", handleGetEvents);

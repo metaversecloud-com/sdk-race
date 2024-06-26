@@ -60,6 +60,7 @@ export const handleLoadGameState = async (req, res) => {
       visitor,
       elapsedTimeInSeconds,
       profile,
+      tracks: JSON.parse(process.env.TRACKS),
       success: true,
     });
   } catch (error) {

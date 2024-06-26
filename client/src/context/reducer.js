@@ -75,6 +75,7 @@ const globalReducer = (state, action) => {
         numberOfCheckpoints: payload.numberOfCheckpoints,
         visitor: payload.visitor,
         elapsedTimeInSeconds: payload.elapsedTimeInSeconds,
+        tracks: payload.tracks,
       };
     default: {
       throw new Error(`Unhandled action type: ${type}`);
