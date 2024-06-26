@@ -1,6 +1,21 @@
 import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
+const TRACKS = [
+  {
+    id: 1,
+    name: "Forest Track",
+    thumbnail: "https://i.pinimg.com/originals/ee/db/19/eedb1919a7f5d003bb56a401f6b4a886.png",
+    sceneId: "YCY9S4JpiIZswkQV8sx8",
+  },
+  {
+    id: 2,
+    name: "Desert Track",
+    thumbnail: "https://i.pinimg.com/originals/ee/db/19/eedb1919a7f5d003bb56a401f6b4a886.png",
+    sceneId: "oXghmgohNPuaICPA9Ne5",
+  },
+];
+
 export const handleLoadGameState = async (req, res) => {
   try {
     const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
@@ -60,7 +75,7 @@ export const handleLoadGameState = async (req, res) => {
       visitor,
       elapsedTimeInSeconds,
       profile,
-      tracks: JSON.parse(process.env.TRACKS),
+      tracks: process.env.TRACKS ? JSON.parse(process.env.TRACKS) : JSON.parse(TRACKS),
       success: true,
     });
   } catch (error) {
