@@ -75,7 +75,7 @@ export const handleLoadGameState = async (req, res) => {
       visitor,
       elapsedTimeInSeconds,
       profile,
-      tracks: process.env.TRACKS ? JSON.parse(process.env.TRACKS) : JSON.parse(TRACKS),
+      tracks: process.env.TRACKS ? JSON.parse(process.env.TRACKS) : TRACKS,
       success: true,
     });
   } catch (error) {
