@@ -38,6 +38,7 @@ router.get("/system/health", (req, res) => {
     INTERACTIVE_SECRET: process.env.INTERACTIVE_SECRET ? "SET" : "NOT SET",
     REDIS_URL: process.env.REDIS_URL ? "SET" : "NOT SET",
     IS_LOCALHOST: process.env.IS_LOCALHOST,
+    TRACKS: process.env.TRACKS ? process.env.TRACKS : "NOT SET",
     GOOGLESHEETS_CLIENT_EMAIL: process.env.CLIENT_EMAIL ? "SET" : "NOT SET",
     GOOGLESHEETS_SHEET_ID: process.env.SHEET_ID ? "SET" : "NOT SET",
     GOOGLESHEETS_PRIVATE_KEY: process.env.PRIVATE_KEY ? "SET" : "NOT SET",
