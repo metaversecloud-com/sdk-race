@@ -4,13 +4,13 @@ import { errorHandler } from "../../utils/index.js";
 const TRACKS = [
   {
     id: 1,
-    name: "Forest Track",
+    name: "Missing env variables",
     thumbnail: "https://i.pinimg.com/originals/ee/db/19/eedb1919a7f5d003bb56a401f6b4a886.png",
     sceneId: "YCY9S4JpiIZswkQV8sx8",
   },
   {
     id: 2,
-    name: "Desert Track",
+    name: "Example track",
     thumbnail: "https://i.pinimg.com/originals/ee/db/19/eedb1919a7f5d003bb56a401f6b4a886.png",
     sceneId: "oXghmgohNPuaICPA9Ne5",
   },
