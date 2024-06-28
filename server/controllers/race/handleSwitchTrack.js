@@ -23,7 +23,14 @@ export const handleSwitchTrack = async (req, res) => {
     };
 
     const world = await World.create(urlSlug, { credentials });
-    const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
+    const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
+
+    if (!visitor?.isAdmin) {
+      return res.status(403).json({
+        success: false,
+        msg: "The user is not an admin. Perhaps the user is just a super admin but not an admin",
+      });
+    }
 
     const allRaceAssets = await world.fetchDroppedAssetsBySceneDropId({ sceneDropId });
 
