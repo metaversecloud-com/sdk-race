@@ -28,7 +28,7 @@ function ResetGameModal({ handleToggleShowModal, setMessage }) {
   return (
     <div className="modal-container visible">
       <div className="modal">
-        <h4>Reset race and clear leaderboard</h4>
+        <h4>Reset Game</h4>
         <p>If you reset the game, the leaderboard will be removed. Are you sure that you would like to continue?</p>
         <div className="actions">
           <button
