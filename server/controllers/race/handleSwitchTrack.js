@@ -1,4 +1,4 @@
-import { World } from "../../utils/topiaInit.js";
+import { World, Visitor } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
 
 export const handleSwitchTrack = async (req, res) => {
@@ -23,6 +23,7 @@ export const handleSwitchTrack = async (req, res) => {
     };
 
     const world = await World.create(urlSlug, { credentials });
+    const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
 
     const allRaceAssets = await world.fetchDroppedAssetsBySceneDropId({ sceneDropId });
 
@@ -50,7 +51,21 @@ export const handleSwitchTrack = async (req, res) => {
     await world.dropScene({
       sceneId: trackSceneId,
       position: raceTrackContainerAsset?.position,
+      sceneDropId,
     });
+
+    const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
+      uniqueName: "race-track-checkpoint",
+      isPartial: true,
+    });
+
+    await world.updateDataObject({
+      [`race.leaderboard`]: {},
+      [`race.profiles`]: {},
+      [`race.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+    });
+
+    await visitor.closeIframe(assetId);
 
     return res.json({ success: true });
   } catch (error) {
