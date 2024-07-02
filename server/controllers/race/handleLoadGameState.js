@@ -68,7 +68,6 @@ export const handleLoadGameState = async (req, res) => {
     }
 
     const tracks = process.env.TRACKS ? JSON.parse(process.env.TRACKS) : TRACKS;
-    console.log("tracks", tracks);
 
     return res.json({
       checkpointsCompleted,

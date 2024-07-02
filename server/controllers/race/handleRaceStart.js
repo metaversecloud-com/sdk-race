@@ -24,6 +24,8 @@ export const handleRaceStart = async (req, res) => {
       },
     });
 
+    await world.fetchDataObject();
+
     const startCheckpoint = (
       await world.fetchDroppedAssetsWithUniqueName({
         uniqueName: "race-track-start",
