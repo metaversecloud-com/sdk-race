@@ -13,21 +13,18 @@ export const handleCheckpointEntered = async (req, res) => {
 
     let currentElapsedTime = null;
 
-    // Checkpoint zero is the finish line. It is handled different because you have to calculate the total race elapsed time.
     if (checkpointNumber === 0) {
       currentElapsedTime = await handleCheckpointZero(urlSlug, credentials, profileId, currentTimestamp);
     }
 
-    /*  The code seems repetitive but the goal is to publish to the frontend as fast as possible, to feel like real time
-     *  The background sync can be slower
-     */
+    //  Instant response to the frontend
     await publishRaceEvent(profileId, checkpointNumber, currentElapsedTime);
 
     const world = World.create(urlSlug, { credentials });
     const dataObject = await world.fetchDataObject();
     const raceData = getRaceData(dataObject, profileId);
 
-    // Background sync
+    // Background data sync
     await updateRaceData(
       world,
       urlSlug,
@@ -108,7 +105,7 @@ async function handleFinishLine(world, urlSlug, profileId, username, currentTime
   const currentElapsedTime = calculateElapsedTime(startTimestamp, currentTimestamp);
   const newHighscore = calculateHighscore(raceData, currentElapsedTime);
 
-  await updateWorldDataForFinish(world, profileId, currentElapsedTime, newHighscore);
+  await updateWorldDataForFinish({ world, profileId, currentElapsedTime, newHighscore, username });
   notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime)
     .then()
     .catch((error) => console.error(JSON.stringify(error)));
@@ -139,10 +136,11 @@ async function handleCheckpoint(world, urlSlug, profileId, checkpointNumber, cur
   await updateWorldDataForCheckpoint(world, profileId, checkpoints, startTimestamp, currentElapsedTime, highscore);
 }
 
-async function updateWorldDataForFinish(world, profileId, currentElapsedTime, newHighscore) {
+async function updateWorldDataForFinish({ world, profileId, currentElapsedTime, newHighscore, username }) {
   await world.updateDataObject(
     {
-      [`race.profiles.${profileId}`]: {
+      [`race.leaderboard.${profileId}`]: {
+        username,
         checkpoints: [],
         elapsedTime: currentElapsedTime,
         highscore: newHighscore,
@@ -159,7 +157,9 @@ async function notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime) {
     title: "🏁 Finish",
     text: `You finished the race! Your time: ${currentElapsedTime}`,
   });
-  await triggerFinishParticle(visitor);
+  triggerFinishParticle(visitor)
+    .then()
+    .catch((error) => console.error(error));
 }
 
 async function triggerFinishParticle(visitor) {
