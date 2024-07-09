@@ -45,8 +45,8 @@ function Home() {
 
   const sortedLeaderboard = Object.entries(leaderboard || {})
     .sort(([, a], [, b]) => {
-      const [aMinutes, aSeconds, aMilliseconds] = a.elapsedTime.split(":").map(Number);
-      const [bMinutes, bSeconds, bMilliseconds] = b.elapsedTime.split(":").map(Number);
+      const [aMinutes, aSeconds, aMilliseconds] = a.highscore.split(":").map(Number);
+      const [bMinutes, bSeconds, bMilliseconds] = b.highscore.split(":").map(Number);
 
       if (aMinutes === bMinutes) {
         if (aSeconds === bSeconds) {
@@ -98,7 +98,7 @@ function Home() {
                 <tr key={userId}>
                   <td>{index + 1}</td>
                   <td>{entry.username}</td>
-                  <td>{entry.elapsedTime}</td>
+                  <td>{entry.highscore}</td>
                 </tr>
               ))
             )}

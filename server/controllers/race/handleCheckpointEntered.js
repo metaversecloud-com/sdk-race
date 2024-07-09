@@ -110,7 +110,6 @@ class RaceManager {
 
     await this.updateWorldDataForFinish(world, currentElapsedTime, newHighscore);
     this.notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime);
-    this.updateLeaderboard(world, raceObject, currentElapsedTime);
   }
 
   async handleCheckpoint(world, checkpointNumber, currentTimestamp, raceData) {
@@ -162,20 +161,6 @@ class RaceManager {
       duration: 3,
       position: { x, y },
     });
-  }
-
-  async updateLeaderboard(world, raceObject, currentElapsedTime) {
-    const { profileId, username, sceneDropId } = this.context;
-    const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;
-    if (
-      !currentBestTime ||
-      timeToValue(currentElapsedTime) < timeToValue(currentBestTime) ||
-      currentElapsedTime === "00:00:00"
-    ) {
-      await world.updateDataObject({
-        [`${sceneDropId}.leaderboard.${profileId}`]: { username, elapsedTime: currentElapsedTime },
-      });
-    }
   }
 
   async notifyVisitorOfMissedCheckpoint(urlSlug, credentials) {

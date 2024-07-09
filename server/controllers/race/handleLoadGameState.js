@@ -26,7 +26,7 @@ export const handleLoadGameState = async (req, res) => {
 
     let checkpointsCompleted = raceData?.profiles?.[profileId]?.checkpoints;
     let startTimestamp = raceData?.profiles?.[profileId]?.startTimestamp;
-    const leaderboard = raceData?.leaderboard;
+    const leaderboard = raceData?.profiles;
     const profile = raceData?.profiles?.[profileId];
     const numberOfCheckpoints = raceData?.numberOfCheckpoints;
 
@@ -68,10 +68,27 @@ export const handleLoadGameState = async (req, res) => {
 
 async function migrateRaceDataIfNeeded({ world, sceneDropId }) {
   if (world.dataObject?.race && !world.dataObject?.[sceneDropId]) {
-    await world.setDataObject({
-      [sceneDropId]: world.dataObject.race,
+    const { profiles, numberOfCheckpoints, leaderboard } = world.dataObject.race;
+
+    const updatedProfiles = Object.entries(profiles).reduce((acc, [key, value]) => {
+      acc[key] = {
+        ...value,
+        highscore: value.elapsedTime,
+        username: leaderboard[key]?.username,
+      };
+      delete acc[key].elapsedTime;
+      return acc;
+    }, {});
+
+    const newDataObject = {
+      [sceneDropId]: {
+        profiles: updatedProfiles,
+        numberOfCheckpoints,
+      },
       race: null,
-    });
+    };
+
+    await world.setDataObject(newDataObject);
   }
 }
 
@@ -83,7 +100,6 @@ async function initializeRaceDataIfNeeded({ sceneDropId, raceData, world }) {
     });
     await world.setDataObject({
       [sceneDropId]: {
-        leaderboard: {},
         profiles: {},
         numberOfCheckpoints: numberOfCheckpoints?.length,
       },
