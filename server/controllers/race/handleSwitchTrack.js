@@ -67,9 +67,9 @@ export const handleSwitchTrack = async (req, res) => {
     });
 
     await world.updateDataObject({
-      [`race.leaderboard`]: {},
-      [`race.profiles`]: {},
-      [`race.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+      [`${sceneDropId}.leaderboard`]: {},
+      [`${sceneDropId}.profiles`]: {},
+      [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
     });
 
     await visitor.closeIframe(assetId);

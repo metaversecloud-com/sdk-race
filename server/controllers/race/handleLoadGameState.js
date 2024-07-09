@@ -1,24 +1,10 @@
-import { Visitor, World, DroppedAsset } from "../../utils/topiaInit.js";
+import { Visitor, World } from "../../utils/topiaInit.js";
 import { errorHandler } from "../../utils/index.js";
-
-const TRACKS = [
-  {
-    id: 1,
-    name: "Missing env variables",
-    thumbnail: "https://i.pinimg.com/originals/ee/db/19/eedb1919a7f5d003bb56a401f6b4a886.png",
-    sceneId: "YCY9S4JpiIZswkQV8sx8",
-  },
-  {
-    id: 2,
-    name: "Example track",
-    thumbnail: "https://i.pinimg.com/originals/ee/db/19/eedb1919a7f5d003bb56a401f6b4a886.png",
-    sceneId: "oXghmgohNPuaICPA9Ne5",
-  },
-];
+import { TRACKS } from "../../utils/constants.js";
 
 export const handleLoadGameState = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, sceneDropId } = req.query;
     const now = Date.now();
 
     const credentials = {
@@ -33,27 +19,16 @@ export const handleLoadGameState = async (req, res) => {
     const result = await Promise.all([world.fetchDataObject(), Visitor.get(visitorId, urlSlug, { credentials })]);
     const visitor = result?.[1];
 
-    const race = world?.dataObject?.race;
+    await migrateRaceDataIfNeeded({ world, sceneDropId });
 
-    if (!race) {
-      const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
-        uniqueName: "race-track-checkpoint",
-        isPartial: true,
-      });
-      await world.setDataObject({
-        race: {
-          leaderboard: {},
-          profiles: {},
-          numberOfCheckpoints: numberOfCheckpoints?.length,
-        },
-      });
-    }
+    const raceData = world?.dataObject?.[sceneDropId];
+    await initializeRaceDataIfNeeded({ sceneDropId, raceData, world });
 
-    let checkpointsCompleted = world?.dataObject?.race?.profiles[profileId]?.checkpoints;
-    let startTimestamp = world?.dataObject?.race?.profiles[profileId]?.startTimestamp;
-    const leaderboard = world?.dataObject?.race?.leaderboard;
-    const profile = world?.dataObject?.race?.profiles?.[profileId];
-    const numberOfCheckpoints = world?.dataObject?.race?.numberOfCheckpoints;
+    let checkpointsCompleted = raceData?.profiles?.[profileId]?.checkpoints;
+    let startTimestamp = raceData?.profiles?.[profileId]?.startTimestamp;
+    const leaderboard = raceData?.leaderboard;
+    const profile = raceData?.profiles?.[profileId];
+    const numberOfCheckpoints = raceData?.numberOfCheckpoints;
 
     let elapsedTimeInSeconds = startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0;
 
@@ -63,7 +38,7 @@ export const handleLoadGameState = async (req, res) => {
       checkpointsCompleted = [];
       elapsedTimeInSeconds = null;
       await world.updateDataObject({
-        [`race.profiles.${profileId}`]: null,
+        [`${sceneDropId}.profiles.${profileId}`]: null,
       });
     }
 
@@ -90,3 +65,28 @@ export const handleLoadGameState = async (req, res) => {
     });
   }
 };
+
+async function migrateRaceDataIfNeeded({ world, sceneDropId }) {
+  if (world.dataObject?.race && !world.dataObject?.[sceneDropId]) {
+    await world.setDataObject({
+      [sceneDropId]: world.dataObject.race,
+      race: null,
+    });
+  }
+}
+
+async function initializeRaceDataIfNeeded({ sceneDropId, raceData, world }) {
+  if (!raceData) {
+    const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
+      uniqueName: "race-track-checkpoint",
+      isPartial: true,
+    });
+    await world.setDataObject({
+      [sceneDropId]: {
+        leaderboard: {},
+        profiles: {},
+        numberOfCheckpoints: numberOfCheckpoints?.length,
+      },
+    });
+  }
+}

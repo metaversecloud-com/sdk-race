@@ -6,224 +6,213 @@ import { formatElapsedTime, publishRaceEvent, timeToValue } from "../../utils/ut
 
 export const handleCheckpointEntered = async (req, res) => {
   try {
-    const { urlSlug, profileId, username } = req.body;
-    const credentials = getCredentials(req.body);
-    const checkpointNumber = getCheckpointNumber(req.body.uniqueName);
-    const currentTimestamp = Date.now();
+    const context = {
+      ...req.body,
+      credentials: getCredentials(req.body),
+    };
 
-    let currentElapsedTime = null;
+    const raceManager = new RaceManager(context);
+    const result = await raceManager.handleCheckpointEntered();
 
-    if (checkpointNumber === 0) {
-      currentElapsedTime = await handleCheckpointZero(urlSlug, credentials, profileId, currentTimestamp);
-    }
-
-    //  Instant response to the frontend
-    await publishRaceEvent(profileId, checkpointNumber, currentElapsedTime);
-
-    const world = World.create(urlSlug, { credentials });
-    const dataObject = await world.fetchDataObject();
-    const raceData = getRaceData(dataObject, profileId);
-
-    // Background data sync
-    await updateRaceData(
-      world,
-      urlSlug,
-      profileId,
-      checkpointNumber,
-      username,
-      currentTimestamp,
-      credentials,
-      raceData,
-    );
-
-    return res.status(200).json({ success: true });
+    return res.status(200).json(result);
   } catch (error) {
     return errorHandler({
       error,
       functionName: "handleCheckpointEntered",
-      message: "Erro when entering in the checkpoint",
+      message: "Error when entering the checkpoint",
       req,
       res,
     });
   }
 };
 
-async function handleCheckpointZero(urlSlug, credentials, profileId, currentTimestamp) {
-  const world = World.create(urlSlug, { credentials });
-  const dataObject = await world.fetchDataObject();
-  const raceData = getRaceData(dataObject, profileId);
-
-  const startTimestamp = raceData.startTimestamp || currentTimestamp;
-  const elapsedMilliseconds = currentTimestamp - startTimestamp;
-
-  const minutes = Math.floor(elapsedMilliseconds / 60000);
-  const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
-  const milliseconds = Math.floor((elapsedMilliseconds % 1000) / 10);
-
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}:${milliseconds.toString().padStart(2, "0")}`;
-}
-
-function getCheckpointNumber(uniqueName) {
-  return uniqueName === CHECKPOINT_NAMES.START ? 0 : parseInt(uniqueName.split("-").pop(), 10);
-}
-
-function getRaceData(dataObject, profileId) {
-  const raceObject = dataObject.race || {};
-  const profilesObject = raceObject.profiles || {};
-  return profilesObject[profileId] || {};
-}
-
-function calculateElapsedTime(startTimestamp, currentTimestamp) {
-  if (!startTimestamp) return null;
-  const elapsedMilliseconds = currentTimestamp - startTimestamp;
-  return formatElapsedTime(elapsedMilliseconds);
-}
-
-async function updateRaceData(
-  world,
-  urlSlug,
-  profileId,
-  checkpointNumber,
-  username,
-  currentTimestamp,
-  credentials,
-  raceData,
-) {
-  if (checkpointNumber === 0) {
-    return handleFinishLine(world, urlSlug, profileId, username, currentTimestamp, credentials, raceData);
-  }
-  return handleCheckpoint(world, urlSlug, profileId, checkpointNumber, currentTimestamp, credentials, raceData);
-}
-
-async function handleFinishLine(world, urlSlug, profileId, username, currentTimestamp, credentials, raceData) {
-  const { checkpoints, startTimestamp } = raceData;
-  const raceObject = (await world.fetchDataObject()).race || {};
-  const allCheckpointsCompleted = raceObject.numberOfCheckpoints === checkpoints.length;
-
-  if (!allCheckpointsCompleted) return;
-
-  const currentElapsedTime = calculateElapsedTime(startTimestamp, currentTimestamp);
-  const newHighscore = calculateHighscore(raceData, currentElapsedTime);
-
-  await updateWorldDataForFinish({ world, profileId, currentElapsedTime, newHighscore, username });
-  notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime)
-    .then()
-    .catch((error) => console.error(JSON.stringify(error)));
-
-  updateLeaderboard(world, raceObject, profileId, username, currentElapsedTime)
-    .then()
-    .catch((error) => console.error(JSON.stringify(error)));
-}
-
-async function handleCheckpoint(world, urlSlug, profileId, checkpointNumber, currentTimestamp, credentials, raceData) {
-  const { checkpoints, startTimestamp, highscore } = raceData;
-
-  if (checkpoints[checkpointNumber - 1]) return;
-  if (checkpointNumber > 1 && !checkpoints[checkpointNumber - 2]) {
-    notifyVisitorOfMissedCheckpoint(urlSlug, credentials)
-      .then()
-      .catch((error) => console.error(JSON.stringify(error)));
-
-    return;
+class RaceManager {
+  constructor(context) {
+    this.context = context;
   }
 
-  checkpoints[checkpointNumber - 1] = true;
-  const currentElapsedTime = calculateElapsedTime(startTimestamp, currentTimestamp);
+  async handleCheckpointEntered() {
+    try {
+      const { urlSlug, profileId, username, sceneDropId, uniqueName } = this.context;
+      const checkpointNumber = this.getCheckpointNumber(uniqueName);
+      const currentTimestamp = Date.now();
 
-  notifyVisitorOfCheckpoint(urlSlug, credentials, checkpointNumber)
-    .then()
-    .catch((error) => console.error(JSON.stringify(error)));
-  await updateWorldDataForCheckpoint(world, profileId, checkpoints, startTimestamp, currentElapsedTime, highscore);
-}
+      let currentElapsedTime = null;
 
-async function updateWorldDataForFinish({ world, profileId, currentElapsedTime, newHighscore, username }) {
-  await world.updateDataObject(
-    {
-      [`race.leaderboard.${profileId}`]: {
-        username,
-        checkpoints: [],
-        elapsedTime: currentElapsedTime,
-        highscore: newHighscore,
+      if (checkpointNumber === 0) {
+        currentElapsedTime = await this.handleCheckpointZero(currentTimestamp);
+      }
+
+      await publishRaceEvent(profileId, checkpointNumber, currentElapsedTime);
+
+      const world = World.create(urlSlug, { credentials: this.context.credentials });
+      const dataObject = await world.fetchDataObject();
+      const raceData = this.getRaceData(dataObject);
+
+      await this.updateRaceData(world, checkpointNumber, currentTimestamp, raceData);
+
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async handleCheckpointZero(currentTimestamp) {
+    const { urlSlug, credentials, profileId, sceneDropId } = this.context;
+    const world = World.create(urlSlug, { credentials });
+    const dataObject = await world.fetchDataObject();
+    const raceData = this.getRaceData(dataObject);
+
+    const startTimestamp = raceData.startTimestamp || currentTimestamp;
+    const elapsedMilliseconds = currentTimestamp - startTimestamp;
+
+    const minutes = Math.floor(elapsedMilliseconds / 60000);
+    const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
+    const milliseconds = Math.floor((elapsedMilliseconds % 1000) / 10);
+
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}:${milliseconds.toString().padStart(2, "0")}`;
+  }
+
+  getCheckpointNumber(uniqueName) {
+    return uniqueName === CHECKPOINT_NAMES.START ? 0 : parseInt(uniqueName.split("-").pop(), 10);
+  }
+
+  getRaceData(dataObject) {
+    const { sceneDropId, profileId } = this.context;
+    const raceObject = dataObject?.[sceneDropId] || {};
+    const profilesObject = raceObject.profiles || {};
+    return profilesObject[profileId] || {};
+  }
+
+  calculateElapsedTime(startTimestamp, currentTimestamp) {
+    if (!startTimestamp) return null;
+    const elapsedMilliseconds = currentTimestamp - startTimestamp;
+    return formatElapsedTime(elapsedMilliseconds);
+  }
+
+  async updateRaceData(world, checkpointNumber, currentTimestamp, raceData) {
+    if (checkpointNumber === 0) {
+      return this.handleFinishLine(world, currentTimestamp, raceData);
+    }
+    return this.handleCheckpoint(world, checkpointNumber, currentTimestamp, raceData);
+  }
+
+  async handleFinishLine(world, currentTimestamp, raceData) {
+    const { urlSlug, profileId, username, credentials, sceneDropId } = this.context;
+    const { checkpoints, startTimestamp } = raceData;
+    const raceObject = (await world.fetchDataObject())?.[sceneDropId] || {};
+    const allCheckpointsCompleted = raceObject.numberOfCheckpoints === checkpoints.length;
+
+    if (!allCheckpointsCompleted) return;
+
+    const currentElapsedTime = this.calculateElapsedTime(startTimestamp, currentTimestamp);
+    const newHighscore = this.calculateHighscore(raceData, currentElapsedTime);
+
+    await this.updateWorldDataForFinish(world, currentElapsedTime, newHighscore);
+    this.notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime);
+    this.updateLeaderboard(world, raceObject, currentElapsedTime);
+  }
+
+  async handleCheckpoint(world, checkpointNumber, currentTimestamp, raceData) {
+    const { urlSlug, profileId, credentials, sceneDropId } = this.context;
+    const { checkpoints, startTimestamp, highscore } = raceData;
+
+    if (checkpoints[checkpointNumber - 1]) return;
+    if (checkpointNumber > 1 && !checkpoints[checkpointNumber - 2]) {
+      this.notifyVisitorOfMissedCheckpoint(urlSlug, credentials);
+      return;
+    }
+
+    checkpoints[checkpointNumber - 1] = true;
+    const currentElapsedTime = this.calculateElapsedTime(startTimestamp, currentTimestamp);
+
+    this.notifyVisitorOfCheckpoint(urlSlug, credentials, checkpointNumber);
+    await this.updateWorldDataForCheckpoint(world, checkpoints, startTimestamp, currentElapsedTime, highscore);
+  }
+
+  async updateWorldDataForFinish(world, currentElapsedTime, newHighscore) {
+    const { profileId, username, sceneDropId } = this.context;
+    await world.updateDataObject(
+      {
+        [`${sceneDropId}.profiles.${profileId}`]: {
+          username,
+          checkpoints: [],
+          elapsedTime: currentElapsedTime,
+          highscore: newHighscore,
+        },
       },
-    },
-    { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
-  );
-}
+      { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
+    );
+  }
 
-async function notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime) {
-  const visitor = await Visitor.get(credentials.visitorId, urlSlug, { credentials });
-  await visitor.fireToast({
-    groupId: "race",
-    title: "🏁 Finish",
-    text: `You finished the race! Your time: ${currentElapsedTime}`,
-  });
-  triggerFinishParticle(visitor)
-    .then()
-    .catch((error) => console.error(error));
-}
+  async notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime) {
+    const visitor = await Visitor.get(credentials.visitorId, urlSlug, { credentials });
+    await visitor.fireToast({
+      groupId: "race",
+      title: "🏁 Finish",
+      text: `You finished the race! Your time: ${currentElapsedTime}`,
+    });
+    this.triggerFinishParticle(visitor);
+  }
 
-async function triggerFinishParticle(visitor) {
-  const { x, y } = visitor.moveTo;
-  await visitor.triggerParticle({
-    name: "Firework2_BlueGreen",
-    duration: 3,
-    position: { x, y },
-  });
-}
-
-async function updateLeaderboard(world, raceObject, profileId, username, currentElapsedTime) {
-  const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;
-  if (
-    !currentBestTime ||
-    timeToValue(currentElapsedTime) < timeToValue(currentBestTime) ||
-    currentElapsedTime === "00:00:00"
-  ) {
-    await world.updateDataObject({
-      [`race.leaderboard.${profileId}`]: { username, elapsedTime: currentElapsedTime },
+  async triggerFinishParticle(visitor) {
+    const { x, y } = visitor.moveTo;
+    await visitor.triggerParticle({
+      name: "Firework2_BlueGreen",
+      duration: 3,
+      position: { x, y },
     });
   }
-}
 
-async function notifyVisitorOfMissedCheckpoint(urlSlug, credentials) {
-  const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
-  await visitor.fireToast({
-    groupId: "race",
-    title: "❌ Wrong checkpoint",
-    text: "Oops! Go back. You missed a checkpoint!",
-  });
-}
+  async updateLeaderboard(world, raceObject, currentElapsedTime) {
+    const { profileId, username, sceneDropId } = this.context;
+    const currentBestTime = raceObject.leaderboard?.[profileId]?.elapsedTime;
+    if (
+      !currentBestTime ||
+      timeToValue(currentElapsedTime) < timeToValue(currentBestTime) ||
+      currentElapsedTime === "00:00:00"
+    ) {
+      await world.updateDataObject({
+        [`${sceneDropId}.leaderboard.${profileId}`]: { username, elapsedTime: currentElapsedTime },
+      });
+    }
+  }
 
-async function notifyVisitorOfCheckpoint(urlSlug, credentials, checkpointNumber) {
-  const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
-  const text = ENCOURAGEMENT_MESSAGES[checkpointNumber % ENCOURAGEMENT_MESSAGES.length];
-  await visitor.fireToast({
-    groupId: "race",
-    title: `✅ Checkpoint ${checkpointNumber}`,
-    text,
-  });
-}
+  async notifyVisitorOfMissedCheckpoint(urlSlug, credentials) {
+    const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
+    await visitor.fireToast({
+      groupId: "race",
+      title: "❌ Wrong checkpoint",
+      text: "Oops! Go back. You missed a checkpoint!",
+    });
+  }
 
-async function updateWorldDataForCheckpoint(
-  world,
-  profileId,
-  checkpoints,
-  startTimestamp,
-  currentElapsedTime,
-  highscore,
-) {
-  await world.updateDataObject({
-    [`race.profiles.${profileId}`]: {
-      checkpoints,
-      startTimestamp,
-      currentElapsedTime,
-      highscore,
-    },
-  });
-}
+  async notifyVisitorOfCheckpoint(urlSlug, credentials, checkpointNumber) {
+    const visitor = await Visitor.create(credentials.visitorId, urlSlug, { credentials });
+    const text = ENCOURAGEMENT_MESSAGES[checkpointNumber % ENCOURAGEMENT_MESSAGES.length];
+    await visitor.fireToast({
+      groupId: "race",
+      title: `✅ Checkpoint ${checkpointNumber}`,
+      text,
+    });
+  }
 
-function calculateHighscore(profileObject, currentElapsedTime) {
-  const currentHighscore = profileObject.highscore;
-  return !currentHighscore || timeToValue(currentElapsedTime) < timeToValue(currentHighscore)
-    ? currentElapsedTime
-    : currentHighscore;
+  async updateWorldDataForCheckpoint(world, checkpoints, startTimestamp, currentElapsedTime, highscore) {
+    const { profileId, sceneDropId } = this.context;
+    await world.updateDataObject({
+      [`${sceneDropId}.profiles.${profileId}`]: {
+        checkpoints,
+        startTimestamp,
+        currentElapsedTime,
+        highscore,
+      },
+    });
+  }
+
+  calculateHighscore(profileObject, currentElapsedTime) {
+    const currentHighscore = profileObject.highscore;
+    return !currentHighscore || timeToValue(currentElapsedTime) < timeToValue(currentHighscore)
+      ? currentElapsedTime
+      : currentHighscore;
+  }
 }

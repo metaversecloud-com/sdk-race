@@ -17,6 +17,7 @@ export const getCredentials = (query) => {
     sceneDropId: query.sceneDropId,
     urlSlug: query.urlSlug,
     username: query.username,
+    sceneDropId: query.sceneDropId,
     visitorId: Number(query.visitorId),
   };
 };

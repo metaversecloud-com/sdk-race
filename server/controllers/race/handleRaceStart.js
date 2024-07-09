@@ -4,7 +4,7 @@ import { addNewRowToGoogleSheets } from "../../utils/addNewRowToGoogleSheets.js"
 
 export const handleRaceStart = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId, sceneDropId } = req.query;
     const startTimestamp = Date.now();
 
     const visitor = await Visitor.get(visitorId, urlSlug, {
@@ -36,8 +36,8 @@ export const handleRaceStart = async (req, res) => {
     await Promise.all([
       world.updateDataObject(
         {
-          [`race.profiles.${profileId}.startTimestamp`]: startTimestamp,
-          [`race.profiles.${profileId}.checkpoints`]: [],
+          [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
+          [`${sceneDropId}.profiles.${profileId}.checkpoints`]: [],
         },
         { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
       ),
@@ -56,7 +56,7 @@ export const handleRaceStart = async (req, res) => {
       urlSlug,
     })
       .then()
-      .catch();
+      .catch((error) => console.error(JSON.stringify(error)));
 
     return res.json({ startTimestamp, success: true });
   } catch (error) {

@@ -3,7 +3,7 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleResetGame = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, sceneDropId } = req.query;
     const now = Date.now();
 
     const credentials = {
@@ -23,9 +23,9 @@ export const handleResetGame = async (req, res) => {
     });
 
     await world.updateDataObject({
-      [`race.leaderboard`]: {},
-      [`race.profiles`]: {},
-      [`race.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+      [`${sceneDropId}.leaderboard`]: {},
+      [`${sceneDropId}.profiles`]: {},
+      [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
     });
 
     return res.json({ success: true });

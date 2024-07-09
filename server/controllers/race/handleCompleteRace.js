@@ -3,15 +3,15 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleCompleteRace = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, sceneDropId } = req.query;
     const credentials = { interactiveNonce, interactivePublicKey, visitorId, assetId };
 
     const world = await World.create(urlSlug, { credentials });
     await world.fetchDataObject();
 
-    const elapsedTime = world?.dataObject?.race?.profiles?.[profileId]?.elapsedTime;
+    const elapsedTime = world?.dataObject?.sceneDropId?.profiles?.[profileId]?.elapsedTime;
 
-    const leaderboard = world.dataObject.race.leaderboard;
+    const leaderboard = world.dataObject.sceneDropId?.leaderboard;
 
     return res.json({ success: true, leaderboard, elapsedTime });
   } catch (error) {

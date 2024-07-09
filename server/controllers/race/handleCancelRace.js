@@ -17,10 +17,10 @@ export const handleCancelRace = async (req, res) => {
     if (profileId) {
       world
         .updateDataObject({
-          [`race.profiles.${profileId}`]: null,
+          [`${sceneDropId}.profiles.${profileId}`]: null,
         })
         .then()
-        .catch();
+        .catch((error) => console.error(JSON.stringify(error)));
     }
 
     return res.json({ success: true });
