@@ -3,7 +3,7 @@ import BackArrow from "./BackArrow";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import ResetGameButton from "../ResetGame/ResetGameButton";
 import ResetGameModal from "../ResetGame/ResetGameModal";
-import TrackSwitcherModal from "../TrackSwitcher/TrackSwitcherModal";
+import TrackSwitcherModal from "../SwitchRace/SwitchRaceTrackModal";
 import "./AdminView.scss";
 
 function AdminView({ setShowSettings }) {
