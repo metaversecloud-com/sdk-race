@@ -28,7 +28,7 @@ export const handleSwitchTrack = async (req, res) => {
     if (!visitor?.isAdmin) {
       return res.status(403).json({
         success: false,
-        msg: "The user is not an admin. Perhaps the user is just a super admin but not an admin",
+        msg: "The user is not an admin.",
       });
     }
 
