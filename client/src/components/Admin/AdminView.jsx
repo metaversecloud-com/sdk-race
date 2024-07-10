@@ -3,7 +3,7 @@ import BackArrow from "./BackArrow";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import ResetGameButton from "../ResetGame/ResetGameButton";
 import ResetGameModal from "../ResetGame/ResetGameModal";
-import RacetrackSwitcherModal from "../RaceTrackSwitcher/RaceTrackSwitcherModal";
+import TrackSwitcherModal from "../TrackSwitcher/TrackSwitcherModal";
 import "./AdminView.scss";
 
 function AdminView({ setShowSettings }) {
@@ -11,21 +11,21 @@ function AdminView({ setShowSettings }) {
   const { tracks } = useContext(GlobalStateContext);
   const [message, setMessage] = useState(false);
   const [showResetGameModal, setShowResetGameModal] = useState(false);
-  const [showRacetrackModal, setShowRacetrackModal] = useState(false);
+  const [showTrackModal, setShowTrackModal] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
 
   function handleToggleShowResetGameModal() {
     setShowResetGameModal(!showResetGameModal);
   }
 
-  function handleToggleShowRacetrackModal(track) {
+  function handleToggleShowTrackModal(track) {
     setSelectedTrack(track);
-    setShowRacetrackModal(!showRacetrackModal);
+    setShowTrackModal(!showTrackModal);
   }
 
   function handleTrackSelect(track) {
     setSelectedTrack(track.id);
-    setShowRacetrackModal(true);
+    setShowTrackModal(true);
   }
 
   function Footer() {
@@ -43,10 +43,10 @@ function AdminView({ setShowSettings }) {
       {showResetGameModal && (
         <ResetGameModal handleToggleShowModal={handleToggleShowResetGameModal} setMessage={setMessage} />
       )}
-      {showRacetrackModal && selectedTrack && (
-        <RacetrackSwitcherModal
+      {showTrackModal && selectedTrack && (
+        <TrackSwitcherModal
           track={tracks?.find((track) => track.id === selectedTrack)}
-          handleToggleShowModal={() => handleToggleShowRacetrackModal(null)}
+          handleToggleShowModal={() => handleToggleShowTrackModal(null)}
           setMessage={setMessage}
         />
       )}
@@ -55,7 +55,7 @@ function AdminView({ setShowSettings }) {
         <div>
           <div style={{ textAlign: "center", marginBottom: "20px" }}>
             <h2>{"Settings"}</h2>
-            <p style={{ textAlign: "left" }}>Select a track to switch the current racetrack in the world.</p>
+            <p style={{ textAlign: "left" }}>Select a track to change the current one.</p>
             <p>{message}</p>
           </div>
           <div className="tracks-container">

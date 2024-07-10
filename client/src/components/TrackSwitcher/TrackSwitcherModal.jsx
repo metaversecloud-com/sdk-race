@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { backendAPI } from "@utils/backendAPI";
 
-function RaceTrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
+function TrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
 
   async function handleSwitchTrack() {
@@ -24,7 +24,7 @@ function RaceTrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
   return (
     <div className="modal-container visible">
       <div className="modal">
-        <h4>Switch Racetrack</h4>
+        <h4>Switch Track</h4>
         <p>Are you sure you want to switch to {track.name}?</p>
         <p>Switching tracks will reset the game and clear the Leaderboard. This action cannot be undone.</p>
 
@@ -46,4 +46,4 @@ function RaceTrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
   );
 }
 
-export default RaceTrackSwitcherModal;
+export default TrackSwitcherModal;

@@ -34,11 +34,11 @@ export const handleSwitchTrack = async (req, res) => {
 
     const allRaceAssets = await world.fetchDroppedAssetsBySceneDropId({ sceneDropId });
 
-    const raceTrackContainerAsset = allRaceAssets?.find((raceAsset) => {
+    const trackContainerAsset = allRaceAssets?.find((raceAsset) => {
       return raceAsset.uniqueName === "race-track-container";
     });
 
-    if (!raceTrackContainerAsset || !raceTrackContainerAsset?.position) {
+    if (!trackContainerAsset || !trackContainerAsset?.position) {
       return res.status(404).json({
         msg: "Race Track Container asset not found. Please surround the race with a big rectangle object with race-track-container uniqueName",
       });
@@ -57,7 +57,7 @@ export const handleSwitchTrack = async (req, res) => {
 
     await world.dropScene({
       sceneId: trackSceneId,
-      position: raceTrackContainerAsset?.position,
+      position: trackContainerAsset?.position,
       sceneDropId,
     });
 
