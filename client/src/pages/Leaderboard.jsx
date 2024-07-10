@@ -43,20 +43,22 @@ function Home() {
     }
   };
 
-  const sortedLeaderboard = Object.entries(leaderboard || {})
-    .sort(([, a], [, b]) => {
-      const [aMinutes, aSeconds, aMilliseconds] = a.highscore.split(":").map(Number);
-      const [bMinutes, bSeconds, bMilliseconds] = b.highscore.split(":").map(Number);
+  const sortedLeaderboard = leaderboard
+    ? Object.entries(leaderboard)
+        .filter(([, playerData]) => playerData && playerData.highscore)
+        .sort(([, a], [, b]) => {
+          const aScore = a.highscore.split(":").map(Number);
+          const bScore = b.highscore.split(":").map(Number);
 
-      if (aMinutes === bMinutes) {
-        if (aSeconds === bSeconds) {
-          return aMilliseconds - bMilliseconds;
-        }
-        return aSeconds - bSeconds;
-      }
-      return aMinutes - bMinutes;
-    })
-    .slice(0, 20);
+          for (let i = 0; i < 3; i++) {
+            if (aScore[i] !== bScore[i]) {
+              return aScore[i] - bScore[i];
+            }
+          }
+          return 0;
+        })
+        .slice(0, 20)
+    : [];
 
   if (loading) {
     return (
