@@ -98,7 +98,16 @@ async function initializeRaceDataIfNeeded({ sceneDropId, raceData, world }) {
       uniqueName: "race-track-checkpoint",
       isPartial: true,
     });
-    await world.setDataObject({
+
+    if (!world?.dataObject) {
+      return world.setDataObject({
+        [sceneDropId]: {
+          profiles: {},
+          numberOfCheckpoints: numberOfCheckpoints?.length,
+        },
+      });
+    }
+    await world.updateDataObject({
       [sceneDropId]: {
         profiles: {},
         numberOfCheckpoints: numberOfCheckpoints?.length,
