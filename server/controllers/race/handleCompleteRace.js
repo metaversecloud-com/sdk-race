@@ -11,9 +11,7 @@ export const handleCompleteRace = async (req, res) => {
 
     const elapsedTime = world?.dataObject?.sceneDropId?.profiles?.[profileId]?.elapsedTime;
 
-    const leaderboard = world.dataObject.sceneDropId?.leaderboard;
-
-    return res.json({ success: true, leaderboard, elapsedTime });
+    return res.json({ success: true, elapsedTime });
   } catch (error) {
     return errorHandler({
       error,

@@ -23,7 +23,6 @@ export const handleResetGame = async (req, res) => {
     });
 
     await world.updateDataObject({
-      [`${sceneDropId}.leaderboard`]: {},
       [`${sceneDropId}.profiles`]: {},
       [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
     });
