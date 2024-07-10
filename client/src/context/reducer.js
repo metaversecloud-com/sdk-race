@@ -59,7 +59,6 @@ const globalReducer = (state, action) => {
         startTimestamp: null,
       };
     case RESET_GAME:
-      console.log("reset game reducer");
       return {
         ...state,
         checkpoints: [],
