@@ -99,7 +99,7 @@ async function initializeRaceDataIfNeeded({ sceneDropId, raceData, world }) {
       isPartial: true,
     });
 
-    if (!world?.dataObject) {
+    if (Object.keys(world?.dataObject || {}).length === 0) {
       return world.setDataObject({
         [sceneDropId]: {
           profiles: {},
