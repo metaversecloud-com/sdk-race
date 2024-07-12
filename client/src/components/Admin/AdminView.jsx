@@ -3,7 +3,7 @@ import BackArrow from "./BackArrow";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import ResetGameButton from "../ResetGame/ResetGameButton";
 import ResetGameModal from "../ResetGame/ResetGameModal";
-import TrackSwitcherModal from "../SwitchRace/SwitchRaceTrackModal";
+import SwitchRaceTrackModal from "../SwitchRace/SwitchRaceTrackModal";
 import "./AdminView.scss";
 
 function AdminView({ setShowSettings }) {
@@ -44,7 +44,7 @@ function AdminView({ setShowSettings }) {
         <ResetGameModal handleToggleShowModal={handleToggleShowResetGameModal} setMessage={setMessage} />
       )}
       {showTrackModal && selectedTrack && (
-        <TrackSwitcherModal
+        <SwitchRaceTrackModal
           track={tracks?.find((track) => track.id === selectedTrack)}
           handleToggleShowModal={() => handleToggleShowTrackModal(null)}
           setMessage={setMessage}

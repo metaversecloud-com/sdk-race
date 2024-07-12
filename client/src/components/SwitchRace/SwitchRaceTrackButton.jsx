@@ -1,6 +1,6 @@
 import React from "react";
 
-function TrackSwitcherButton({ track, handleToggleShowTrackModal }) {
+function SwitchRaceTrackButton({ track, handleToggleShowTrackModal }) {
   return (
     <div className="race-track-item" onClick={() => handleToggleShowTrackModal(track)}>
       <img src={track.thumbnail} alt={track.name} className="race-track-thumbnail" />
@@ -9,4 +9,4 @@ function TrackSwitcherButton({ track, handleToggleShowTrackModal }) {
   );
 }
 
-export default TrackSwitcherButton;
+export default SwitchRaceTrackButton;
