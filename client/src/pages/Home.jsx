@@ -48,7 +48,7 @@ function Home() {
 
   return (
     <div className="app-wrapper">
-      {visitor?.isAdmin ? AdminGear(setShowSettings) : <></>}
+      {visitor?.isAdmin && <AdminGear screenManager={screenManager} setShowSettings={setShowSettings} />}
       {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}

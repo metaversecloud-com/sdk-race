@@ -28,7 +28,7 @@ const sheetsClient = sheets?.sheets({ version: "v4", auth });
  *         urlSlug
  *       })
  *         .then()
- *         .catch();
+ *         .catch(error => console.error(JSON.stringify(error)));
  * ```
  */
 export const addNewRowToGoogleSheets = async ({ identityId, displayName, username, appName, event, urlSlug }) => {

@@ -3,7 +3,7 @@ import { errorHandler } from "../../utils/index.js";
 
 export const handleCancelRace = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId } = req.query;
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, sceneDropId } = req.query;
 
     const credentials = {
       interactiveNonce,
@@ -17,10 +17,10 @@ export const handleCancelRace = async (req, res) => {
     if (profileId) {
       world
         .updateDataObject({
-          [`race.profiles.${profileId}`]: null,
+          [`${sceneDropId}.profiles.${profileId}`]: null,
         })
         .then()
-        .catch();
+        .catch((error) => console.error(JSON.stringify(error)));
     }
 
     return res.json({ success: true });

@@ -17,8 +17,8 @@ const OnYourMarkScreen = () => {
   const beep2AudioRef = useRef(null);
 
   useEffect(() => {
-    beepAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/beep1.mp3");
-    beep2AudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/beep2.mp3");
+    beepAudioRef.current = new Audio("https://sdk-race.s3.amazonaws.com/audio/beep1.mp3");
+    beep2AudioRef.current = new Audio("https://sdk-race.s3.amazonaws.com/audio/beep2.mp3");
 
     beepAudioRef.current.addEventListener("canplaythrough", () => {
       beepAudioRef.current.play();

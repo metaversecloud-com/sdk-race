@@ -5,3 +5,4 @@ export * from "./handleCancelRace.js";
 export * from "./handleGetEvents.js";
 export * from "./handleCompleteRace.js";
 export * from "./handleResetGame.js";
+export * from "./handleSwitchTrack.js";

@@ -7,7 +7,7 @@ import "./Leaderboard.scss";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard } = useContext(GlobalStateContext);
+  const { leaderboard, profile } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ function Home() {
             checkpointsCompleted: result.data.checkpointsCompleted,
             startTimestamp: result.data.startTimestamp,
             leaderboard: result.data.leaderboard,
+            profile: result.data.profile,
           },
         });
         setLoading(false);
@@ -42,20 +43,22 @@ function Home() {
     }
   };
 
-  const sortedLeaderboard = Object.entries(leaderboard || {})
-    .sort(([, a], [, b]) => {
-      const [aMinutes, aSeconds, aMilliseconds] = a.elapsedTime.split(":").map(Number);
-      const [bMinutes, bSeconds, bMilliseconds] = b.elapsedTime.split(":").map(Number);
+  const sortedLeaderboard = leaderboard
+    ? Object.entries(leaderboard)
+        .filter(([, playerData]) => playerData && playerData.highscore)
+        .sort(([, a], [, b]) => {
+          const aScore = a.highscore.split(":").map(Number);
+          const bScore = b.highscore.split(":").map(Number);
 
-      if (aMinutes === bMinutes) {
-        if (aSeconds === bSeconds) {
-          return aMilliseconds - bMilliseconds;
-        }
-        return aSeconds - bSeconds;
-      }
-      return aMinutes - bMinutes;
-    })
-    .slice(0, 20);
+          for (let i = 0; i < 3; i++) {
+            if (aScore[i] !== bScore[i]) {
+              return aScore[i] - bScore[i];
+            }
+          }
+          return 0;
+        })
+        .slice(0, 20)
+    : [];
 
   if (loading) {
     return (
@@ -68,6 +71,13 @@ function Home() {
   return (
     <>
       <div className="app-wrapper leaderboard-container">
+        <div className="highscore-container">
+          <div className="medal">
+            <h2>🏅</h2>
+          </div>
+          <h2>Personal Best</h2>
+          <p>{profile?.highscore || "No highscore available"}</p>
+        </div>
         <h1 className="trophy">🏆</h1>
         <div style={{ marginBottom: "20px" }}>
           <h3>Leaderboard</h3>
@@ -90,7 +100,7 @@ function Home() {
                 <tr key={userId}>
                   <td>{index + 1}</td>
                   <td>{entry.username}</td>
-                  <td>{entry.elapsedTime}</td>
+                  <td>{entry.highscore}</td>
                 </tr>
               ))
             )}

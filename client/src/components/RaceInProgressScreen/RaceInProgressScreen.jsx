@@ -21,9 +21,9 @@ const RaceInProgressScreen = () => {
   const successAudioRef = useRef(null);
 
   useEffect(() => {
-    positiveAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/positive.mp3");
-    negativeAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/negative.mp3");
-    successAudioRef.current = new Audio("https://sdk-scavenger-hunt.s3.amazonaws.com/success.mp3");
+    positiveAudioRef.current = new Audio("https://sdk-race.s3.amazonaws.com/audio/positive.mp3");
+    negativeAudioRef.current = new Audio("https://sdk-race.s3.amazonaws.com/audio/negative.mp3");
+    successAudioRef.current = new Audio("https://sdk-race.s3.amazonaws.com/audio/success.mp3");
   }, []);
 
   const dispatch = useContext(GlobalDispatchContext);
@@ -176,9 +176,6 @@ const RaceInProgressScreen = () => {
     );
   }
 
-  {
-    console.log("isAdmin", visitor);
-  }
   return (
     <>
       <div className="race-in-progress-wrapper">

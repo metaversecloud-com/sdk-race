@@ -59,7 +59,6 @@ const globalReducer = (state, action) => {
         startTimestamp: null,
       };
     case RESET_GAME:
-      console.log("reset game reducer");
       return {
         ...state,
         checkpoints: [],
@@ -71,9 +70,11 @@ const globalReducer = (state, action) => {
         checkpointsCompleted: payload.checkpointsCompleted,
         startTimestamp: payload.startTimestamp,
         leaderboard: payload.leaderboard,
+        profile: payload.profile,
         numberOfCheckpoints: payload.numberOfCheckpoints,
         visitor: payload.visitor,
         elapsedTimeInSeconds: payload.elapsedTimeInSeconds,
+        tracks: payload.tracks,
       };
     default: {
       throw new Error(`Unhandled action type: ${type}`);

@@ -75,6 +75,7 @@ export const loadGameState = async (dispatch) => {
           numberOfCheckpoints: result.data.numberOfCheckpoints,
           visitor: result.data.visitor,
           elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
+          tracks: result.data.tracks,
         },
       });
 

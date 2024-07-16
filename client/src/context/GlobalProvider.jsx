@@ -9,6 +9,7 @@ const initialState = {
   urlSlug: "",
   showOnYourMarkScreen: false,
   screenManager: "",
+  tracks: [],
 };
 
 const GlobalProvider = ({ children }) => {

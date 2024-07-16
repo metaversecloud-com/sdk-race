@@ -1,43 +1,81 @@
 import React, { useState, useContext } from "react";
-import { backendAPI } from "@utils/backendAPI";
 import BackArrow from "./BackArrow";
-import { RESET_GAME, SCREEN_MANAGER } from "../../context/types";
-import { GlobalDispatchContext } from "@context/GlobalContext";
+import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import ResetGameButton from "../ResetGame/ResetGameButton";
+import ResetGameModal from "../ResetGame/ResetGameModal";
+import SwitchRaceTrackModal from "../SwitchRace/SwitchRaceTrackModal";
+import "./AdminView.scss";
 
 function AdminView({ setShowSettings }) {
   const dispatch = useContext(GlobalDispatchContext);
-  const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
+  const { tracks } = useContext(GlobalStateContext);
   const [message, setMessage] = useState(false);
+  const [showResetGameModal, setShowResetGameModal] = useState(false);
+  const [showTrackModal, setShowTrackModal] = useState(false);
+  const [selectedTrack, setSelectedTrack] = useState(null);
 
-  async function handleResetGame() {
-    try {
-      setAreAllButtonsDisabled(true);
-      const result = await backendAPI.post("/race/reset-game");
-      if (result.data.success) {
-        dispatch({ type: RESET_GAME });
-        dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
-        setMessage("The game reset successfully");
-      }
-    } catch (error) {
-      setMessage("There was an error reseting the game. Try again later or contact support.");
-      console.error(error);
-    } finally {
-      setAreAllButtonsDisabled(false);
-    }
+  function handleToggleShowResetGameModal() {
+    setShowResetGameModal(!showResetGameModal);
+  }
+
+  function handleToggleShowTrackModal(track) {
+    setSelectedTrack(track);
+    setShowTrackModal(!showTrackModal);
+  }
+
+  function handleTrackSelect(track) {
+    setSelectedTrack(track.id);
+    setShowTrackModal(true);
+  }
+
+  function Footer() {
+    return (
+      <div className="footer-fixed">
+        <div>
+          <ResetGameButton handleToggleShowModal={handleToggleShowResetGameModal} />
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="app-wrapper">
+    <>
+      {showResetGameModal && (
+        <ResetGameModal handleToggleShowModal={handleToggleShowResetGameModal} setMessage={setMessage} />
+      )}
+      {showTrackModal && selectedTrack && (
+        <SwitchRaceTrackModal
+          track={tracks?.find((track) => track.id === selectedTrack)}
+          handleToggleShowModal={() => handleToggleShowTrackModal(null)}
+          setMessage={setMessage}
+        />
+      )}
       <BackArrow setShowSettings={setShowSettings} />
-      <div className="admin-wrapper" style={{ padding: "16px 24px" }}>
-        <div style={{ textAlign: "center" }}>
-          <button disabled={areAllButtonsDisabled} onClick={() => handleResetGame()}>
-            Reset Game
-          </button>
-          <p>{message}</p>
+      <div className="admin-wrapper">
+        <div>
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <h2>{"Settings"}</h2>
+            <p style={{ textAlign: "left" }}>Select a track to change the current one.</p>
+            <p>{message}</p>
+          </div>
+          <div className="tracks-container">
+            {tracks?.map((track) => (
+              <div
+                key={track.id}
+                className={`track-container ${selectedTrack === track.id ? "selected" : ""}`}
+                onClick={() => handleTrackSelect(track)}
+              >
+                <img className="track-thumbnail" src={track.thumbnail} alt={track.name} />
+                <div className="track-info">
+                  <h3>{track.name}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
 
