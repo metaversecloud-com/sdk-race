@@ -42,7 +42,8 @@ export const handleLoadGameState = async (req, res) => {
       });
     }
 
-    const tracks = process.env.TRACKS ? JSON.parse(process.env.TRACKS) : TRACKS;
+    // const tracks = process.env.TRACKS ? JSON.parse(process.env.TRACKS) : TRACKS;
+    const tracks = parseEnvJson(process.env.TRACKS) || TRACKS;
 
     return res.json({
       checkpointsCompleted,
@@ -115,3 +116,20 @@ async function initializeRaceDataIfNeeded({ sceneDropId, raceData, world }) {
     });
   }
 }
+
+const parseEnvJson = (envVar) => {
+  if (!envVar) {
+    throw new Error("Environment variable is undefined");
+  }
+
+  // Remove as barras invertidas que escapam as aspas duplas
+  const unescapedJson = envVar.replace(/\\"/g, '"');
+
+  try {
+    return JSON.parse(unescapedJson);
+  } catch (error) {
+    console.error("Error parsing JSON:", error);
+    console.log("Attempted to parse:", unescapedJson);
+    throw error;
+  }
+};

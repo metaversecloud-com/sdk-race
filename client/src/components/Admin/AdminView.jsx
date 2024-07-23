@@ -14,6 +14,8 @@ function AdminView({ setShowSettings }) {
   const [showTrackModal, setShowTrackModal] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
 
+  console.log("tracks", tracks);
+
   function handleToggleShowResetGameModal() {
     setShowResetGameModal(!showResetGameModal);
   }
@@ -65,7 +67,7 @@ function AdminView({ setShowSettings }) {
                 className={`track-container ${selectedTrack === track.id ? "selected" : ""}`}
                 onClick={() => handleTrackSelect(track)}
               >
-                <img className="track-thumbnail" src={track.thumbnail} alt={track.name} />
+                <img className="track-thumbnail" src={track?.thumbnail} alt={track.name} />
                 <div className="track-info">
                   <h3>{track.name}</h3>
                 </div>
