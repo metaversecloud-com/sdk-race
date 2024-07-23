@@ -122,13 +122,13 @@ const parseEnvJson = (envVar) => {
     throw new Error("Environment variable is undefined");
   }
 
-  // Remove as barras invertidas que escapam as aspas duplas
   const unescapedJson = envVar.replace(/\\"/g, '"');
 
   try {
     return JSON.parse(unescapedJson);
   } catch (error) {
     console.error("Error parsing JSON:", error);
+
     throw error;
   }
 };
