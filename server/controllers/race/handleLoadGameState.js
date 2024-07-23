@@ -129,7 +129,6 @@ const parseEnvJson = (envVar) => {
     return JSON.parse(unescapedJson);
   } catch (error) {
     console.error("Error parsing JSON:", error);
-    console.log("Attempted to parse:", unescapedJson);
     throw error;
   }
 };

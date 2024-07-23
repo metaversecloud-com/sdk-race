@@ -14,8 +14,6 @@ function AdminView({ setShowSettings }) {
   const [showTrackModal, setShowTrackModal] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(null);
 
-  console.log("tracks", tracks);
-
   function handleToggleShowResetGameModal() {
     setShowResetGameModal(!showResetGameModal);
   }
