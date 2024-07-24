@@ -109,7 +109,9 @@ class RaceManager {
     const newHighscore = this.calculateHighscore(raceData, currentElapsedTime);
 
     await this.updateWorldDataForFinish(world, currentElapsedTime, newHighscore);
-    this.notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime);
+    this.notifyVisitorOfFinish(urlSlug, credentials, currentElapsedTime)
+      .then()
+      .catch((error) => console.error(JSON.stringify(error)));
   }
 
   async handleCheckpoint(world, checkpointNumber, currentTimestamp, raceData) {
@@ -118,14 +120,18 @@ class RaceManager {
 
     if (checkpoints[checkpointNumber - 1]) return;
     if (checkpointNumber > 1 && !checkpoints[checkpointNumber - 2]) {
-      this.notifyVisitorOfMissedCheckpoint(urlSlug, credentials);
+      this.notifyVisitorOfMissedCheckpoint(urlSlug, credentials)
+        .then()
+        .catch((error) => console.error(JSON.stringify(error)));
       return;
     }
 
     checkpoints[checkpointNumber - 1] = true;
     const currentElapsedTime = this.calculateElapsedTime(startTimestamp, currentTimestamp);
 
-    this.notifyVisitorOfCheckpoint(urlSlug, credentials, checkpointNumber);
+    this.notifyVisitorOfCheckpoint(urlSlug, credentials, checkpointNumber)
+      .then()
+      .catch((error) => console.error(JSON.stringify(error)));
     await this.updateWorldDataForCheckpoint(world, checkpoints, startTimestamp, currentElapsedTime, highscore);
   }
 
@@ -151,7 +157,9 @@ class RaceManager {
       title: "🏁 Finish",
       text: `You finished the race! Your time: ${currentElapsedTime}`,
     });
-    this.triggerFinishParticle(visitor);
+    this.triggerFinishParticle(visitor)
+      .then()
+      .catch((error) => console.error(JSON.stringify(error)));
   }
 
   async triggerFinishParticle(visitor) {
