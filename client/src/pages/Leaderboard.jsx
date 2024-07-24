@@ -4,44 +4,30 @@ import { backendAPI } from "@utils/backendAPI";
 import { LOAD_GAME_STATE } from "../context/types";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import "./Leaderboard.scss";
+import AdminGear from "../components/Admin/AdminGear";
+import { loadGameState } from "../context/actions";
+import AdminView from "../components/Admin/AdminView";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard, profile } = useContext(GlobalStateContext);
+  const { leaderboard, profile, screenManager, visitor, selectedTrack } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const fetchGameState = async () => {
       try {
-        await loadGameState({ dispatch });
+        setLoading(true);
+        await loadGameState(dispatch);
       } catch (error) {
         console.error("error in loadGameState action");
-      }
-    };
-    fetchGameState();
-  }, [dispatch, backendAPI]);
-
-  const loadGameState = async ({ dispatch }) => {
-    try {
-      setLoading(true);
-      const result = await backendAPI?.post("/race/game-state");
-      if (result?.data?.success) {
-        await dispatch({
-          type: LOAD_GAME_STATE,
-          payload: {
-            checkpointsCompleted: result.data.checkpointsCompleted,
-            startTimestamp: result.data.startTimestamp,
-            leaderboard: result.data.leaderboard,
-            profile: result.data.profile,
-          },
-        });
+      } finally {
         setLoading(false);
       }
-    } catch (error) {
-      console.error("error in loadGameState action");
-      console.error(error);
-    }
-  };
+    };
+
+    fetchGameState();
+  }, [dispatch, backendAPI]);
 
   const sortedLeaderboard = leaderboard
     ? Object.entries(leaderboard)
@@ -68,9 +54,14 @@ function Home() {
     );
   }
 
+  if (showSettings) {
+    return <AdminView setShowSettings={setShowSettings} />;
+  }
+
   return (
     <>
       <div className="app-wrapper leaderboard-container">
+        {visitor?.isAdmin && <AdminGear screenManager={screenManager} setShowSettings={setShowSettings} />}
         <div className="highscore-container">
           <div className="medal">
             <h2>🏅</h2>

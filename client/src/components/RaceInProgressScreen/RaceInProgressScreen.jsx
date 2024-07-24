@@ -35,7 +35,7 @@ const RaceInProgressScreen = () => {
   const profileId = searchParams.get("profileId");
 
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState("00:00");
+  const [elapsedTime, setElapsedTime] = useState("00:00:00");
   const [audioQueue, setAudioQueue] = useState([]);
 
   const [checkpoints, setCheckpoints] = useState(
@@ -119,17 +119,21 @@ const RaceInProgressScreen = () => {
 
   // Timer
   useEffect(() => {
-    let elapsedSeconds = elapsedTimeInSeconds;
+    let startTime = Date.now() - elapsedTimeInSeconds * 1000;
 
     const interval = setInterval(() => {
-      elapsedSeconds++;
-      const minutes = Math.floor(elapsedSeconds / 60);
-      const seconds = elapsedSeconds % 60;
-      setElapsedTime(`${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
-    }, 1000);
+      const elapsedMilliseconds = Date.now() - startTime;
+      const minutes = Math.floor(elapsedMilliseconds / 60000);
+      const seconds = Math.floor((elapsedMilliseconds % 60000) / 1000);
+      const centiseconds = Math.floor((elapsedMilliseconds % 1000) / 10);
+
+      setElapsedTime(
+        `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}:${centiseconds.toString().padStart(2, "0")}`,
+      );
+    }, 50);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [elapsedTimeInSeconds]);
 
   const playAudioQueue = () => {
     if (audioQueue.length > 0) {
