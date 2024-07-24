@@ -49,6 +49,10 @@ class RaceManager {
       const dataObject = await world.fetchDataObject();
       const raceData = this.getRaceData(dataObject);
 
+      if (!raceData.startTimestamp) {
+        return { success: false, message: "Race has not started yet" };
+      }
+
       await this.updateRaceData(world, checkpointNumber, currentTimestamp, raceData);
 
       return { success: true };
