@@ -21,8 +21,8 @@ export const handleLoadGameState = async (req, res) => {
 
     await migrateRaceDataIfNeeded({ world, sceneDropId });
 
+    await initializeRaceDataIfNeeded({ sceneDropId, raceData: world?.dataObject?.[sceneDropId], world });
     const raceData = world?.dataObject?.[sceneDropId];
-    await initializeRaceDataIfNeeded({ sceneDropId, raceData, world });
 
     let checkpointsCompleted = raceData?.profiles?.[profileId]?.checkpoints;
     let startTimestamp = raceData?.profiles?.[profileId]?.startTimestamp;
