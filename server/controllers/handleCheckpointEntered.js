@@ -1,8 +1,6 @@
-import { errorHandler } from "../../utils/index.js";
-import { Visitor, World } from "../../utils/topiaInit.js";
-import { ENCOURAGEMENT_MESSAGES, CHECKPOINT_NAMES } from "../../utils/constants.js";
-import { getCredentials } from "../../utils/getCredentials.js";
-import { formatElapsedTime, publishRaceEvent, timeToValue } from "../../utils/utils.js";
+import { getCredentials, Visitor, World, errorHandler } from "../utils/index.js";
+import { formatElapsedTime, publishRaceEvent, timeToValue } from "../utils/utils.js";
+import { ENCOURAGEMENT_MESSAGES, CHECKPOINT_NAMES } from "../constants.js";
 
 export const handleCheckpointEntered = async (req, res) => {
   try {
@@ -33,7 +31,7 @@ class RaceManager {
 
   async handleCheckpointEntered() {
     try {
-      const { urlSlug, profileId, username, sceneDropId, uniqueName } = this.context;
+      const { credentials, urlSlug, profileId, uniqueName } = this.context;
       const checkpointNumber = this.getCheckpointNumber(uniqueName);
       const currentTimestamp = Date.now();
 
@@ -45,7 +43,7 @@ class RaceManager {
 
       await publishRaceEvent(profileId, checkpointNumber, currentElapsedTime);
 
-      const world = World.create(urlSlug, { credentials: this.context.credentials });
+      const world = World.create(urlSlug, { credentials });
       const dataObject = await world.fetchDataObject();
       const raceData = this.getRaceData(dataObject);
 
@@ -62,7 +60,7 @@ class RaceManager {
   }
 
   async handleCheckpointZero(currentTimestamp) {
-    const { urlSlug, credentials, profileId, sceneDropId } = this.context;
+    const { urlSlug, credentials } = this.context;
     const world = World.create(urlSlug, { credentials });
     const dataObject = await world.fetchDataObject();
     const raceData = this.getRaceData(dataObject);
@@ -102,7 +100,7 @@ class RaceManager {
   }
 
   async handleFinishLine(world, currentTimestamp, raceData) {
-    const { urlSlug, profileId, username, credentials, sceneDropId } = this.context;
+    const { urlSlug, credentials, sceneDropId } = this.context;
     const { checkpoints, startTimestamp } = raceData;
     const raceObject = (await world.fetchDataObject())?.[sceneDropId] || {};
     const allCheckpointsCompleted = raceObject.numberOfCheckpoints === checkpoints.length;
@@ -119,7 +117,7 @@ class RaceManager {
   }
 
   async handleCheckpoint(world, checkpointNumber, currentTimestamp, raceData) {
-    const { urlSlug, profileId, credentials, sceneDropId } = this.context;
+    const { urlSlug, credentials } = this.context;
     const { checkpoints, startTimestamp, highscore } = raceData;
 
     if (checkpoints[checkpointNumber - 1]) return;

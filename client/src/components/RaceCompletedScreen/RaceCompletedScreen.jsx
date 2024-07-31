@@ -1,8 +1,9 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import Leaderboard from "../../pages/Leaderboard";
 import { SCREEN_MANAGER } from "../../context/types";
 import "./RaceCompletedScreen.scss";
+import Footer from "../Shared/Footer";
 
 const RaceCompletedScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
@@ -21,25 +22,6 @@ const RaceCompletedScreen = () => {
     return <Leaderboard />;
   }
 
-  function Footer() {
-    return (
-      <div className="footer-fixed">
-        <div>
-          <button
-            className="btn-success"
-            style={{ width: "94%", marginBottom: "6px" }}
-            onClick={() => handleViewLeaderboard()}
-          >
-            🏆 View Leaderboard
-          </button>
-          <button style={{ width: "94%" }} onClick={() => handlePlayAgain()}>
-            Play Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="race-completed-wrapper">
@@ -52,7 +34,18 @@ const RaceCompletedScreen = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      <Footer>
+        <button
+          className="btn-success"
+          style={{ width: "94%", marginBottom: "6px" }}
+          onClick={() => handleViewLeaderboard()}
+        >
+          🏆 View Leaderboard
+        </button>
+        <button style={{ width: "94%" }} onClick={() => handlePlayAgain()}>
+          Play Again
+        </button>
+      </Footer>
     </>
   );
 };

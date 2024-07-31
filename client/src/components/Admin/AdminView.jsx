@@ -1,13 +1,14 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
+import PropTypes from "prop-types";
 import BackArrow from "./BackArrow";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import { GlobalStateContext } from "@context/GlobalContext";
 import ResetGameButton from "../ResetGame/ResetGameButton";
 import ResetGameModal from "../ResetGame/ResetGameModal";
 import SwitchRaceTrackModal from "../SwitchRace/SwitchRaceTrackModal";
 import "./AdminView.scss";
+import Footer from "../Shared/Footer";
 
 function AdminView({ setShowSettings }) {
-  const dispatch = useContext(GlobalDispatchContext);
   const { tracks } = useContext(GlobalStateContext);
   const [message, setMessage] = useState(false);
   const [showResetGameModal, setShowResetGameModal] = useState(false);
@@ -26,16 +27,6 @@ function AdminView({ setShowSettings }) {
   function handleTrackSelect(track) {
     setSelectedTrack(track.id);
     setShowTrackModal(true);
-  }
-
-  function Footer() {
-    return (
-      <div className="footer-fixed">
-        <div>
-          <ResetGameButton handleToggleShowModal={handleToggleShowResetGameModal} />
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -74,9 +65,15 @@ function AdminView({ setShowSettings }) {
           </div>
         </div>
       </div>
-      <Footer />
+      <Footer>
+        <ResetGameButton handleToggleShowModal={handleToggleShowResetGameModal} />
+      </Footer>
     </>
   );
 }
+
+AdminView.propTypes = {
+  setShowSettings: PropTypes.boolean,
+};
 
 export default AdminView;

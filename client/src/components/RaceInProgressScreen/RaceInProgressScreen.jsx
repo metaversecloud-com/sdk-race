@@ -1,10 +1,12 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { useSearchParams } from "react-router-dom";
 
 import { cancelRace, completeRace } from "../../context/actions";
 import { ClipLoader } from "react-spinners";
 import "./RaceInProgressScreen.scss";
+import Footer from "../Shared/Footer";
 
 const Checkpoint = ({ number, completed }) => {
   return (
@@ -13,6 +15,11 @@ const Checkpoint = ({ number, completed }) => {
       <span className="checkpoint-text">{number === "Finish" ? "Finish" : `Checkpoint ${number}`}</span>
     </div>
   );
+};
+
+Checkpoint.propTypes = {
+  completed: PropTypes.bool,
+  number: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 const RaceInProgressScreen = () => {
@@ -27,7 +34,7 @@ const RaceInProgressScreen = () => {
   }, []);
 
   const dispatch = useContext(GlobalDispatchContext);
-  const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds, visitor } = useContext(GlobalStateContext);
+  const { checkpointsCompleted, numberOfCheckpoints, elapsedTimeInSeconds } = useContext(GlobalStateContext);
   const [searchParams] = useSearchParams();
   const [isFinishComplete, setIsFinishComplete] = useState(false);
   const [currentFinishedElapsedTime, setCurrentFinishedElapsedTime] = useState(null);
@@ -68,7 +75,7 @@ const RaceInProgressScreen = () => {
             newEvent?.checkpointNumber === currentCheckpointIndex + 1 &&
             (currentCheckpointIndex === 0 || prevCheckpoints[currentCheckpointIndex - 1].completed);
 
-          const updatedCheckpoints = prevCheckpoints?.map((checkpoint, index) => {
+          const updatedCheckpoints = prevCheckpoints?.map((checkpoint) => {
             if (checkpoint?.id === newEvent?.checkpointNumber && isCheckpointInCorrectOrder) {
               if (
                 newEvent?.checkpointNumber !== undefined &&
@@ -160,18 +167,6 @@ const RaceInProgressScreen = () => {
     }
   };
 
-  function Footer() {
-    return (
-      <div className="footer-fixed">
-        <div>
-          <button style={{ width: "94%" }} disabled={areAllButtonsDisabled} onClick={() => handleCancelRace()}>
-            Cancel Race
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   if (elapsedTime == "00:00") {
     return (
       <div className="loader">
@@ -208,7 +203,11 @@ const RaceInProgressScreen = () => {
             <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
           </div>
         </div>
-        <Footer />
+        <Footer>
+          <button style={{ width: "94%" }} disabled={areAllButtonsDisabled} onClick={() => handleCancelRace()}>
+            Cancel Race
+          </button>
+        </Footer>
       </div>
     </>
   );

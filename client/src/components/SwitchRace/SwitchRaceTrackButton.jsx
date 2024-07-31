@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 
 function SwitchRaceTrackButton({ track, handleToggleShowTrackModal }) {
   return (
@@ -8,5 +8,13 @@ function SwitchRaceTrackButton({ track, handleToggleShowTrackModal }) {
     </div>
   );
 }
+
+SwitchRaceTrackButton.propTypes = {
+  handleToggleShowTrackModal: PropTypes.func,
+  track: {
+    name: PropTypes.string,
+    thumbnail: PropTypes.string,
+  },
+};
 
 export default SwitchRaceTrackButton;

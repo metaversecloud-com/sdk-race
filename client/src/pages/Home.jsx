@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 import { backendAPI } from "@utils/backendAPI";
 import { SCREEN_MANAGER } from "../context/types";
