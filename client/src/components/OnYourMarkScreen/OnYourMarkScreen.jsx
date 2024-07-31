@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-// import "./OnYourMarkScreen.scss";
 
 // context
 import { startRace } from "@context/actions";

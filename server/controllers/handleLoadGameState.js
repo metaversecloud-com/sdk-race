@@ -57,7 +57,7 @@ export const handleLoadGameState = async (req, res) => {
         await world.updateDataObject(data);
       }
     } catch (error) {
-      await keyAsset.updateDataObject({ updateInProgress: false });
+      await world.updateDataObject({ updateInProgress: false });
       throw error;
     }
 
