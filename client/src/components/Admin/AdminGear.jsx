@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
-import gear from "../../assets/gear.svg";
-import { SCREEN_MANAGER } from "../../context/types";
+import { SCREEN_MANAGER } from "@context/types";
 
 function AdminGear({ screenManager, setShowSettings }) {
   function getStyle() {
@@ -16,7 +15,7 @@ function AdminGear({ screenManager, setShowSettings }) {
 
   return (
     <div style={getStyle()} className="icon-with-rounded-border" onClick={() => setShowSettings(true)}>
-      <img src={gear} alt="Configurações" />
+      <img src="https://sdk-style.s3.amazonaws.com/icons/cog.svg" />
     </div>
   );
 }

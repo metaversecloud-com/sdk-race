@@ -1,26 +1,14 @@
 import { useState, useContext, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { useSearchParams } from "react-router-dom";
 
-import { cancelRace, completeRace } from "../../context/actions";
-import { ClipLoader } from "react-spinners";
-import "./RaceInProgressScreen.scss";
-import Footer from "../Shared/Footer";
+// components
+import Checkpoint from "./Checkpoint";
+import Footer from "@components/Shared/Footer";
+import Loading from "@components/Shared/Loading";
 
-const Checkpoint = ({ number, completed }) => {
-  return (
-    <div className={`checkpoint ${completed ? "completed" : ""}`}>
-      <span className="indicator">{completed ? "🟢" : "⚪"}</span>
-      <span className="checkpoint-text">{number === "Finish" ? "Finish" : `Checkpoint ${number}`}</span>
-    </div>
-  );
-};
-
-Checkpoint.propTypes = {
-  completed: PropTypes.bool,
-  number: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-};
+// context
+import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import { cancelRace, completeRace } from "@context/actions";
 
 const RaceInProgressScreen = () => {
   const positiveAudioRef = useRef(null);
@@ -167,49 +155,31 @@ const RaceInProgressScreen = () => {
     }
   };
 
-  if (elapsedTime == "00:00") {
-    return (
-      <div className="loader">
-        <ClipLoader color={"#123abc"} loading={true} size={150} />
-      </div>
-    );
-  }
+  if (elapsedTime == "00:00") return <Loading />;
 
   return (
-    <>
-      <div className="race-in-progress-wrapper">
-        <div className="checkpoints-container">
-          <div style={{ textAlign: "center" }}>
-            <div className="timer" style={{ margin: "0 auto", textAlign: "center", marginBottom: "10px" }}>
-              ⌛ {elapsedTime}
-            </div>
-          </div>
-          <h2 style={{ textAlign: "center", marginBottom: "10px" }}>
-            <b>Race in progress!</b>
-          </h2>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
-            <div
-              key={"run"}
-              className={`countdown heartbeat`}
-              style={{ marginRight: "16px", display: "flex", alignItems: "center" }}
-            >
-              Run!
-            </div>
-          </div>
-          <div className="checkpoints">
-            {checkpoints?.map((checkpoint) => (
-              <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
-            ))}
-            <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
-          </div>
-        </div>
-        <Footer>
-          <button style={{ width: "94%" }} disabled={areAllButtonsDisabled} onClick={() => handleCancelRace()}>
-            Cancel Race
-          </button>
-        </Footer>
+    <div className="text-center pb-8">
+      <div style={{ textAlign: "center" }}>
+        <div className="mt-20">⌛ {elapsedTime}</div>
       </div>
-    </>
+      <h2 className="py-6">Race in progress!</h2>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
+        <h2 key={"run"} className={`heartbeat`}>
+          Run!
+        </h2>
+      </div>
+      <div className="py-4 text-left">
+        {checkpoints?.map((checkpoint) => (
+          <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
+        ))}
+        <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
+      </div>
+      <Footer>
+        <button style={{ width: "94%" }} disabled={areAllButtonsDisabled} onClick={() => handleCancelRace()}>
+          Cancel Race
+        </button>
+      </Footer>
+    </div>
   );
 };
 

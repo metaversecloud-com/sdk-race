@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import backArrow from "../../assets/backArrow.svg";
 
 function BackArrow({ setShowSettings }) {
   return (
@@ -10,7 +9,7 @@ function BackArrow({ setShowSettings }) {
         setShowSettings(false);
       }}
     >
-      <img src={backArrow} />
+      <img src="https://sdk-style.s3.amazonaws.com/icons/arrow.svg" />
     </div>
   );
 }

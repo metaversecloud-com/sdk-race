@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 
 function SwitchRaceTrackButton({ track, handleToggleShowTrackModal }) {
   return (
-    <div className="race-track-item" onClick={() => handleToggleShowTrackModal(track)}>
-      <img src={track.thumbnail} alt={track.name} className="race-track-thumbnail" />
+    <div onClick={() => handleToggleShowTrackModal(track)}>
+      <img src={track.thumbnail} alt={track.name} />
       <p>{track.name}</p>
     </div>
   );

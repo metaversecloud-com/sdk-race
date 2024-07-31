@@ -1,8 +1,10 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { startRace } from "../../context/actions";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { useNavigate } from "react-router-dom";
-import "./OnYourMarkScreen.scss";
+// import "./OnYourMarkScreen.scss";
+
+// context
+import { startRace } from "@context/actions";
+import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 
 const OnYourMarkScreen = () => {
   const navigate = useNavigate();
@@ -45,19 +47,17 @@ const OnYourMarkScreen = () => {
   }, [currentMessage, raceInitiated, dispatch, navigate]);
 
   return (
-    <div className="container" style={{ height: visitor?.isAdmin ? "90vh" : "100vh" }}>
+    <div className="container text-center my-20" style={{ height: visitor?.isAdmin ? "90vh" : "100vh" }}>
       {!raceStarted && (
         <div style={{ paddingBottom: "50px" }}>
           {initialMessages?.map((message, index) => (
-            <div key={index} className="initialMessage">
-              {message}
-            </div>
+            <h2 key={index}>{message}</h2>
           ))}
         </div>
       )}
-      <div key={currentMessage} className={`countdown ${!raceStarted ? "small-to-large" : ""}`}>
+      <h2 key={currentMessage} className={`${!raceStarted ? "small-to-large" : ""}`}>
         {currentMessage < countdown.length ? countdown[currentMessage] : "Go!"}
-      </div>
+      </h2>
     </div>
   );
 };
