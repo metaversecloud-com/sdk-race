@@ -12,7 +12,7 @@ export const handleLoadGameState = async (req, res) => {
     const result = await Promise.all([world.fetchDataObject(), Visitor.get(visitorId, urlSlug, { credentials })]);
     const visitor = result?.[1];
 
-    let data = world.dataObject;
+    let data = world.dataObject || {};
 
     const lockId = `${sceneDropId}-${profileId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
     try {
