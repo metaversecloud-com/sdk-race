@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import gear from "../../assets/gear.svg";
 import { SCREEN_MANAGER } from "../../context/types";
 
@@ -20,5 +20,10 @@ function AdminGear({ screenManager, setShowSettings }) {
     </div>
   );
 }
+
+AdminGear.propTypes = {
+  screenManager: PropTypes.string,
+  setShowSettings: PropTypes.boolean,
+};
 
 export default AdminGear;

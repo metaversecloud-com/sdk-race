@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 
 function ResetGameButton({ handleToggleShowModal }) {
   return (
@@ -7,5 +7,9 @@ function ResetGameButton({ handleToggleShowModal }) {
     </button>
   );
 }
+
+ResetGameButton.propTypes = {
+  handleToggleShowModal: PropTypes.func,
+};
 
 export default ResetGameButton;

@@ -1,10 +1,9 @@
-import { World } from "../../utils/topiaInit.js";
-import { errorHandler } from "../../utils/index.js";
+import { World, errorHandler, getCredentials } from "../utils/index.js";
 
 export const handleCompleteRace = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, sceneDropId } = req.query;
-    const credentials = { interactiveNonce, interactivePublicKey, visitorId, assetId };
+    const credentials = getCredentials(req.query);
+    const { urlSlug, profileId } = credentials;
 
     const world = await World.create(urlSlug, { credentials });
     await world.fetchDataObject();

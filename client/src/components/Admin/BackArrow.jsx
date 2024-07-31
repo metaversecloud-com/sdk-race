@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import backArrow from "../../assets/backArrow.svg";
 
 function BackArrow({ setShowSettings }) {
@@ -13,4 +14,9 @@ function BackArrow({ setShowSettings }) {
     </div>
   );
 }
+
+BackArrow.propTypes = {
+  setShowSettings: PropTypes.boolean,
+};
+
 export default BackArrow;

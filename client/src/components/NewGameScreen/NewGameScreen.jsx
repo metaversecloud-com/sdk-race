@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER } from "@context/types";
 import racingMap from "../../assets/racingMap.png";
+import Footer from "../Shared/Footer";
 
 const NewGameScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
@@ -43,26 +44,18 @@ const NewGameScreen = () => {
     </>
   );
 
-  function Footer() {
-    return (
-      <div className="footer-fixed">
-        <div>
-          <button onClick={startRace} style={{ width: "94%" }}>
-            {" "}
-            Start Race
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="">
         <img src={racingMap} alt="racing map" className="rounded-lg shadow-lg" />
       </div>
       <Instructions />
-      <Footer />
+      <Footer>
+        <button onClick={startRace} style={{ width: "94%" }}>
+          {" "}
+          Start Race
+        </button>
+      </Footer>
     </>
   );
 };

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { backendAPI } from "@utils/backendAPI";
 
 function TrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
@@ -45,5 +46,14 @@ function TrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
     </div>
   );
 }
+
+TrackSwitcherModal.propTypes = {
+  handleToggleShowModal: PropTypes.func,
+  setMessage: PropTypes.func,
+  track: {
+    name: PropTypes.string,
+    sceneId: PropTypes.string,
+  },
+};
 
 export default TrackSwitcherModal;

@@ -1,14 +1,6 @@
 import express from "express";
 
 import {
-  handleDropAsset,
-  handleGetDroppedAssetsWithUniqueName,
-  handleGetWorldDetails,
-  handleGetDroppedAsset,
-  handleGetVisitor,
-  handleUpdateWorldDataObject,
-  moveVisitor,
-  handleRemoveDroppedAssets,
   handleRaceStart,
   handleCheckpointEntered,
   handleLoadGameState,
@@ -44,20 +36,6 @@ router.get("/system/health", (req, res) => {
     GOOGLESHEETS_PRIVATE_KEY: process.env.GOOGLESHEETS_PRIVATE_KEY ? "SET" : "NOT SET",
   });
 });
-
-// Dropped Assets
-router.get("/dropped-asset-with-unique-name", handleGetDroppedAssetsWithUniqueName);
-router.post("/dropped-asset", handleDropAsset);
-router.get("/dropped-asset", handleGetDroppedAsset);
-router.delete("/dropped-asset", handleRemoveDroppedAssets);
-
-// Visitor
-router.get("/visitor", handleGetVisitor);
-router.put("/visitor/move", moveVisitor);
-
-// World
-router.get("/world", handleGetWorldDetails);
-router.put("/world/data-object", handleUpdateWorldDataObject);
 
 // Race
 router.post("/race/game-state", handleLoadGameState);

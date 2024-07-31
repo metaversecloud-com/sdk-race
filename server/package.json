@@ -1,5 +1,5 @@
 {
-  "name": "@sdk-boilerplate/server",
+  "name": "@sdk-race/server",
   "private": true,
   "version": "0.1.17.0",
   "type": "module",

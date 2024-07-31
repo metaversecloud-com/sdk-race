@@ -1,7 +1,7 @@
 import { backendAPI } from "@utils/backendAPI";
 import { LOAD_GAME_STATE, START_RACE, SCREEN_MANAGER, COMPLETE_RACE, CANCEL_RACE } from "./types";
 
-export const startRace = async ({ dispatch, navigate }) => {
+export const startRace = async ({ dispatch }) => {
   try {
     const result = await backendAPI.post("/race/start-race");
     if (result.status === 200) {
@@ -76,6 +76,8 @@ export const loadGameState = async (dispatch) => {
           visitor: result.data.visitor,
           elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
           tracks: result.data.tracks,
+          leaderboard: result.data.leaderboard,
+          profile: result.data.profile,
         },
       });
 

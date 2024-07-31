@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 import { backendAPI } from "@utils/backendAPI";
-import { LOAD_GAME_STATE } from "../context/types";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import "./Leaderboard.scss";
 import AdminGear from "../components/Admin/AdminGear";
@@ -10,7 +9,7 @@ import AdminView from "../components/Admin/AdminView";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard, profile, screenManager, visitor, selectedTrack } = useContext(GlobalStateContext);
+  const { leaderboard, profile, screenManager, visitor } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 

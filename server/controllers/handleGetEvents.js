@@ -1,5 +1,5 @@
-import { errorHandler } from "../../utils/index.js";
-import redisObj from "../../redis/redis.js";
+import { errorHandler } from "../utils/index.js";
+import redisObj from "../redis/redis.js";
 
 export const handleGetEvents = async (req, res) => {
   try {
