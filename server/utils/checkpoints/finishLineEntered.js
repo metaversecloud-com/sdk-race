@@ -1,17 +1,16 @@
 import { Visitor } from "../topiaInit.js";
+import { timeToValue } from "../utils.js";
 
 export const finishLineEntered = async ({ credentials, currentElapsedTime, profileObject, raceObject, world }) => {
   try {
     const { profileId, sceneDropId, urlSlug, username, visitorId } = credentials;
-    const { checkpoints } = profileObject;
+    const { checkpoints, highscore } = profileObject;
     const allCheckpointsCompleted = raceObject.numberOfCheckpoints === checkpoints.length;
 
     if (!allCheckpointsCompleted) return;
 
-    const highscore =
-      !profileObject.highscore || timeToValue(currentElapsedTime) < timeToValue(profileObject.highscore)
-        ? currentElapsedTime
-        : profileObject.highscore;
+    const newHighscore =
+      !highscore || timeToValue(currentElapsedTime) < timeToValue(highscore) ? currentElapsedTime : highscore;
 
     const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
     const { x, y } = visitor.moveTo;
@@ -22,7 +21,7 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
           [`${sceneDropId}.profiles.${profileId}`]: {
             checkpoints: [],
             elapsedTime: currentElapsedTime,
-            highscore,
+            highscore: newHighscore,
             startTimestamp: null,
             username,
           },

@@ -19,7 +19,7 @@ const getRedisConfig = () => {
     return {
       url: process.env.REDIS_URL,
       socket: {
-        tls: process.env.REDIS_URL?.startsWith("redis"),
+        tls: process.env.REDIS_URL?.startsWith("rediss"),
       },
     };
   }

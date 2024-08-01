@@ -23,6 +23,8 @@ export const handleCheckpointEntered = async (req, res) => {
     const profileObject = raceObject?.profiles?.[profileId] || {};
 
     const { startTimestamp } = profileObject;
+    if (!startTimestamp) return { success: false, message: "Race has not started yet" };
+
     const checkpointNumber = uniqueName === CHECKPOINT_NAMES.START ? 0 : parseInt(uniqueName.split("-").pop(), 10);
     const currentTimestamp = Date.now();
 
@@ -36,16 +38,14 @@ export const handleCheckpointEntered = async (req, res) => {
       promises.push(checkpointEntered({ checkpointNumber, currentTimestamp, credentials, profileObject, world }));
     }
 
-    await redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
+    redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
       profileId,
       checkpointNumber,
       currentRaceFinishedElapsedTime: currentElapsedTime,
       event: "checkpoint-entered",
     });
 
-    if (!startTimestamp) return { success: false, message: "Race has not started yet" };
-
-    const result = await Promise.all(promises);
+    await Promise.all(promises);
     return res.status(200).json({ success: true });
   } catch (error) {
     return errorHandler({
