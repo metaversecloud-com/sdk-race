@@ -8,7 +8,7 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 const OnYourMarkScreen = () => {
   const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
-  const { raceStarted, visitor } = useContext(GlobalStateContext);
+  const { visitor } = useContext(GlobalStateContext);
   const countdown = ["3...", "2...", "1..."];
   const [currentMessage, setCurrentMessage] = useState(0);
   const initialMessages = ["On Your Mark...", "Get Set..."];
@@ -47,14 +47,12 @@ const OnYourMarkScreen = () => {
 
   return (
     <div className="container text-center my-20" style={{ height: visitor?.isAdmin ? "90vh" : "100vh" }}>
-      {!raceStarted && (
-        <div style={{ paddingBottom: "50px" }}>
-          {initialMessages?.map((message, index) => (
-            <h2 key={index}>{message}</h2>
-          ))}
-        </div>
-      )}
-      <h2 key={currentMessage} className={`${!raceStarted ? "small-to-large" : ""}`}>
+      {initialMessages?.map((message, index) => (
+        <h2 key={index} className="pb-10">
+          {message}
+        </h2>
+      ))}
+      <h2 key={currentMessage} className="py-8 small-to-large">
         {currentMessage < countdown.length ? countdown[currentMessage] : "Go!"}
       </h2>
     </div>

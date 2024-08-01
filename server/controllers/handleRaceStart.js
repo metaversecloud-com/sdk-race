@@ -29,8 +29,8 @@ export const handleRaceStart = async (req, res) => {
     await Promise.all([
       world.updateDataObject(
         {
-          [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
           [`${sceneDropId}.profiles.${profileId}.checkpoints`]: [],
+          [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
         },
         { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
       ),

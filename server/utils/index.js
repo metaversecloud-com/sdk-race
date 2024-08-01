@@ -1,3 +1,4 @@
+export * from "./checkpoints/index.js";
 export * from "./addNewRowToGoogleSheets.js";
 export * from "./cleanReturnPayload.js";
 export * from "./errorHandler.js";

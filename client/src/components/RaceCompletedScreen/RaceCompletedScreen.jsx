@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
 
 // components
-import Leaderboard from "@pages/Leaderboard";
 import Footer from "@components/Shared/Footer";
 
 // context
@@ -11,17 +11,10 @@ import { SCREEN_MANAGER } from "@context/types";
 const RaceCompletedScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
   const { elapsedTime } = useContext(GlobalStateContext);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
-
-  function handleViewLeaderboard() {
-    setShowLeaderboard(true);
-  }
 
   function handlePlayAgain() {
     dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
   }
-
-  if (showLeaderboard) return <Leaderboard />;
 
   return (
     <>
@@ -33,13 +26,11 @@ const RaceCompletedScreen = () => {
         </div>
       </div>
       <Footer>
-        <button
-          className="btn-success"
-          style={{ width: "94%", marginBottom: "6px" }}
-          onClick={() => handleViewLeaderboard()}
-        >
-          🏆 View Leaderboard
-        </button>
+        <Link to="/leaderboard">
+          <button className="btn-success mb-2" style={{ width: "94%" }}>
+            🏆 View Leaderboard
+          </button>
+        </Link>
         <button style={{ width: "94%" }} onClick={() => handlePlayAgain()}>
           Play Again
         </button>

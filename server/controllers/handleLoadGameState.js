@@ -4,7 +4,7 @@ import { TRACKS } from "../constants.js";
 export const handleLoadGameState = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { urlSlug, profileId, sceneDropId, visitorId } = credentials;
+    const { urlSlug, profileId, sceneDropId, username, visitorId } = credentials;
     const now = Date.now();
 
     const world = await World.create(urlSlug, { credentials });
@@ -45,8 +45,9 @@ export const handleLoadGameState = async (req, res) => {
         data[sceneDropId].profiles[profileId] = {
           checkpoints: [],
           startTimestamp: null,
-          highscore: null,
-          currentElapsedTime: null,
+          elapsedTime: null,
+          highscore: profile?.highscore,
+          username,
         };
       }
 

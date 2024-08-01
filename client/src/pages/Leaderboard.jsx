@@ -1,10 +1,12 @@
 import { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./Leaderboard.scss";
 
 // components
 import AdminGear from "@components/Admin/AdminGear";
 import AdminView from "@components/Admin/AdminView";
 import Loading from "@components/Shared/Loading";
+import Footer from "@components/Shared/Footer";
 
 // context
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
@@ -15,7 +17,7 @@ import { backendAPI } from "@utils/backendAPI";
 
 function Leaderboard() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard, profile, screenManager, visitor } = useContext(GlobalStateContext);
+  const { leaderboard, profile, visitor } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -57,7 +59,7 @@ function Leaderboard() {
 
   return (
     <>
-      {visitor?.isAdmin && <AdminGear screenManager={screenManager} setShowSettings={setShowSettings} />}
+      {visitor?.isAdmin && <AdminGear setShowSettings={setShowSettings} />}
       <div className="px-4">
         <div className="highscore-container">
           <div className="icon">🏅</div>
@@ -93,6 +95,11 @@ function Leaderboard() {
           </tbody>
         </table>
       </div>
+      <Footer>
+        <Link to="/start">
+          <button style={{ width: "94%" }}>Start Race</button>
+        </Link>
+      </Footer>
     </>
   );
 }

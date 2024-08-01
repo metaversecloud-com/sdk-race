@@ -46,7 +46,7 @@ function Home() {
 
   return (
     <div>
-      {visitor?.isAdmin && <AdminGear screenManager={screenManager} setShowSettings={setShowSettings} />}
+      {visitor?.isAdmin && <AdminGear setShowSettings={setShowSettings} />}
       {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
