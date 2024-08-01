@@ -8,8 +8,8 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
 
     if (!allCheckpointsCompleted) return;
 
-    const newHighscore =
-      !profileObject.highscore || timeToValue(currentElapsedTime) < timeToValue(currentHighscore)
+    const highscore =
+      !profileObject.highscore || timeToValue(currentElapsedTime) < timeToValue(profileObject.highscore)
         ? currentElapsedTime
         : profileObject.highscore;
 
@@ -22,7 +22,7 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
           [`${sceneDropId}.profiles.${profileId}`]: {
             checkpoints: [],
             elapsedTime: currentElapsedTime,
-            highscore: newHighscore,
+            highscore,
             startTimestamp: null,
             username,
           },
