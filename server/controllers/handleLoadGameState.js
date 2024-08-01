@@ -50,10 +50,11 @@ export const handleLoadGameState = async (req, res) => {
     }
 
     if (shouldUpdateDataObject) {
+      const lockId = `${sceneDropId}-${profileId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
       if (Object.keys(world?.dataObject || {}).length === 0) {
-        return world.setDataObject(data);
+        return world.setDataObject(data, { lock: { lockId, releaseLock: true } });
       } else {
-        await world.updateDataObject(data);
+        await world.updateDataObject(data, { lock: { lockId, releaseLock: true } });
       }
     }
 
