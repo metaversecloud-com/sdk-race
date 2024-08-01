@@ -52,19 +52,19 @@ export const handleLoadGameState = async (req, res) => {
     if (shouldUpdateDataObject) {
       const lockId = `${sceneDropId}-${profileId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
       if (Object.keys(world?.dataObject || {}).length === 0) {
-        return world.setDataObject(data, { lock: { lockId, releaseLock: true } });
+        await world.setDataObject(data, { lock: { lockId, releaseLock: true } });
       } else {
         await world.updateDataObject(data, { lock: { lockId, releaseLock: true } });
       }
     }
 
     return res.json({
-      checkpointsCompleted: profile.checkpoints,
-      startTimestamp: profile.startTimestamp,
+      checkpointsCompleted: profile?.checkpoints,
+      startTimestamp: profile?.startTimestamp,
       leaderboard: data[sceneDropId]?.profiles,
       numberOfCheckpoints: data[sceneDropId]?.numberOfCheckpoints,
       visitor,
-      elapsedTimeInSeconds: profile.startTimestamp ? Math.floor((now - profile.startTimestamp) / 1000) : 0,
+      elapsedTimeInSeconds: profile?.startTimestamp ? Math.floor((now - profile.startTimestamp) / 1000) : 0,
       profile,
       tracks: parseEnvJson(process.env.TRACKS) || TRACKS,
       success: true,
