@@ -13,56 +13,50 @@ export const handleLoadGameState = async (req, res) => {
     const visitor = result?.[1];
 
     let data = world.dataObject || {};
+    let shouldUpdateDataObject = false;
 
-    const lockId = `${sceneDropId}-${profileId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
-    try {
-      try {
-        await world.updateDataObject({ updateInProgress: true }, { lock: { lockId, releaseLock: true } });
-      } catch (error) {
-        return res.status(409).json({ message: "Data object update already in progress." });
-      }
+    if (data.race) {
+      data.race = { removedFromWorld: now };
+      shouldUpdateDataObject = true;
+    }
 
-      if (data.race) data.race = { removedFromWorld: now };
+    if (!data[sceneDropId]) {
+      const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
+        uniqueName: "race-track-checkpoint",
+        isPartial: true,
+      });
 
-      if (!data[sceneDropId]) {
-        const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
-          uniqueName: "race-track-checkpoint",
-          isPartial: true,
-        });
+      data[sceneDropId] = {
+        profiles: {},
+        numberOfCheckpoints: numberOfCheckpoints?.length,
+      };
+      shouldUpdateDataObject = true;
+    }
 
-        data[sceneDropId] = {
-          profiles: {},
-          numberOfCheckpoints: numberOfCheckpoints?.length,
-        };
-      }
+    const profile = data[sceneDropId]?.profiles?.[profileId];
 
-      const profile = data[sceneDropId]?.profiles?.[profileId];
+    let startTimestamp = profile?.startTimestamp;
 
-      let startTimestamp = profile?.startTimestamp;
+    // restart client race if the elapsed time is higher than 3 minutes
+    if (!profile || (startTimestamp && now - startTimestamp > 180000)) {
+      data[sceneDropId].profiles[profileId] = {
+        checkpoints: [],
+        startTimestamp: null,
+        elapsedTime: null,
+        highscore: profile?.highscore,
+        username,
+      };
+      shouldUpdateDataObject = true;
+    }
 
-      // restart client race if the elapsed time is higher than 3 minutes
-      if (!profile || (startTimestamp && now - startTimestamp > 180000)) {
-        data[sceneDropId].profiles[profileId] = {
-          checkpoints: [],
-          startTimestamp: null,
-          elapsedTime: null,
-          highscore: profile?.highscore,
-          username,
-        };
-      }
-
-      data.updateInProgress = false;
+    if (shouldUpdateDataObject) {
       if (Object.keys(world?.dataObject || {}).length === 0) {
         return world.setDataObject(data);
       } else {
         await world.updateDataObject(data);
       }
-    } catch (error) {
-      await world.updateDataObject({ updateInProgress: false });
-      throw error;
     }
 
-    const profile = data[sceneDropId]?.profiles?.[profileId];
     return res.json({
       checkpointsCompleted: profile.checkpoints,
       startTimestamp: profile.startTimestamp,
