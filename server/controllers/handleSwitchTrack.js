@@ -51,8 +51,8 @@ export const handleSwitchTrack = async (req, res) => {
     });
 
     await world.updateDataObject({
-      [`${sceneDropId}.profiles`]: {},
       [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+      [`${sceneDropId}.profiles`]: {},
     });
 
     await visitor.closeIframe(assetId);

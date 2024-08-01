@@ -1,15 +1,23 @@
 import { useContext, useState, useEffect } from "react";
-import { ClipLoader } from "react-spinners";
-import { backendAPI } from "@utils/backendAPI";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import { Link } from "react-router-dom";
 import "./Leaderboard.scss";
-import AdminGear from "../components/Admin/AdminGear";
-import { loadGameState } from "../context/actions";
-import AdminView from "../components/Admin/AdminView";
 
-function Home() {
+// components
+import AdminGear from "@components/Admin/AdminGear";
+import AdminView from "@components/Admin/AdminView";
+import Loading from "@components/Shared/Loading";
+import Footer from "@components/Shared/Footer";
+
+// context
+import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import { loadGameState } from "@context/actions";
+
+// utils
+import { backendAPI } from "@utils/backendAPI";
+
+function Leaderboard() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard, profile, screenManager, visitor } = useContext(GlobalStateContext);
+  const { leaderboard, profile, visitor } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -45,34 +53,24 @@ function Home() {
         .slice(0, 20)
     : [];
 
-  if (loading) {
-    return (
-      <div className="loader">
-        <ClipLoader color={"#123abc"} loading={loading} size={150} />
-      </div>
-    );
-  }
+  if (loading) return <Loading />;
 
-  if (showSettings) {
-    return <AdminView setShowSettings={setShowSettings} />;
-  }
+  if (showSettings) return <AdminView setShowSettings={setShowSettings} />;
 
   return (
     <>
-      <div className="app-wrapper leaderboard-container">
-        {visitor?.isAdmin && <AdminGear screenManager={screenManager} setShowSettings={setShowSettings} />}
+      {visitor?.isAdmin && <AdminGear setShowSettings={setShowSettings} />}
+      <div className="px-4">
         <div className="highscore-container">
-          <div className="medal">
-            <h2>🏅</h2>
-          </div>
-          <h2>Personal Best</h2>
+          <div className="icon">🏅</div>
+          <h3>Personal Best</h3>
           <p>{profile?.highscore || "No highscore available"}</p>
         </div>
-        <h1 className="trophy">🏆</h1>
-        <div style={{ marginBottom: "20px" }}>
-          <h3>Leaderboard</h3>
+        <div className="icon pt-6">🏆</div>
+        <div className="pb-4">
+          <h3 className="text-center">Leaderboard</h3>
         </div>
-        <table className="leaderboard-table">
+        <table className="table">
           <thead>
             <tr>
               <th></th>
@@ -97,8 +95,13 @@ function Home() {
           </tbody>
         </table>
       </div>
+      <Footer>
+        <Link to="/start">
+          <button style={{ width: "94%" }}>Start Race</button>
+        </Link>
+      </Footer>
     </>
   );
 }
 
-export default Home;
+export default Leaderboard;

@@ -1,5 +1,3 @@
-import redisObj from "../redis/redis.js";
-
 export function formatElapsedTime(milliseconds) {
   const minutes = Math.floor(milliseconds / 60000);
   const seconds = Math.floor((milliseconds % 60000) / 1000);
@@ -14,13 +12,4 @@ function padZero(num) {
 export function timeToValue(timeString) {
   const [minutes, seconds, milliseconds] = timeString.split(":");
   return parseInt(minutes, 10) * 60000 + parseInt(seconds, 10) * 1000 + parseInt(milliseconds, 10) * 10;
-}
-
-export async function publishRaceEvent(profileId, checkpointNumber, currentElapsedTime) {
-  await redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
-    profileId,
-    checkpointNumber,
-    currentRaceFinishedElapsedTime: currentElapsedTime,
-    event: "checkpoint-entered",
-  });
 }

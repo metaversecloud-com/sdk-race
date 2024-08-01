@@ -1,70 +1,12 @@
-.leaderboard-container {
-  padding: 5px;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
 .leaderboard-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-  font-size: 14px;
-  
-  th, td {
-    padding: 12px 15px;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  
   tr:nth-child(even) {
     background-color: #f8f8f8;
   }
-
 }
 
-table {
-  padding: 0;
-  font-size: 14px;
-}
-
-tbody {
-  font-size: 14px;
-}
-
-.trophy {
-  font-family: 'Quicksand';
-  font-size: 48px;
-  font-style: normal;
-  font-weight: 300;
-  line-height: 130%;
-  letter-spacing: -0.24px;
+.icon {
+  font-size: 28px;
   text-align: center;
-  margin-bottom: 20px;
-}
-
-h3 {
-  color: #0A2540;
-  text-align: center;
-  font-family: Quicksand;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 130%;
-  letter-spacing: 0.06px;
-  margin-bottom: 30px;
-}
-
-.tab-container {
-  width: unset;
 }
 
 .highscore-container {
@@ -74,16 +16,4 @@ h3 {
   border: 2px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
-}
-
-.highscore-container h2 {
-  margin: 0;
-  font-size: 24px;
-  color: #333;
-}
-
-.highscore-container p {
-  margin: 5px 0 0;
-  font-size: 18px;
-  color: #666;
 }
