@@ -12,12 +12,9 @@ import Footer from "@components/Shared/Footer";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { loadGameState } from "@context/actions";
 
-// utils
-import { backendAPI } from "@utils/backendAPI";
-
 function Leaderboard() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard, profile, visitor } = useContext(GlobalStateContext);
+  const { leaderboard, highscore, isAdmin } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -34,7 +31,7 @@ function Leaderboard() {
     };
 
     fetchGameState();
-  }, [dispatch, backendAPI]);
+  }, [dispatch]);
 
   const sortedLeaderboard = leaderboard
     ? Object.entries(leaderboard)
@@ -59,12 +56,12 @@ function Leaderboard() {
 
   return (
     <>
-      {visitor?.isAdmin && <AdminGear setShowSettings={setShowSettings} />}
+      {isAdmin && <AdminGear setShowSettings={setShowSettings} />}
       <div className="px-4">
         <div className="highscore-container">
           <div className="icon">🏅</div>
           <h3>Personal Best</h3>
-          <p>{profile?.highscore || "No highscore available"}</p>
+          <p>{highscore || "No highscore available"}</p>
         </div>
         <div className="icon pt-6">🏆</div>
         <div className="pb-4">

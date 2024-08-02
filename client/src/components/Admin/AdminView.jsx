@@ -58,7 +58,7 @@ function AdminView({ setShowSettings }) {
             onClick={() => handleTrackSelect(track)}
           >
             <div className="card small">
-              <div className="card-image heigh-auto">
+              <div className="card-image" style={{ height: "auto" }}>
                 <img src={track?.thumbnail} alt={track.name} />
               </div>
               <div className="card-details">
@@ -76,7 +76,7 @@ function AdminView({ setShowSettings }) {
 }
 
 AdminView.propTypes = {
-  setShowSettings: PropTypes.boolean,
+  setShowSettings: PropTypes.func,
 };
 
 export default AdminView;

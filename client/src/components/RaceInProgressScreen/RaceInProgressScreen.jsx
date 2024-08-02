@@ -160,7 +160,7 @@ const RaceInProgressScreen = () => {
   return (
     <div className="text-center pb-8">
       <div style={{ textAlign: "center" }}>
-        <div className="mt-20">⌛ {elapsedTime}</div>
+        <div className="mt-4">⌛ {elapsedTime}</div>
       </div>
       <h2 className="py-6">Race in progress!</h2>
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>

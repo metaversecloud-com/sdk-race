@@ -14,12 +14,9 @@ import { loadGameState } from "@context/actions";
 import { SCREEN_MANAGER } from "@context/types";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 
-// utils
-import { backendAPI } from "@utils/backendAPI";
-
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { screenManager, visitor } = useContext(GlobalStateContext);
+  const { screenManager, isAdmin } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -36,7 +33,7 @@ function Home() {
     };
 
     fetchGameState();
-  }, [dispatch, backendAPI]);
+  }, [dispatch]);
 
   if (loading) return <Loading />;
 
@@ -46,7 +43,7 @@ function Home() {
 
   return (
     <div>
-      {visitor?.isAdmin && <AdminGear setShowSettings={setShowSettings} />}
+      {isAdmin && <AdminGear setShowSettings={setShowSettings} />}
       {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}

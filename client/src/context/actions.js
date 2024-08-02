@@ -67,17 +67,18 @@ export const loadGameState = async (dispatch) => {
   try {
     const result = await backendAPI?.post("/race/game-state");
     if (result?.data?.success) {
+      console.log("🚀 ~ file: actions.js:70 ~ result?.data:", result?.data);
       await dispatch({
         type: LOAD_GAME_STATE,
         payload: {
           checkpointsCompleted: result.data.checkpointsCompleted,
-          startTimestamp: result.data.startTimestamp,
-          numberOfCheckpoints: result.data.numberOfCheckpoints,
-          visitor: result.data.visitor,
           elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
-          tracks: result.data.tracks,
+          highscore: result.data.highscore,
+          isAdmin: result.data.isAdmin,
           leaderboard: result.data.leaderboard,
-          profile: result.data.profile,
+          numberOfCheckpoints: result.data.numberOfCheckpoints,
+          startTimestamp: result.data.startTimestamp,
+          tracks: result.data.tracks,
         },
       });
 

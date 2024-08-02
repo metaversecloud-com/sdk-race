@@ -60,14 +60,14 @@ export const handleLoadGameState = async (req, res) => {
 
     return res.json({
       checkpointsCompleted: profile?.checkpoints,
-      startTimestamp: profile?.startTimestamp,
+      elapsedTimeInSeconds: profile?.startTimestamp ? Math.floor((now - profile.startTimestamp) / 1000) : 0,
+      highscore: profile?.highscore,
+      isAdmin: visitor.isAdmin,
       leaderboard: data[sceneDropId]?.profiles,
       numberOfCheckpoints: data[sceneDropId]?.numberOfCheckpoints,
-      visitor,
-      elapsedTimeInSeconds: profile?.startTimestamp ? Math.floor((now - profile.startTimestamp) / 1000) : 0,
-      profile,
-      tracks: parseEnvJson(process.env.TRACKS) || TRACKS,
+      startTimestamp: profile?.startTimestamp,
       success: true,
+      tracks: parseEnvJson(process.env.TRACKS) || TRACKS,
     });
   } catch (error) {
     return errorHandler({

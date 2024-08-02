@@ -9,7 +9,7 @@ function AdminGear({ setShowSettings }) {
 }
 
 AdminGear.propTypes = {
-  setShowSettings: PropTypes.boolean,
+  setShowSettings: PropTypes.func,
 };
 
 export default AdminGear;
