@@ -67,7 +67,6 @@ export const loadGameState = async (dispatch) => {
   try {
     const result = await backendAPI?.post("/race/game-state");
     if (result?.data?.success) {
-      console.log("🚀 ~ file: actions.js:70 ~ result?.data:", result?.data);
       await dispatch({
         type: LOAD_GAME_STATE,
         payload: {
