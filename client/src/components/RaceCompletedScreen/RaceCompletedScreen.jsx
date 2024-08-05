@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // components
 import Footer from "@components/Shared/Footer";
@@ -9,6 +9,7 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 import { SCREEN_MANAGER } from "@context/types";
 
 const RaceCompletedScreen = () => {
+  const queryParams = new URLSearchParams(location.search);
   const dispatch = useContext(GlobalDispatchContext);
   const { elapsedTime } = useContext(GlobalStateContext);
 
@@ -26,7 +27,7 @@ const RaceCompletedScreen = () => {
         </div>
       </div>
       <Footer>
-        <Link to="/leaderboard">
+        <Link to={`/leaderboard?${queryParams.toString()}`}>
           <button className="btn-success mb-2" style={{ width: "94%" }}>
             🏆 View Leaderboard
           </button>
