@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./Leaderboard.scss";
 
 // components
@@ -17,6 +17,7 @@ function Leaderboard() {
   const { leaderboard, highscore, isAdmin } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchGameState = async () => {
@@ -53,6 +54,8 @@ function Leaderboard() {
   if (loading) return <Loading />;
 
   if (showSettings) return <AdminView setShowSettings={setShowSettings} />;
+
+  const queryParams = new URLSearchParams(location.search);
 
   return (
     <>
@@ -93,7 +96,7 @@ function Leaderboard() {
         </table>
       </div>
       <Footer>
-        <Link to="/start">
+        <Link to={`/start?${queryParams.toString()}`}>
           <button style={{ width: "94%" }}>Start Race</button>
         </Link>
       </Footer>
