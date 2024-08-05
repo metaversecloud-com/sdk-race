@@ -46,7 +46,7 @@ const OnYourMarkScreen = () => {
   }, [currentMessage, raceInitiated, dispatch, navigate]);
 
   return (
-    <div className="container text-center my-20" style={{ height: isAdmin ? "90vh" : "100vh" }}>
+    <div className="container text-center pt-20" style={{ height: isAdmin ? "90vh" : "100vh" }}>
       {initialMessages?.map((message, index) => (
         <h2 key={index} className="pb-10">
           {message}

@@ -33,19 +33,18 @@ export const handleLoadGameState = async (req, res) => {
       shouldUpdateDataObject = true;
     }
 
-    const profile = data[sceneDropId]?.profiles?.[profileId];
+    const profile = data[sceneDropId]?.profiles?.[profileId] || {};
 
     let startTimestamp = profile?.startTimestamp;
 
     // restart client race if the elapsed time is higher than 3 minutes
     if (!profile || (startTimestamp && now - startTimestamp > 180000)) {
-      data[sceneDropId].profiles[profileId] = {
-        checkpoints: [],
-        startTimestamp: null,
-        elapsedTime: null,
-        highscore: profile?.highscore,
-        username,
-      };
+      profile.checkpoints = [];
+      profile.startTimestamp = null;
+      profile.elapsedTime = null;
+      profile.highscore = profile?.highscore;
+      profile.username = username;
+      data[sceneDropId].profiles[profileId] = profile;
       shouldUpdateDataObject = true;
     }
 

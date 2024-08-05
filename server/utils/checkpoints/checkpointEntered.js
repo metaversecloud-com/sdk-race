@@ -6,44 +6,37 @@ export const checkpointEntered = async ({ checkpointNumber, currentTimestamp, cr
   try {
     const { profileId, sceneDropId, urlSlug, username, visitorId } = credentials;
     const { checkpoints, startTimestamp, highscore } = profileObject;
-    const promises = [];
 
     if (checkpoints[checkpointNumber - 1]) return;
 
     const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
 
     if (checkpointNumber > 1 && !checkpoints[checkpointNumber - 2]) {
-      promises.push(
-        visitor.fireToast({
-          groupId: "race",
-          title: "❌ Wrong checkpoint",
-          text: "Oops! Go back. You missed a checkpoint!",
-        }),
-      );
+      await visitor.fireToast({
+        groupId: "race",
+        title: "❌ Wrong checkpoint",
+        text: "Oops! Go back. You missed a checkpoint!",
+      });
     } else {
       checkpoints[checkpointNumber - 1] = true;
       const currentElapsedTime = !startTimestamp ? null : formatElapsedTime(currentTimestamp - startTimestamp);
 
-      const text = ENCOURAGEMENT_MESSAGES[checkpointNumber % ENCOURAGEMENT_MESSAGES.length];
-      promises.push(
-        visitor.fireToast({
-          groupId: "race",
-          title: `✅ Checkpoint ${checkpointNumber}`,
-          text,
-        }),
-        world.updateDataObject({
-          [`${sceneDropId}.profiles.${profileId}`]: {
-            checkpoints,
-            elapsedTime: currentElapsedTime,
-            highscore,
-            startTimestamp,
-            username,
-          },
-        }),
-      );
-    }
+      await visitor.fireToast({
+        groupId: "race",
+        title: `✅ Checkpoint ${checkpointNumber}`,
+        text: ENCOURAGEMENT_MESSAGES[checkpointNumber % ENCOURAGEMENT_MESSAGES.length],
+      });
 
-    await Promise.all(promises);
+      await world.updateDataObject({
+        [`${sceneDropId}.profiles.${profileId}`]: {
+          checkpoints,
+          elapsedTime: currentElapsedTime,
+          highscore,
+          startTimestamp,
+          username,
+        },
+      });
+    }
 
     return;
   } catch (error) {
