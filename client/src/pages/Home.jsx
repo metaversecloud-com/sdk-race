@@ -18,7 +18,6 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
   const { screenManager, isAdmin } = useContext(GlobalStateContext);
-  const test = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
