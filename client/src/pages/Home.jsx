@@ -8,6 +8,7 @@ import RaceCompletedScreen from "@components/RaceCompletedScreen/RaceCompletedSc
 import AdminGear from "@components/Admin/AdminGear";
 import AdminView from "@components/Admin/AdminView";
 import Loading from "@components/Shared/Loading";
+import { backendAPI } from "@utils/backendAPI";
 
 // context
 import { loadGameState } from "@context/actions";
@@ -17,6 +18,7 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
   const { screenManager, isAdmin } = useContext(GlobalStateContext);
+  const test = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -33,7 +35,7 @@ function Home() {
     };
 
     fetchGameState();
-  }, [dispatch]);
+  }, [dispatch, backendAPI]);
 
   if (loading) return <Loading />;
 
