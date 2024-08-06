@@ -168,7 +168,7 @@ const RaceInProgressScreen = () => {
           Run!
         </h2>
       </div>
-      <div className="py-4 text-left">
+      <div className="p-4 text-left">
         {checkpoints?.map((checkpoint) => (
           <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
         ))}

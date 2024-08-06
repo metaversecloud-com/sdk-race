@@ -63,13 +63,13 @@ function Leaderboard() {
   return (
     <>
       {isAdmin && <AdminGear setShowSettings={setShowSettings} />}
-      <div className="px-4">
+      <div className="px-4 my-6">
         <div className="highscore-container">
           <div className="icon">🏅</div>
           <h3>Personal Best</h3>
           <p>{highscore || "No highscore available"}</p>
         </div>
-        <div className="icon pt-6">🏆</div>
+        <div className="icon pt-4">🏆</div>
         <div className="pb-4">
           <h3 className="text-center">Leaderboard</h3>
         </div>

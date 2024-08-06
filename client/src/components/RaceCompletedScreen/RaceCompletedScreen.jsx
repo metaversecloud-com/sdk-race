@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // components
 import Footer from "@components/Shared/Footer";
@@ -19,12 +19,10 @@ const RaceCompletedScreen = () => {
 
   return (
     <>
-      <div className="container p-6">
+      <div className="container p-4 text-center">
         <h2>🏆 Congratulations!</h2>
-        <p className="my-10">You have successfully completed the race.</p>
-        <div className="pt-30">
-          <h3>Elapsed Time: {elapsedTime}</h3>
-        </div>
+        <p className="my-6">You have successfully completed the race.</p>
+        <h3 className="pt-10">Elapsed Time: {elapsedTime}</h3>
       </div>
       <Footer>
         <Link to={`/leaderboard?${queryParams.toString()}`}>
