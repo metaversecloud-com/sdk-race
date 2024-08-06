@@ -12,6 +12,9 @@ import Footer from "@components/Shared/Footer";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { loadGameState } from "@context/actions";
 
+// utils
+import { backendAPI } from "@utils/backendAPI";
+
 function Leaderboard() {
   const dispatch = useContext(GlobalDispatchContext);
   const { leaderboard, highscore, isAdmin } = useContext(GlobalStateContext);
@@ -32,7 +35,7 @@ function Leaderboard() {
     };
 
     fetchGameState();
-  }, [dispatch]);
+  }, [dispatch, backendAPI]);
 
   const sortedLeaderboard = leaderboard
     ? Object.entries(leaderboard)

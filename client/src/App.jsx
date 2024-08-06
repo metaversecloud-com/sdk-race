@@ -1,12 +1,17 @@
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Route, Routes, useSearchParams } from "react-router-dom";
 
+// pagrs
 import Home from "@pages/Home";
 import Leaderboard from "@pages/Leaderboard";
 import Error from "@pages/Error";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+
+// context
 import { GlobalDispatchContext } from "@context/GlobalContext";
-import { setupBackendAPI } from "@utils/backendAPI";
 import { SET_INTERACTIVE_PARAMS } from "@context/types";
+
+// utils
+import { setupBackendAPI } from "@utils/backendAPI";
 
 const App = () => {
   const [searchParams] = useSearchParams();
