@@ -158,7 +158,7 @@ const RaceInProgressScreen = () => {
   if (elapsedTime == "00:00") return <Loading />;
 
   return (
-    <div className="text-center pb-8">
+    <div className="text-center pb-16">
       <div style={{ textAlign: "center" }}>
         <div className="mt-4">⌛ {elapsedTime}</div>
       </div>

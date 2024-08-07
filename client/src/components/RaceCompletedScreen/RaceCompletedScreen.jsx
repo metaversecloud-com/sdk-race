@@ -20,7 +20,7 @@ const RaceCompletedScreen = () => {
   return (
     <>
       <div className="container p-4 text-center">
-        <h2>🏆 Congratulations!</h2>
+        <h2 className="pt-4">🏆 Congratulations!</h2>
         <p className="my-6">You have successfully completed the race.</p>
         <h3 className="pt-10">Elapsed Time: {elapsedTime}</h3>
       </div>
