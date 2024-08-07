@@ -1,13 +1,17 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
+import PropTypes from "prop-types";
+
+// components
 import BackArrow from "./BackArrow";
-import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import ResetGameButton from "../ResetGame/ResetGameButton";
 import ResetGameModal from "../ResetGame/ResetGameModal";
 import SwitchRaceTrackModal from "../SwitchRace/SwitchRaceTrackModal";
-import "./AdminView.scss";
+import Footer from "../Shared/Footer";
+
+// context
+import { GlobalStateContext } from "@context/GlobalContext";
 
 function AdminView({ setShowSettings }) {
-  const dispatch = useContext(GlobalDispatchContext);
   const { tracks } = useContext(GlobalStateContext);
   const [message, setMessage] = useState(false);
   const [showResetGameModal, setShowResetGameModal] = useState(false);
@@ -28,16 +32,6 @@ function AdminView({ setShowSettings }) {
     setShowTrackModal(true);
   }
 
-  function Footer() {
-    return (
-      <div className="footer-fixed">
-        <div>
-          <ResetGameButton handleToggleShowModal={handleToggleShowResetGameModal} />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       {showResetGameModal && (
@@ -51,32 +45,38 @@ function AdminView({ setShowSettings }) {
         />
       )}
       <BackArrow setShowSettings={setShowSettings} />
-      <div className="admin-wrapper">
-        <div>
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <h2>{"Settings"}</h2>
-            <p style={{ textAlign: "left" }}>Select a track to change the current one.</p>
-            <p>{message}</p>
-          </div>
-          <div className="tracks-container">
-            {tracks?.map((track) => (
-              <div
-                key={track.id}
-                className={`track-container ${selectedTrack === track.id ? "selected" : ""}`}
-                onClick={() => handleTrackSelect(track)}
-              >
-                <img className="track-thumbnail" src={track?.thumbnail} alt={track.name} />
-                <div className="track-info">
-                  <h3>{track.name}</h3>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="px-4 pb-20">
+        <div className="text-center pb-8">
+          <h2>Settings</h2>
+          <p className="pt-4">Select a track to change the current one.</p>
+          <p>{message}</p>
         </div>
+        {tracks?.map((track) => (
+          <div
+            key={track.id}
+            className={`mb-2 ${selectedTrack === track.id ? "selected" : ""}`}
+            onClick={() => handleTrackSelect(track)}
+          >
+            <div className="card small">
+              <div className="card-image" style={{ height: "auto" }}>
+                <img src={track?.thumbnail} alt={track.name} />
+              </div>
+              <div className="card-details">
+                <h4 className="card-title h4">{track.name}</h4>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-      <Footer />
+      <Footer>
+        <ResetGameButton handleToggleShowModal={handleToggleShowResetGameModal} />
+      </Footer>
     </>
   );
 }
+
+AdminView.propTypes = {
+  setShowSettings: PropTypes.func,
+};
 
 export default AdminView;

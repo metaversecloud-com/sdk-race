@@ -1,6 +1,11 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
+import PropTypes from "prop-types";
+
+// context
 import { GlobalDispatchContext } from "@context/GlobalContext";
-import { RESET_GAME, SCREEN_MANAGER } from "../../context/types";
+import { RESET_GAME, SCREEN_MANAGER } from "@context/types";
+
+// utils
 import { backendAPI } from "@utils/backendAPI";
 
 function ResetGameModal({ handleToggleShowModal, setMessage }) {
@@ -47,5 +52,10 @@ function ResetGameModal({ handleToggleShowModal, setMessage }) {
     </div>
   );
 }
+
+ResetGameModal.propTypes = {
+  handleToggleShowModal: PropTypes.func,
+  setMessage: PropTypes.func,
+};
 
 export default ResetGameModal;

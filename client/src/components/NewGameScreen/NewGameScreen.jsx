@@ -1,7 +1,12 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
+
+// components
+import racingMap from "../../assets/racingMap.png";
+import Footer from "../Shared/Footer";
+
+// context
 import { GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER } from "@context/types";
-import racingMap from "../../assets/racingMap.png";
 
 const NewGameScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
@@ -12,49 +17,26 @@ const NewGameScreen = () => {
 
   const Instructions = () => (
     <>
-      <div style={{ marginTop: "24px", marginBottom: "24px" }}>
-        <h4 style={{ textAlign: "center" }}>🏎️ Welcome to the Race game!</h4>
-      </div>
-      <div className="instructions" style={{ padding: "0px 16px" }}>
-        <div className="title">
-          <b>How to play:</b>
-        </div>
-        <ol style={{ marginTop: "5px" }}>
+      <h3 className="text-center p-6">🏎️ Welcome to the Race!</h3>
+      <div className="p-4">
+        <h4 className="pb-2">How to play:</h4>
+        <ol style={{ marginLeft: "24px", listStyle: "auto" }}>
           <li>
-            Click <b style={{ color: "green" }}>Start Race</b> to begin..
+            Click <span style={{ color: "green" }}>Start Race</span> to begin..
           </li>
-          <li>
-            🏁 Run through all <strong>checkpoints</strong> in the correct order to complete the race!
-          </li>
+          <li>🏁 Run through all checkpoints in the correct order to complete the race!</li>
         </ol>
 
-        <div className="rules" style={{ paddingBottom: "40px" }}>
-          <div className="title">
-            <b>Important Rules:</b>
-          </div>
-          <ul style={{ marginTop: "5px" }}>
-            <li>
-              <b>Time</b> starts when you click <b style={{ color: "green" }}>Start Race</b>.
-            </li>
-            <li>Check your rank by clicking the 🏆 leaderboard.</li>
-          </ul>
-        </div>
+        <h4 className="pt-6 pb-2">Important rules:</h4>
+        <ul style={{ marginLeft: "24px", listStyle: "disc" }}>
+          <li>
+            Time starts when you click <span style={{ color: "green" }}>Start Race</span>.
+          </li>
+          <li>Check your rank by clicking the 🏆 leaderboard.</li>
+        </ul>
       </div>
     </>
   );
-
-  function Footer() {
-    return (
-      <div className="footer-fixed">
-        <div>
-          <button onClick={startRace} style={{ width: "94%" }}>
-            {" "}
-            Start Race
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -62,7 +44,12 @@ const NewGameScreen = () => {
         <img src={racingMap} alt="racing map" className="rounded-lg shadow-lg" />
       </div>
       <Instructions />
-      <Footer />
+      <Footer>
+        <button onClick={startRace} style={{ width: "94%" }}>
+          {" "}
+          Start Race
+        </button>
+      </Footer>
     </>
   );
 };

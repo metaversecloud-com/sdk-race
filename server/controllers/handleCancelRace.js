@@ -1,5 +1,4 @@
-import { World } from "../../utils/topiaInit.js";
-import { errorHandler } from "../../utils/index.js";
+import { errorHandler, World } from "../utils/index.js";
 
 export const handleCancelRace = async (req, res) => {
   try {
@@ -17,7 +16,9 @@ export const handleCancelRace = async (req, res) => {
     if (profileId) {
       world
         .updateDataObject({
-          [`${sceneDropId}.profiles.${profileId}`]: null,
+          [`${sceneDropId}.profiles.${profileId}.checkpoints`]: [],
+          [`${sceneDropId}.profiles.${profileId}.elapsedTime`]: null,
+          [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: null,
         })
         .then()
         .catch((error) => console.error(JSON.stringify(error)));

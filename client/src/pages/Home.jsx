@@ -1,21 +1,25 @@
-import React, { useContext, useState, useEffect } from "react";
-import { ClipLoader } from "react-spinners";
-import { backendAPI } from "@utils/backendAPI";
-import { SCREEN_MANAGER } from "../context/types";
+import { useContext, useState, useEffect } from "react";
 
-import OnYourMarkScreen from "../components/OnYourMarkScreen/OnYourMarkScreen";
+// components
+import OnYourMarkScreen from "@components/OnYourMarkScreen/OnYourMarkScreen";
+import RaceInProgressScreen from "@components/RaceInProgressScreen/RaceInProgressScreen";
+import NewGameScreen from "@components/NewGameScreen/NewGameScreen";
+import RaceCompletedScreen from "@components/RaceCompletedScreen/RaceCompletedScreen";
+import AdminGear from "@components/Admin/AdminGear";
+import AdminView from "@components/Admin/AdminView";
+import Loading from "@components/Shared/Loading";
+
+// context
+import { loadGameState } from "@context/actions";
+import { SCREEN_MANAGER } from "@context/types";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 
-import RaceInProgressScreen from "../components/RaceInProgressScreen/RaceInProgressScreen";
-import NewGameScreen from "../components/NewGameScreen/NewGameScreen";
-import RaceCompletedScreen from "../components/RaceCompletedScreen/RaceCompletedScreen";
-import AdminGear from "../components/Admin/AdminGear";
-import AdminView from "../components/Admin/AdminView";
-import { loadGameState } from "../context/actions";
+// utils
+import { backendAPI } from "@utils/backendAPI";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { screenManager, visitor } = useContext(GlobalStateContext);
+  const { screenManager, isAdmin } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -34,21 +38,15 @@ function Home() {
     fetchGameState();
   }, [dispatch, backendAPI]);
 
-  if (loading) {
-    return (
-      <div className="loader">
-        <ClipLoader color={"#123abc"} loading={loading} size={150} />
-      </div>
-    );
-  }
+  if (loading) return <Loading />;
 
   if (showSettings) {
     return <AdminView setShowSettings={setShowSettings} />;
   }
 
   return (
-    <div className="app-wrapper">
-      {visitor?.isAdmin && <AdminGear screenManager={screenManager} setShowSettings={setShowSettings} />}
+    <div>
+      {isAdmin && <AdminGear setShowSettings={setShowSettings} />}
       {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}

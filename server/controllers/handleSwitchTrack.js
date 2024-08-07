@@ -1,26 +1,10 @@
-import { World, Visitor } from "../../utils/topiaInit.js";
-import { errorHandler } from "../../utils/index.js";
+import { World, Visitor, errorHandler, getCredentials } from "../utils/index.js";
 
 export const handleSwitchTrack = async (req, res) => {
   try {
-    const {
-      interactiveNonce,
-      interactivePublicKey,
-      urlSlug,
-      visitorId,
-      assetId,
-      profileId,
-      sceneDropId,
-      trackSceneId,
-    } = req.query;
-    const now = Date.now();
-
-    const credentials = {
-      interactiveNonce,
-      interactivePublicKey,
-      visitorId,
-      assetId,
-    };
+    const credentials = getCredentials(req.query);
+    const { assetId, interactiveNonce, interactivePublicKey, urlSlug, visitorId, sceneDropId } = credentials;
+    const { trackSceneId } = req.query;
 
     const world = await World.create(urlSlug, { credentials });
     const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
@@ -67,8 +51,8 @@ export const handleSwitchTrack = async (req, res) => {
     });
 
     await world.updateDataObject({
-      [`${sceneDropId}.profiles`]: {},
       [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+      [`${sceneDropId}.profiles`]: {},
     });
 
     await visitor.closeIframe(assetId);

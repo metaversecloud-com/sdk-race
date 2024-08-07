@@ -8,7 +8,7 @@ const initialState = {
   selectedWorld: {},
   urlSlug: "",
   showOnYourMarkScreen: false,
-  screenManager: "",
+  screenManager: SCREEN_MANAGER.SHOW_HOME_SCREEN,
   tracks: [],
 };
 

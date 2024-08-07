@@ -1,10 +1,10 @@
-import { Visitor, World } from "../../utils/topiaInit.js";
-import { errorHandler } from "../../utils/index.js";
-import { addNewRowToGoogleSheets } from "../../utils/addNewRowToGoogleSheets.js";
+import { addNewRowToGoogleSheets, Visitor, World, errorHandler, getCredentials } from "../utils/index.js";
 
 export const handleRaceStart = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, assetId, sceneDropId } = req.query;
+    const credentials = getCredentials(req.query);
+    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, sceneDropId } = credentials;
+    const { identityId, displayName } = req.query;
     const startTimestamp = Date.now();
 
     const visitor = await Visitor.get(visitorId, urlSlug, {
@@ -15,14 +15,7 @@ export const handleRaceStart = async (req, res) => {
       },
     });
 
-    const world = World.create(urlSlug, {
-      credentials: {
-        assetId,
-        interactiveNonce,
-        interactivePublicKey,
-        visitorId,
-      },
-    });
+    const world = World.create(urlSlug, { credentials });
 
     await world.fetchDataObject();
 
@@ -36,8 +29,8 @@ export const handleRaceStart = async (req, res) => {
     await Promise.all([
       world.updateDataObject(
         {
-          [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
           [`${sceneDropId}.profiles.${profileId}.checkpoints`]: [],
+          [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
         },
         { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
       ),
@@ -49,8 +42,8 @@ export const handleRaceStart = async (req, res) => {
     ]);
 
     addNewRowToGoogleSheets({
-      identityId: req?.query?.identityId,
-      displayName: req?.query?.displayName,
+      identityId,
+      displayName,
       appName: "Race",
       event: "starts",
       urlSlug,

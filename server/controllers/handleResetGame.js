@@ -1,17 +1,9 @@
-import { World } from "../../utils/topiaInit.js";
-import { errorHandler } from "../../utils/index.js";
+import { World, errorHandler, getCredentials } from "../utils/index.js";
 
 export const handleResetGame = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, sceneDropId } = req.query;
-    const now = Date.now();
-
-    const credentials = {
-      interactiveNonce,
-      interactivePublicKey,
-      visitorId,
-      assetId,
-    };
+    const credentials = getCredentials(req.query);
+    const { urlSlug, sceneDropId } = credentials;
 
     const world = await World.create(urlSlug, { credentials });
 
@@ -23,8 +15,8 @@ export const handleResetGame = async (req, res) => {
     });
 
     await world.updateDataObject({
-      [`${sceneDropId}.profiles`]: {},
       [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+      [`${sceneDropId}.profiles`]: {},
     });
 
     return res.json({ success: true });

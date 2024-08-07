@@ -1,5 +1,5 @@
 {
-  "name": "@sdk-boilerplate/client",
+  "name": "@sdk-race/client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
