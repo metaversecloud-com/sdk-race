@@ -10,7 +10,6 @@
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.10.0",
-    "nodemon": "^3.1.4",
     "redis": "^4.6.13",
     "yalc": "^1.0.0-pre.53"
   },
@@ -19,7 +18,8 @@
   "main": "./server/index.js",
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "prettier": "3.2.5"
+    "prettier": "3.2.5",
+    "nodemon": "^3.1.4"
   },
   "workspaces": [
     "client",
