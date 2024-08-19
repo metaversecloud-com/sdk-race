@@ -13,7 +13,8 @@ export const handleLoadGameState = async (req, res) => {
     const visitor = result?.[1];
 
     let data = world.dataObject || {};
-    let shouldUpdateDataObject = false;
+    let shouldUpdateDataObject = false,
+      shouldSetDataObject = !world.dataObject || Object.keys(world?.dataObject).length === 0;
 
     if (data.race) {
       data.race = { removedFromWorld: now };
@@ -48,13 +49,11 @@ export const handleLoadGameState = async (req, res) => {
       shouldUpdateDataObject = true;
     }
 
-    if (shouldUpdateDataObject) {
-      const lockId = `${sceneDropId}-${profileId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
-      if (Object.keys(world?.dataObject || {}).length === 0) {
-        await world.setDataObject(data, { lock: { lockId, releaseLock: true } });
-      } else {
-        await world.updateDataObject(data, { lock: { lockId, releaseLock: true } });
-      }
+    const lockId = `${sceneDropId}-${profileId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
+    if (shouldSetDataObject) {
+      await world.setDataObject(data, { lock: { lockId, releaseLock: true } });
+    } else if (shouldUpdateDataObject) {
+      await world.updateDataObject(data, { lock: { lockId, releaseLock: true } });
     }
 
     return res.json({

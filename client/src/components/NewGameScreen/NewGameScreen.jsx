@@ -22,7 +22,7 @@ const NewGameScreen = () => {
         <h4 className="pb-2">How to play:</h4>
         <ol style={{ marginLeft: "24px", listStyle: "auto" }}>
           <li>
-            Click <span style={{ color: "green" }}>Start Race</span> to begin..
+            Click <span style={{ color: "green" }}>Start Race</span> to begin.
           </li>
           <li>🏁 Run through all checkpoints in the correct order to complete the race!</li>
         </ol>
