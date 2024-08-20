@@ -10,10 +10,9 @@ import Footer from "@components/Shared/Footer";
 
 // context
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
-import { loadGameState } from "@context/actions";
 
 // utils
-import { backendAPI } from "@utils/backendAPI";
+import { backendAPI, loadGameState } from "@utils";
 
 function Leaderboard() {
   const dispatch = useContext(GlobalDispatchContext);

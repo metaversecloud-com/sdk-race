@@ -2,8 +2,10 @@ import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 // context
-import { startRace } from "@context/actions";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+
+// utils
+import { startRace } from "@utils";
 
 const OnYourMarkScreen = () => {
   const navigate = useNavigate();

@@ -1,11 +1,13 @@
 import { Visitor } from "../index.js";
 import { formatElapsedTime } from "../utils.js";
 import { ENCOURAGEMENT_MESSAGES } from "../../constants.js";
+import redisObj from "../../redis/redis.js";
 
 export const checkpointEntered = async ({ checkpointNumber, currentTimestamp, credentials, profileObject, world }) => {
   try {
     const { profileId, sceneDropId, urlSlug, username, visitorId } = credentials;
     const { checkpoints, startTimestamp, highscore } = profileObject;
+    console.log("🚀 ~ file: checkpointEntered.js:10 ~ checkpoints:", checkpoints);
 
     if (checkpoints[checkpointNumber - 1]) return;
 
@@ -16,6 +18,10 @@ export const checkpointEntered = async ({ checkpointNumber, currentTimestamp, cr
         groupId: "race",
         title: "❌ Wrong checkpoint",
         text: "Oops! Go back. You missed a checkpoint!",
+      });
+      redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
+        profileId,
+        checkpointsCompleted: checkpoints,
       });
     } else {
       checkpoints[checkpointNumber - 1] = true;

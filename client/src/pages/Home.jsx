@@ -10,12 +10,11 @@ import AdminView from "@components/Admin/AdminView";
 import Loading from "@components/Shared/Loading";
 
 // context
-import { loadGameState } from "@context/actions";
 import { SCREEN_MANAGER } from "@context/types";
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 
 // utils
-import { backendAPI } from "@utils/backendAPI";
+import { backendAPI, loadGameState } from "@utils";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);

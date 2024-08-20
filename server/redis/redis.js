@@ -1,54 +1,32 @@
 import { createClient } from "redis";
+import dotenv from "dotenv";
+dotenv.config({ path: "../.env" });
 
-const shouldSendEvent = (data, profileId) => {
-  return data.profileId === profileId;
-};
-
-const getRedisConfig = () => {
-  // Cloud Redis in Localhost
-  if (process.env.IS_LOCALHOST) {
-    return {
-      password: process.env.REDIS_PASSWORD,
-      socket: {
-        host: "redis-10627.c15.us-east-1-2.ec2.cloud.redislabs.com",
-        port: 10627,
-      },
-    };
-  } else {
-    // Redis in AWS
-    return {
-      url: process.env.REDIS_URL,
-      socket: {
-        tls: process.env.REDIS_URL?.startsWith("rediss"),
-      },
-    };
-  }
+const redisConfig = {
+  url: process.env.REDIS_URL,
+  socket: {
+    tls: process.env.REDIS_URL?.startsWith("rediss"),
+  },
 };
 
 const redisObj = {
-  publisher: createClient(getRedisConfig()),
-  subscriber: createClient(getRedisConfig()),
-
+  publisher: createClient(redisConfig),
+  subscriber: createClient(redisConfig),
+  connections: [],
   publish: function (channel, message) {
     this.publisher.publish(channel, JSON.stringify(message));
   },
   subscribe: function (channel) {
     this.subscriber.subscribe(channel, (message) => {
       const data = JSON.parse(message);
-      const { profileId, checkpointNumber, currentRaceFinishedElapsedTime } = data;
-      let dataToSend = null;
-      if (data.event === "checkpoint-entered") {
-        dataToSend = { profileId, checkpointNumber, currentRaceFinishedElapsedTime };
-      }
       this.connections.forEach(({ res: existingConnection }) => {
         const { profileId } = existingConnection.req.query;
-        if (shouldSendEvent(data, profileId)) {
-          existingConnection.write(`retry: 5000\ndata: ${JSON.stringify(dataToSend)}\n\n`);
+        if (data.profileId === profileId) {
+          existingConnection.write(`retry: 5000\ndata: ${JSON.stringify(data)}\n\n`);
         }
       });
     });
   },
-  connections: [],
   addConn: function (connection) {
     const { profileId, interactiveNonce } = connection.res.req.query;
 

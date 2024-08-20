@@ -22,7 +22,6 @@ export const handleCheckpointEntered = async (req, res) => {
         profileId,
         checkpointNumber,
         currentRaceFinishedElapsedTime: null,
-        event: "checkpoint-entered",
       });
     }
 
@@ -41,7 +40,6 @@ export const handleCheckpointEntered = async (req, res) => {
         profileId,
         checkpointNumber,
         currentRaceFinishedElapsedTime: currentElapsedTime,
-        event: "checkpoint-entered",
       });
       await finishLineEntered({ credentials, currentElapsedTime, profileObject, raceObject, world });
     } else {
