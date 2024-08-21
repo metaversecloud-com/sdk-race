@@ -25,7 +25,7 @@ const globalReducer = (state, action) => {
     case SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN:
       return {
         ...state,
-        checkpoints: [],
+        checkpoints: {},
         screenManager: SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN,
       };
     case SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN:
@@ -42,9 +42,9 @@ const globalReducer = (state, action) => {
       return {
         ...state,
         raceStarted: payload.raceStarted,
-        checkpoints: [],
+        checkpoints: {},
         startTimestamp: payload.startTimestamp,
-        checkpointsCompleted: [],
+        checkpointsCompleted: {},
       };
     case COMPLETE_RACE:
       return {
@@ -55,13 +55,13 @@ const globalReducer = (state, action) => {
     case CANCEL_RACE:
       return {
         ...state,
-        checkpoints: [],
+        checkpoints: {},
         startTimestamp: null,
       };
     case RESET_GAME:
       return {
         ...state,
-        checkpoints: [],
+        checkpoints: {},
         startTimestamp: null,
       };
     case LOAD_GAME_STATE:

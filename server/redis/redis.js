@@ -60,6 +60,12 @@ const redisObj = {
       return isActive;
     });
   },
+  get: async function (key) {
+    return await this.publisher.get(key);
+  },
+  set: async function (key, value) {
+    await this.publisher.set(key, value);
+  },
 };
 
 redisObj.publisher.connect();

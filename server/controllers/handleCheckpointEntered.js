@@ -5,6 +5,7 @@ import {
   checkpointZeroEntered,
   finishLineEntered,
   checkpointEntered,
+  Visitor,
 } from "../utils/index.js";
 import { CHECKPOINT_NAMES } from "../constants.js";
 import redisObj from "../redis/redis.js";
@@ -12,17 +13,35 @@ import redisObj from "../redis/redis.js";
 export const handleCheckpointEntered = async (req, res) => {
   try {
     const credentials = getCredentials(req.body);
-    const { profileId, sceneDropId, urlSlug } = credentials;
+    const { profileId, sceneDropId, urlSlug, visitorId } = credentials;
     const { uniqueName } = req.body;
+    const channel = `${process.env.INTERACTIVE_KEY}_RACE`;
 
     const checkpointNumber = uniqueName === CHECKPOINT_NAMES.START ? 0 : parseInt(uniqueName.split("-").pop(), 10);
 
     if (checkpointNumber !== 0) {
-      redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
-        profileId,
-        checkpointNumber,
-        currentRaceFinishedElapsedTime: null,
-      });
+      const cachedCheckpoints = JSON.parse(await redisObj.get(profileId)) || {};
+      if (checkpointNumber > 1 && !cachedCheckpoints[checkpointNumber - 2]) {
+        redisObj.publish(channel, {
+          profileId,
+          checkpointsCompleted: cachedCheckpoints,
+        });
+        const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
+        await visitor.fireToast({
+          groupId: "race",
+          title: "❌ Wrong checkpoint",
+          text: "Oops! Go back. You missed a checkpoint!",
+        });
+        return;
+      } else {
+        redisObj.publish(channel, {
+          profileId,
+          checkpointNumber,
+          currentRaceFinishedElapsedTime: null,
+        });
+        cachedCheckpoints[checkpointNumber - 1] = true;
+        redisObj.set(profileId, JSON.stringify(cachedCheckpoints));
+      }
     }
 
     const world = World.create(urlSlug, { credentials });
@@ -36,7 +55,7 @@ export const handleCheckpointEntered = async (req, res) => {
 
     if (checkpointNumber === 0) {
       const currentElapsedTime = checkpointZeroEntered(currentTimestamp, profileObject);
-      redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
+      redisObj.publish(channel, {
         profileId,
         checkpointNumber,
         currentRaceFinishedElapsedTime: currentElapsedTime,
