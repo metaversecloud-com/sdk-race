@@ -1,4 +1,5 @@
 import { addNewRowToGoogleSheets, Visitor, World, errorHandler, getCredentials } from "../utils/index.js";
+import redisObj from "../redis/redis.js";
 
 export const handleRaceStart = async (req, res) => {
   try {
@@ -7,6 +8,17 @@ export const handleRaceStart = async (req, res) => {
     const { identityId, displayName } = req.query;
     const startTimestamp = Date.now();
 
+    redisObj.set(profileId, JSON.stringify({ 0: false }));
+
+    const world = World.create(urlSlug, { credentials });
+
+    // move visitor to start line asset
+    const startCheckpoint = (
+      await world.fetchDroppedAssetsBySceneDropId({
+        sceneDropId,
+        uniqueName: "race-track-start",
+      })
+    )?.[0];
     const visitor = await Visitor.get(visitorId, urlSlug, {
       credentials: {
         interactiveNonce,
@@ -14,32 +26,21 @@ export const handleRaceStart = async (req, res) => {
         visitorId,
       },
     });
+    await visitor.moveVisitor({
+      shouldTeleportVisitor: true,
+      x: startCheckpoint?.position?.x,
+      y: startCheckpoint?.position?.y,
+    });
 
-    const world = World.create(urlSlug, { credentials });
-
+    // reset race data in World data object)
     await world.fetchDataObject();
-
-    const startCheckpoint = (
-      await world.fetchDroppedAssetsWithUniqueName({
-        uniqueName: "race-track-start",
-        isPartial: false,
-      })
-    )?.[0];
-
-    await Promise.all([
-      world.updateDataObject(
-        {
-          [`${sceneDropId}.profiles.${profileId}.checkpoints`]: [],
-          [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
-        },
-        { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
-      ),
-      visitor.moveVisitor({
-        shouldTeleportVisitor: true,
-        x: startCheckpoint?.position?.x,
-        y: startCheckpoint?.position?.y,
-      }),
-    ]);
+    await world.updateDataObject(
+      {
+        [`${sceneDropId}.profiles.${profileId}.checkpoints`]: {},
+        [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
+      },
+      { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
+    );
 
     addNewRowToGoogleSheets({
       identityId,

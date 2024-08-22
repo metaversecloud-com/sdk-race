@@ -40,7 +40,7 @@ export const handleLoadGameState = async (req, res) => {
 
     // restart client race if the elapsed time is higher than 3 minutes
     if (!profile || (startTimestamp && now - startTimestamp > 180000)) {
-      profile.checkpoints = [];
+      profile.checkpoints = {};
       profile.startTimestamp = null;
       profile.elapsedTime = null;
       profile.highscore = profile?.highscore;

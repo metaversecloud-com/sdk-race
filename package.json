@@ -4,7 +4,7 @@
   "description": "",
   "dependencies": {
     "@googleapis/sheets": "^7.0.0",
-    "@rtsdk/topia": "^0.11.12",
+    "@rtsdk/topia": "^0.12.0",
     "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "concurrently": "^8.2.2",
@@ -18,8 +18,8 @@
   "main": "./server/index.js",
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "prettier": "3.2.5",
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "prettier": "3.2.5"
   },
   "workspaces": [
     "client",
