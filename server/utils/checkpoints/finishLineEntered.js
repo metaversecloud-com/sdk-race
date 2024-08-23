@@ -5,7 +5,7 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
   try {
     const { profileId, sceneDropId, urlSlug, username, visitorId } = credentials;
     const { checkpoints, highscore } = profileObject;
-    const allCheckpointsCompleted = raceObject.numberOfCheckpoints === checkpoints.length;
+    const allCheckpointsCompleted = raceObject.numberOfCheckpoints === Object.keys(checkpoints).length;
 
     if (!allCheckpointsCompleted) return;
 
@@ -19,7 +19,7 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
       world.updateDataObject(
         {
           [`${sceneDropId}.profiles.${profileId}`]: {
-            checkpoints: [],
+            checkpoints: {},
             elapsedTime: currentElapsedTime,
             highscore: newHighscore,
             startTimestamp: null,

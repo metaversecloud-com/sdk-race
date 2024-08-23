@@ -8,7 +8,9 @@ import Loading from "@components/Shared/Loading";
 
 // context
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
-import { cancelRace, completeRace } from "@context/actions";
+
+// utils
+import { cancelRace, completeRace } from "@utils";
 
 const RaceInProgressScreen = () => {
   const positiveAudioRef = useRef(null);
@@ -54,43 +56,58 @@ const RaceInProgressScreen = () => {
       const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
       eventSource.onmessage = function (event) {
         const newEvent = JSON.parse(event.data);
-        setCheckpoints((prevCheckpoints) => {
-          const currentCheckpointIndex = prevCheckpoints.findIndex(
-            (checkpoint) => checkpoint?.id === newEvent?.checkpointNumber,
-          );
-          const isCheckpointInCorrectOrder =
-            currentCheckpointIndex !== -1 &&
-            newEvent?.checkpointNumber === currentCheckpointIndex + 1 &&
-            (currentCheckpointIndex === 0 || prevCheckpoints[currentCheckpointIndex - 1].completed);
-
-          const updatedCheckpoints = prevCheckpoints?.map((checkpoint) => {
-            if (checkpoint?.id === newEvent?.checkpointNumber && isCheckpointInCorrectOrder) {
-              if (
-                newEvent?.checkpointNumber !== undefined &&
-                newEvent?.checkpointNumber !== 0 &&
-                !checkpoint.completed
-              ) {
-                setAudioQueue((prevQueue) => [...prevQueue, positiveAudioRef.current]);
-              }
-              return { ...checkpoint, completed: true };
-            }
-            return checkpoint;
+        if (newEvent.checkpointsCompleted) {
+          const updatedCheckpoints = checkpoints.map((checkpoint, index) => {
+            return {
+              ...checkpoint,
+              completed: newEvent.checkpointsCompleted[index] || false,
+            };
           });
+          setCheckpoints(updatedCheckpoints);
+          setAudioQueue((prevQueue) => [...prevQueue, negativeAudioRef.current]);
+        } else {
+          setCheckpoints((prevCheckpoints) => {
+            const currentCheckpointIndex = prevCheckpoints.findIndex(
+              (checkpoint) => checkpoint?.id === newEvent?.checkpointNumber,
+            );
+            const isCheckpointInCorrectOrder =
+              currentCheckpointIndex !== -1 &&
+              newEvent?.checkpointNumber === currentCheckpointIndex + 1 &&
+              (currentCheckpointIndex === 0 || prevCheckpoints[currentCheckpointIndex - 1].completed);
 
-          const allCheckpointsCompleted = updatedCheckpoints?.every((checkpoint) => checkpoint.completed);
-          if (newEvent?.checkpointNumber === 0 && allCheckpointsCompleted && newEvent?.currentRaceFinishedElapsedTime) {
-            setIsFinishComplete(true);
-            setCurrentFinishedElapsedTime(newEvent.currentRaceFinishedElapsedTime);
-          }
+            const updatedCheckpoints = prevCheckpoints?.map((checkpoint) => {
+              if (checkpoint?.id === newEvent?.checkpointNumber && isCheckpointInCorrectOrder) {
+                if (
+                  newEvent?.checkpointNumber !== undefined &&
+                  newEvent?.checkpointNumber !== 0 &&
+                  !checkpoint.completed
+                ) {
+                  setAudioQueue((prevQueue) => [...prevQueue, positiveAudioRef.current]);
+                }
+                return { ...checkpoint, completed: true };
+              }
+              return checkpoint;
+            });
 
-          if (!isCheckpointInCorrectOrder) {
-            if (newEvent?.checkpointNumber !== undefined && newEvent?.checkpointNumber !== 0) {
-              setAudioQueue((prevQueue) => [...prevQueue, negativeAudioRef.current]);
+            const allCheckpointsCompleted = updatedCheckpoints?.every((checkpoint) => checkpoint.completed);
+            if (
+              newEvent?.checkpointNumber === 0 &&
+              allCheckpointsCompleted &&
+              newEvent?.currentRaceFinishedElapsedTime
+            ) {
+              setIsFinishComplete(true);
+              setCurrentFinishedElapsedTime(newEvent.currentRaceFinishedElapsedTime);
             }
-          }
 
-          return updatedCheckpoints;
-        });
+            if (!isCheckpointInCorrectOrder) {
+              if (newEvent?.checkpointNumber !== undefined && newEvent?.checkpointNumber !== 0) {
+                setAudioQueue((prevQueue) => [...prevQueue, negativeAudioRef.current]);
+              }
+            }
+
+            return updatedCheckpoints;
+          });
+        }
       };
       eventSource.onerror = (event) => {
         console.error("Server Event error:", event);

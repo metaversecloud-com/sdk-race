@@ -16,7 +16,7 @@ export const handleCancelRace = async (req, res) => {
     if (profileId) {
       world
         .updateDataObject({
-          [`${sceneDropId}.profiles.${profileId}.checkpoints`]: [],
+          [`${sceneDropId}.profiles.${profileId}.checkpoints`]: {},
           [`${sceneDropId}.profiles.${profileId}.elapsedTime`]: null,
           [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: null,
         })

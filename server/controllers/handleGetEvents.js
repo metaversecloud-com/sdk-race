@@ -4,13 +4,13 @@ import redisObj from "../redis/redis.js";
 export const handleGetEvents = async (req, res) => {
   try {
     const profileId = req.query.profileId;
-    if (!profileId) {
-      return res.status(400).send("ProfileId required");
-    }
+    if (!profileId) return res.status(400).send("ProfileId required");
 
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
+    res.writeHead(200, {
+      "Connection": "keep-alive",
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+    });
 
     redisObj.addConn({ res, lastHeartbeatTime: Date.now() });
 
