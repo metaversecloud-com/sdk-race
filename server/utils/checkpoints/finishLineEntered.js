@@ -34,7 +34,7 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
         text: `You finished the race! Your time: ${currentElapsedTime}`,
       }),
       visitor.triggerParticle({
-        name: "Firework2_BlueGreen",
+        name: "trophy_float",
         duration: 3,
         position: { x, y },
       }),
