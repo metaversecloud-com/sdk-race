@@ -18,13 +18,6 @@ export const TOAST_GROUPS = {
   RACE: "race",
 };
 
-export const PARTICLE_EFFECTS = {
-  FINISH_LINE: {
-    name: "Firework2_BlueGreen",
-    duration: 3,
-  },
-};
-
 export const TIME_FORMATS = {
   PERFECT: "00:00:00",
 };
