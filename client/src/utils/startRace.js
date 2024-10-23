@@ -1,5 +1,5 @@
-import { backendAPI } from "@utils/backendAPI";
-import { START_RACE, SCREEN_MANAGER } from "@context/types";
+import { backendAPI, getErrorMessage } from "@utils";
+import { START_RACE, SCREEN_MANAGER, SET_ERROR } from "@context/types";
 
 export const startRace = async ({ dispatch }) => {
   try {
@@ -16,7 +16,9 @@ export const startRace = async ({ dispatch }) => {
       return result.data;
     } else return console.error("Error getting data object");
   } catch (error) {
-    console.error("error in startRace action");
-    console.error(error);
+    dispatch({
+      type: SET_ERROR,
+      payload: { error: getErrorMessage("starting", error) },
+    });
   }
 };

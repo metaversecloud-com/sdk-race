@@ -1,5 +1,5 @@
-import { backendAPI } from "@utils/backendAPI";
-import { SCREEN_MANAGER, CANCEL_RACE } from "@context/types";
+import { backendAPI, getErrorMessage } from "@utils";
+import { SCREEN_MANAGER, CANCEL_RACE, SET_ERROR } from "@context/types";
 
 export const cancelRace = async (dispatch) => {
   try {
@@ -9,7 +9,9 @@ export const cancelRace = async (dispatch) => {
       dispatch({ type: CANCEL_RACE });
     }
   } catch (error) {
-    console.error("error in cancel action");
-    console.error(error);
+    dispatch({
+      type: SET_ERROR,
+      payload: { error: getErrorMessage("canceling", error) },
+    });
   }
 };

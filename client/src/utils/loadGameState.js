@@ -1,5 +1,5 @@
-import { backendAPI } from "@utils/backendAPI";
-import { LOAD_GAME_STATE, SCREEN_MANAGER } from "@context/types";
+import { backendAPI, getErrorMessage } from "@utils";
+import { LOAD_GAME_STATE, SCREEN_MANAGER, SET_ERROR } from "@context/types";
 
 export const loadGameState = async (dispatch) => {
   try {
@@ -38,7 +38,9 @@ export const loadGameState = async (dispatch) => {
       }
     }
   } catch (error) {
-    console.error("error in startRace action");
-    console.error(error);
+    dispatch({
+      type: SET_ERROR,
+      payload: { error: getErrorMessage("loading", error) },
+    });
   }
 };

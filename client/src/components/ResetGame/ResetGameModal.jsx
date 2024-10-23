@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 
 // context
 import { GlobalDispatchContext } from "@context/GlobalContext";
-import { RESET_GAME, SCREEN_MANAGER } from "@context/types";
+import { RESET_GAME, SCREEN_MANAGER, SET_ERROR } from "@context/types";
 
 // utils
-import { backendAPI } from "@utils/backendAPI";
+import { backendAPI, getErrorMessage } from "@utils";
 
 function ResetGameModal({ handleToggleShowModal, setMessage }) {
   const dispatch = useContext(GlobalDispatchContext);
@@ -22,8 +22,10 @@ function ResetGameModal({ handleToggleShowModal, setMessage }) {
         setMessage("The game and leaderboard have been reset successfully.");
       }
     } catch (error) {
-      setMessage("There was an error resetting the game and leaderboard. Try again later or contact support.");
-      console.error(error);
+      dispatch({
+        type: SET_ERROR,
+        payload: { error: getErrorMessage("resetting", error) },
+      });
     } finally {
       setAreAllButtonsDisabled(false);
       handleToggleShowModal();

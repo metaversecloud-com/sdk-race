@@ -18,7 +18,7 @@ import { backendAPI, loadGameState } from "@utils";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { screenManager, isAdmin } = useContext(GlobalStateContext);
+  const { error, screenManager, isAdmin } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -50,6 +50,7 @@ function Home() {
       {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
       {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
+      {error && <p className="p3 pt-10 text-center text-error">{error}</p>}
     </div>
   );
 }
