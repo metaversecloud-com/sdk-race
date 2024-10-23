@@ -1,5 +1,5 @@
-import { backendAPI } from "@utils/backendAPI";
-import { COMPLETE_RACE } from "@context/types";
+import { backendAPI, getErrorMessage } from "@utils";
+import { SET_ERROR, COMPLETE_RACE } from "@context/types";
 
 export const completeRace = async ({ dispatch, currentFinishedElapsedTime }) => {
   try {
@@ -13,7 +13,9 @@ export const completeRace = async ({ dispatch, currentFinishedElapsedTime }) => 
       });
     }
   } catch (error) {
-    console.error("error in startRace action");
-    console.error(error);
+    dispatch({
+      type: SET_ERROR,
+      payload: { error: getErrorMessage("conpleting", error) },
+    });
   }
 };

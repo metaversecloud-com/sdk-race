@@ -1,3 +1,4 @@
+export const SET_ERROR = "SET_ERROR";
 export const LOAD_GAME_STATE = "LOAD_GAME_STATE";
 export const SET_INTERACTIVE_PARAMS = "SET_INTERACTIVE_PARAMS";
 export const START_RACE = "START_RACE";
