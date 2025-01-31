@@ -19,11 +19,14 @@ export const checkpointEntered = async ({ checkpointNumber, currentTimestamp, cr
       text: ENCOURAGEMENT_MESSAGES[checkpointNumber % ENCOURAGEMENT_MESSAGES.length],
     });
 
-    await world.updateDataObject({
-      [`${sceneDropId}.profiles.${profileId}.checkpoints.${checkpointNumber - 1}`]: true,
-      [`${sceneDropId}.profiles.${profileId}.elapsedTime`]: currentElapsedTime,
-      [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
-    });
+    await world.updateDataObject(
+      {
+        [`${sceneDropId}.profiles.${profileId}.checkpoints.${checkpointNumber - 1}`]: true,
+        [`${sceneDropId}.profiles.${profileId}.elapsedTime`]: currentElapsedTime,
+        [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
+      },
+      { analytics: [{ analyticName: `checkpointEntered${checkpointNumber}`, profileId, uniqueKey: profileId }] },
+    );
 
     return;
   } catch (error) {
