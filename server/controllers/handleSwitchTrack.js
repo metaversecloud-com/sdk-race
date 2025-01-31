@@ -3,7 +3,7 @@ import { World, Visitor, errorHandler, getCredentials } from "../utils/index.js"
 export const handleSwitchTrack = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { assetId, interactiveNonce, interactivePublicKey, urlSlug, visitorId, sceneDropId } = credentials;
+    const { assetId, profileId, interactiveNonce, interactivePublicKey, urlSlug, visitorId, sceneDropId } = credentials;
     const { trackSceneId } = req.query;
 
     const world = await World.create(urlSlug, { credentials });
@@ -50,10 +50,13 @@ export const handleSwitchTrack = async (req, res) => {
       isPartial: true,
     });
 
-    await world.updateDataObject({
-      [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
-      [`${sceneDropId}.profiles`]: {},
-    });
+    await world.updateDataObject(
+      {
+        [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+        [`${sceneDropId}.profiles`]: {},
+      },
+      { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId }] },
+    );
 
     await visitor.closeIframe(assetId);
 
