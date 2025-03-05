@@ -33,7 +33,6 @@ export const handleRaceStart = async (req, res) => {
     });
 
     // reset race data in World data object)
-    await world.fetchDataObject();
     await world.updateDataObject(
       {
         [`${sceneDropId}.profiles.${profileId}.checkpoints`]: {},
