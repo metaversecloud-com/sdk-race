@@ -16,7 +16,7 @@ export const errorHandler = ({ error, functionName, message, req, res }) => {
             reqQueryParams,
             reqBody: req?.body,
           },
-          error,
+          error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
         }),
       );
     }
