@@ -19,13 +19,7 @@ export const handleRaceStart = async (req, res) => {
         uniqueName: "race-track-start",
       })
     )?.[0];
-    const visitor = await Visitor.get(visitorId, urlSlug, {
-      credentials: {
-        interactiveNonce,
-        interactivePublicKey,
-        visitorId,
-      },
-    });
+    const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
     await visitor.moveVisitor({
       shouldTeleportVisitor: true,
       x: startCheckpoint?.position?.x,
