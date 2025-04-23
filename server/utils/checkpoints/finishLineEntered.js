@@ -1,3 +1,4 @@
+import { WorldActivityType } from "@rtsdk/topia";
 import { Visitor } from "../topiaInit.js";
 import { timeToValue } from "../utils.js";
 
@@ -11,6 +12,8 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
 
     const newHighscore =
       !highscore || timeToValue(currentElapsedTime) < timeToValue(highscore) ? currentElapsedTime : highscore;
+
+    if (newHighscore !== highscore) world.triggerActivity({ type: WorldActivityType.GAME_HIGH_SCORE, assetId });
 
     const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
     const { x, y } = visitor.moveTo;

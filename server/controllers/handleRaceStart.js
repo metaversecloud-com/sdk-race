@@ -1,16 +1,18 @@
 import { addNewRowToGoogleSheets, Visitor, World, errorHandler, getCredentials } from "../utils/index.js";
 import redisObj from "../redis/redis.js";
+import { WorldActivityType } from "@rtsdk/topia";
 
 export const handleRaceStart = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, sceneDropId } = credentials;
+    const { assetId, urlSlug, visitorId, profileId, sceneDropId } = credentials;
     const { identityId, displayName } = req.query;
     const startTimestamp = Date.now();
 
     redisObj.set(profileId, JSON.stringify({ 0: false }));
 
     const world = World.create(urlSlug, { credentials });
+    world.triggerActivity({ type: WorldActivityType.GAME_ON, assetId });
 
     // move visitor to start line asset
     const startCheckpoint = (
