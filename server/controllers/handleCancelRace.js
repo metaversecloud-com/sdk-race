@@ -3,6 +3,7 @@ import { errorHandler, getCredentials, World } from "../utils/index.js";
 export const handleCancelRace = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
+    const { urlSlug, profileId, sceneDropId } = credentials;
 
     const world = await World.create(urlSlug, { credentials });
 
