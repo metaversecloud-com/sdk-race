@@ -33,11 +33,7 @@ export const handleSwitchTrack = async (req, res) => {
       droppedAssetIds.push(allRaceAssets?.[raceAsset]?.id);
     }
 
-    await World.deleteDroppedAssets(urlSlug, droppedAssetIds, process.env.INTERACTIVE_SECRET, {
-      interactiveNonce,
-      interactivePublicKey,
-      visitorId,
-    });
+    await World.deleteDroppedAssets(urlSlug, droppedAssetIds, process.env.INTERACTIVE_SECRET, credentials);
 
     await world.dropScene({
       sceneId: trackSceneId,

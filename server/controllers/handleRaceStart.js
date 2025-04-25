@@ -1,16 +1,18 @@
 import { addNewRowToGoogleSheets, Visitor, World, errorHandler, getCredentials } from "../utils/index.js";
 import redisObj from "../redis/redis.js";
+import { WorldActivityType } from "@rtsdk/topia";
 
 export const handleRaceStart = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, profileId, sceneDropId } = credentials;
+    const { assetId, urlSlug, visitorId, profileId, sceneDropId } = credentials;
     const { identityId, displayName } = req.query;
     const startTimestamp = Date.now();
 
     redisObj.set(profileId, JSON.stringify({ 0: false }));
 
     const world = World.create(urlSlug, { credentials });
+    world.triggerActivity({ type: WorldActivityType.GAME_ON, assetId });
 
     // move visitor to start line asset
     const startCheckpoint = (
@@ -19,13 +21,7 @@ export const handleRaceStart = async (req, res) => {
         uniqueName: "race-track-start",
       })
     )?.[0];
-    const visitor = await Visitor.get(visitorId, urlSlug, {
-      credentials: {
-        interactiveNonce,
-        interactivePublicKey,
-        visitorId,
-      },
-    });
+    const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
     await visitor.moveVisitor({
       shouldTeleportVisitor: true,
       x: startCheckpoint?.position?.x,
@@ -33,7 +29,6 @@ export const handleRaceStart = async (req, res) => {
     });
 
     // reset race data in World data object)
-    await world.fetchDataObject();
     await world.updateDataObject(
       {
         [`${sceneDropId}.profiles.${profileId}.checkpoints`]: {},

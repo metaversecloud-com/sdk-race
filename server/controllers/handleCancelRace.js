@@ -1,15 +1,9 @@
-import { errorHandler, World } from "../utils/index.js";
+import { errorHandler, getCredentials, World } from "../utils/index.js";
 
 export const handleCancelRace = async (req, res) => {
   try {
-    const { interactiveNonce, interactivePublicKey, urlSlug, visitorId, assetId, profileId, sceneDropId } = req.query;
-
-    const credentials = {
-      interactiveNonce,
-      interactivePublicKey,
-      visitorId,
-      assetId,
-    };
+    const credentials = getCredentials(req.query);
+    const { urlSlug, profileId, sceneDropId } = credentials;
 
     const world = await World.create(urlSlug, { credentials });
 
