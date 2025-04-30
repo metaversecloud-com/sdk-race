@@ -24,7 +24,10 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
       { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
     );
 
-    if (newHighscore !== highscore) world.triggerActivity({ type: WorldActivityType.GAME_HIGH_SCORE, assetId });
+    if (newHighscore !== highscore)
+      world.triggerActivity({ type: WorldActivityType.GAME_HIGH_SCORE, assetId }).catch((error) => {
+        console.error("Error triggering activity:", error);
+      });
 
     const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
     const { x, y } = visitor.moveTo;
