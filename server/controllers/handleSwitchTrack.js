@@ -3,7 +3,7 @@ import { World, Visitor, errorHandler, getCredentials } from "../utils/index.js"
 export const handleSwitchTrack = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { assetId, profileId, interactiveNonce, interactivePublicKey, urlSlug, visitorId, sceneDropId } = credentials;
+    const { assetId, profileId, urlSlug, visitorId, sceneDropId } = credentials;
     const { trackSceneId } = req.query;
 
     const world = await World.create(urlSlug, { credentials });
@@ -41,6 +41,8 @@ export const handleSwitchTrack = async (req, res) => {
       sceneDropId,
     });
 
+    await visitor.closeIframe(assetId);
+
     const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
       uniqueName: "race-track-checkpoint",
       isPartial: true,
@@ -53,8 +55,6 @@ export const handleSwitchTrack = async (req, res) => {
       },
       { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId }] },
     );
-
-    await visitor.closeIframe(assetId);
 
     return res.json({ success: true });
   } catch (error) {

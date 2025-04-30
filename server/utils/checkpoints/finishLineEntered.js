@@ -4,7 +4,7 @@ import { timeToValue } from "../utils.js";
 
 export const finishLineEntered = async ({ credentials, currentElapsedTime, profileObject, raceObject, world }) => {
   try {
-    const { profileId, sceneDropId, urlSlug, visitorId } = credentials;
+    const { profileId, sceneDropId, urlSlug, username, visitorId } = credentials;
     const { checkpoints, highscore } = profileObject;
     const allCheckpointsCompleted = raceObject.numberOfCheckpoints === Object.keys(checkpoints).length;
 
@@ -19,6 +19,7 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
         [`${sceneDropId}.profiles.${profileId}.elapsedTime`]: currentElapsedTime,
         [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: null,
         [`${sceneDropId}.profiles.${profileId}.highscore`]: newHighscore,
+        [`${sceneDropId}.profiles.${profileId}.username`]: username,
       },
       { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
     );
