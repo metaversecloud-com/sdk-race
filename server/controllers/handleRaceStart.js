@@ -12,9 +12,13 @@ export const handleRaceStart = async (req, res) => {
     redisObj.set(profileId, JSON.stringify({ 0: false }));
 
     const world = World.create(urlSlug, { credentials });
-    world.triggerActivity({ type: WorldActivityType.GAME_ON, assetId }).catch((error) => {
-      console.error("Error triggering activity:", error);
-    });
+    world.triggerActivity({ type: WorldActivityType.GAME_ON, assetId }).catch((error) =>
+      errorHandler({
+        error,
+        functionName: "handleRaceStart",
+        message: "Error triggering world activity",
+      }),
+    );
 
     // move visitor to start line asset
     const startCheckpoint = (
