@@ -25,23 +25,44 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
     );
 
     if (newHighscore !== highscore)
-      world.triggerActivity({ type: WorldActivityType.GAME_HIGH_SCORE, assetId }).catch((error) => {
-        console.error("Error triggering activity:", error);
-      });
+      world.triggerActivity({ type: WorldActivityType.GAME_HIGH_SCORE, assetId }).catch((error) =>
+        errorHandler({
+          error,
+          functionName: "finishLineEntered",
+          message: "Error triggering world activity",
+        }),
+      );
 
     const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
     const { x, y } = visitor.moveTo;
 
-    visitor.fireToast({
-      groupId: "race",
-      title: "🏁 Finish",
-      text: `You finished the race! Your time: ${currentElapsedTime}`,
-    });
-    visitor.triggerParticle({
-      name: "trophy_float",
-      duration: 3,
-      position: { x, y },
-    });
+    visitor
+      .fireToast({
+        groupId: "race",
+        title: "🏁 Finish",
+        text: `You finished the race! Your time: ${currentElapsedTime}`,
+      })
+      .catch((error) =>
+        errorHandler({
+          error,
+          functionName: "finishLineEntered",
+          message: "Error firing toast",
+        }),
+      );
+
+    visitor
+      .triggerParticle({
+        name: "trophy_float",
+        duration: 3,
+        position: { x, y },
+      })
+      .catch((error) =>
+        errorHandler({
+          error,
+          functionName: "finishLineEntered",
+          message: "Error triggering particle effects",
+        }),
+      );
 
     return;
   } catch (error) {

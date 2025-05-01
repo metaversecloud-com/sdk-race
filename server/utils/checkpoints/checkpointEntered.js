@@ -13,11 +13,19 @@ export const checkpointEntered = async ({ checkpointNumber, currentTimestamp, cr
     const currentElapsedTime = !startTimestamp ? null : formatElapsedTime(currentTimestamp - startTimestamp);
 
     const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
-    await visitor.fireToast({
-      groupId: "race",
-      title: `✅ Checkpoint ${checkpointNumber}`,
-      text: ENCOURAGEMENT_MESSAGES[checkpointNumber % ENCOURAGEMENT_MESSAGES.length],
-    });
+    await visitor
+      .fireToast({
+        groupId: "race",
+        title: `✅ Checkpoint ${checkpointNumber}`,
+        text: ENCOURAGEMENT_MESSAGES[checkpointNumber % ENCOURAGEMENT_MESSAGES.length],
+      })
+      .catch((error) =>
+        errorHandler({
+          error,
+          functionName: "checkpointEntered",
+          message: "Error firing toast",
+        }),
+      );
 
     await world.updateDataObject(
       {

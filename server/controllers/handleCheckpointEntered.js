@@ -27,11 +27,19 @@ export const handleCheckpointEntered = async (req, res) => {
           checkpointsCompleted: cachedCheckpoints,
         });
         const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
-        await visitor.fireToast({
-          groupId: "race",
-          title: "❌ Wrong checkpoint",
-          text: "Oops! Go back. You missed a checkpoint!",
-        });
+        await visitor
+          .fireToast({
+            groupId: "race",
+            title: "❌ Wrong checkpoint",
+            text: "Oops! Go back. You missed a checkpoint!",
+          })
+          .catch((error) =>
+            errorHandler({
+              error,
+              functionName: "handleCheckpointEntered",
+              message: "Error firing toast",
+            }),
+          );
         return;
       } else {
         redisObj.publish(channel, {
