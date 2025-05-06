@@ -41,7 +41,13 @@ export const handleSwitchTrack = async (req, res) => {
       sceneDropId,
     });
 
-    await visitor.closeIframe(assetId);
+    visitor.closeIframe(assetId).catch((error) =>
+      errorHandler({
+        error,
+        functionName: "handleSwitchTrack",
+        message: "Error closing iframe",
+      }),
+    );
 
     const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
       uniqueName: "race-track-checkpoint",
