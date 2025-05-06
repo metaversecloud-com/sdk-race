@@ -33,6 +33,14 @@ export const handleSwitchTrack = async (req, res) => {
       droppedAssetIds.push(allRaceAssets?.[raceAsset]?.id);
     }
 
+    await visitor.closeIframe(assetId).catch((error) =>
+      errorHandler({
+        error,
+        functionName: "handleSwitchTrack",
+        message: "Error closing iframe",
+      }),
+    );
+
     await World.deleteDroppedAssets(urlSlug, droppedAssetIds, process.env.INTERACTIVE_SECRET, credentials);
 
     await world.dropScene({
@@ -40,14 +48,6 @@ export const handleSwitchTrack = async (req, res) => {
       position: trackContainerAsset?.position,
       sceneDropId,
     });
-
-    visitor.closeIframe(assetId).catch((error) =>
-      errorHandler({
-        error,
-        functionName: "handleSwitchTrack",
-        message: "Error closing iframe",
-      }),
-    );
 
     const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
       uniqueName: "race-track-checkpoint",
