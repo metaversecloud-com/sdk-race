@@ -1,4 +1,4 @@
-import { World, Visitor, errorHandler, getCredentials } from "../utils/index.js";
+import { DroppedAsset, World, Visitor, errorHandler, getCredentials } from "../utils/index.js";
 
 export const handleSwitchTrack = async (req, res) => {
   try {
@@ -22,15 +22,23 @@ export const handleSwitchTrack = async (req, res) => {
       return raceAsset.uniqueName === "race-track-container";
     });
 
-    if (!trackContainerAsset || !trackContainerAsset?.position) {
-      return res.status(404).json({
-        msg: "Race Track Container asset not found. Please surround the race with a big rectangle object with race-track-container uniqueName",
-      });
+    let position = trackContainerAsset?.position;
+    if (!trackContainerAsset || !position) {
+      await world.fetchDataObject();
+      position = world.dataObject?.[sceneDropId]?.position;
+      if (!position) {
+        return res.status(404).json({
+          msg: "Race Track Container asset not found. Please surround the race with a big rectangle object with race-track-container uniqueName",
+        });
+      }
     }
 
     let droppedAssetIds = [];
+
     for (const raceAsset in allRaceAssets) {
-      droppedAssetIds.push(allRaceAssets?.[raceAsset]?.id);
+      if (allRaceAssets?.[raceAsset]?.id !== assetId) {
+        droppedAssetIds.push(allRaceAssets?.[raceAsset]?.id);
+      }
     }
 
     await visitor.closeIframe(assetId).catch((error) =>
@@ -45,7 +53,7 @@ export const handleSwitchTrack = async (req, res) => {
 
     await world.dropScene({
       sceneId: trackSceneId,
-      position: trackContainerAsset?.position,
+      position,
       sceneDropId,
     });
 
@@ -58,9 +66,13 @@ export const handleSwitchTrack = async (req, res) => {
       {
         [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
         [`${sceneDropId}.profiles`]: {},
+        [`${sceneDropId}.position`]: position,
       },
       { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId }] },
     );
+
+    const droppedAsset = DroppedAsset.create(assetId, urlSlug, { credentials });
+    await droppedAsset.deleteDroppedAsset();
 
     return res.json({ success: true });
   } catch (error) {
