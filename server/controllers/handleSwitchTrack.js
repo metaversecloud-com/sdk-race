@@ -52,6 +52,7 @@ export const handleSwitchTrack = async (req, res) => {
     await World.deleteDroppedAssets(urlSlug, droppedAssetIds, process.env.INTERACTIVE_SECRET, credentials);
 
     await world.dropScene({
+      allowNonAdmins: true,
       sceneId: trackSceneId,
       position,
       sceneDropId,
