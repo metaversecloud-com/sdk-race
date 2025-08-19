@@ -1,4 +1,5 @@
-import { World, errorHandler, getCredentials } from "../utils/index.js";
+import { DEFAULT_PROGRESS } from "../constants.js";
+import { World, errorHandler, getCredentials, updateVisitorProgress } from "../utils/index.js";
 
 export const handleResetGame = async (req, res) => {
   try {
@@ -16,8 +17,17 @@ export const handleResetGame = async (req, res) => {
 
     await world.updateDataObject({
       [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
-      [`${sceneDropId}.profiles`]: {},
+      [`${sceneDropId}.leaderboard`]: {},
     });
+
+    const { visitor } = await getVisitor(credentials);
+
+    const updateVisitorResult = await updateVisitorProgress({
+      credentials,
+      updatedProgress: DEFAULT_PROGRESS,
+      visitor,
+    });
+    if (updateVisitorResult instanceof Error) throw updateVisitorResult;
 
     return res.json({ success: true });
   } catch (error) {

@@ -1,30 +1,24 @@
 import { WorldActivityType } from "@rtsdk/topia";
-import { Visitor } from "../topiaInit.js";
-import { timeToValue } from "../utils.js";
+import { World, errorHandler, getVisitor, timeToValue, updateVisitorProgress } from "../index.js";
 
-export const finishLineEntered = async ({ credentials, currentElapsedTime, profileObject, raceObject, world }) => {
+export const finishLineEntered = async ({ credentials, currentElapsedTime }) => {
   try {
-    const { profileId, sceneDropId, urlSlug, username, visitorId } = credentials;
-    const { checkpoints, highscore } = profileObject;
-    const allCheckpointsCompleted = raceObject.numberOfCheckpoints === Object.keys(checkpoints).length;
+    const { assetId, displayName, profileId, sceneDropId, urlSlug } = credentials;
 
+    const world = World.create(urlSlug, { credentials });
+    await world.fetchDataObject();
+    const raceObject = world.dataObject?.[sceneDropId] || {};
+
+    const { visitor, visitorProgress } = await getVisitor(credentials);
+    const { checkpoints, highScore } = visitorProgress;
+
+    const allCheckpointsCompleted = raceObject.numberOfCheckpoints === Object.keys(checkpoints).length;
     if (!allCheckpointsCompleted) return;
 
-    const newHighscore =
-      !highscore || timeToValue(currentElapsedTime) < timeToValue(highscore) ? currentElapsedTime : highscore;
+    const newHighScore =
+      !highScore || timeToValue(currentElapsedTime) < timeToValue(highScore) ? currentElapsedTime : highScore;
 
-    await world.updateDataObject(
-      {
-        [`${sceneDropId}.profiles.${profileId}.checkpoints`]: {},
-        [`${sceneDropId}.profiles.${profileId}.elapsedTime`]: currentElapsedTime,
-        [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: null,
-        [`${sceneDropId}.profiles.${profileId}.highscore`]: newHighscore,
-        [`${sceneDropId}.profiles.${profileId}.username`]: username,
-      },
-      { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
-    );
-
-    if (newHighscore !== highscore)
+    if (newHighScore !== highScore) {
       world.triggerActivity({ type: WorldActivityType.GAME_HIGH_SCORE, assetId }).catch((error) =>
         errorHandler({
           error,
@@ -32,9 +26,25 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
           message: "Error triggering world activity",
         }),
       );
+    }
 
-    const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
-    const { x, y } = visitor.moveTo;
+    await world.updateDataObject({
+      [`${sceneDropId}.leaderboard.${profileId}`]: `${displayName}|${newHighScore}`,
+    });
+
+    const updateVisitorResult = await updateVisitorProgress({
+      credentials,
+      options: { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
+      updatedProgress: {
+        checkpoints: {},
+        elapsedTime: currentElapsedTime,
+        startTimestamp: null,
+        highScore: newHighScore,
+      },
+      visitor,
+      visitorProgress,
+    });
+    if (updateVisitorResult instanceof Error) throw updateVisitorResult;
 
     visitor
       .fireToast({
@@ -54,7 +64,6 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
       .triggerParticle({
         name: "trophy_float",
         duration: 3,
-        position: { x, y },
       })
       .catch((error) =>
         errorHandler({
@@ -66,6 +75,6 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, profi
 
     return;
   } catch (error) {
-    return error;
+    return new Error(error);
   }
 };

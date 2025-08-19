@@ -1,11 +1,11 @@
 import {
   getCredentials,
-  World,
   errorHandler,
-  checkpointZeroEntered,
   finishLineEntered,
   checkpointEntered,
   Visitor,
+  getVisitor,
+  getElapsedTime,
 } from "../utils/index.js";
 import { CHECKPOINT_NAMES } from "../constants.js";
 import redisObj from "../redis/redis.js";
@@ -13,14 +13,22 @@ import redisObj from "../redis/redis.js";
 export const handleCheckpointEntered = async (req, res) => {
   try {
     const credentials = getCredentials(req.body);
-    const { profileId, sceneDropId, urlSlug, visitorId } = credentials;
+    const { profileId, urlSlug, visitorId } = credentials;
     const { uniqueName } = req.body;
     const channel = `${process.env.INTERACTIVE_KEY}_RACE`;
 
+    const { visitorProgress } = await getVisitor(credentials);
+    const { startTimestamp } = visitorProgress;
+
+    const currentTimestamp = Date.now();
+    const currentElapsedTime = getElapsedTime(currentTimestamp, startTimestamp);
     const checkpointNumber = uniqueName === CHECKPOINT_NAMES.START ? 0 : parseInt(uniqueName.split("-").pop(), 10);
 
+    if (!startTimestamp) return { success: false, message: "Race has not started yet" };
+
+    const cachedCheckpoints = JSON.parse(await redisObj.get(profileId)) || {};
+
     if (checkpointNumber !== 0) {
-      const cachedCheckpoints = JSON.parse(await redisObj.get(profileId)) || {};
       if (checkpointNumber > 1 && !cachedCheckpoints[checkpointNumber - 2]) {
         redisObj.publish(channel, {
           profileId,
@@ -52,25 +60,22 @@ export const handleCheckpointEntered = async (req, res) => {
       }
     }
 
-    const world = World.create(urlSlug, { credentials });
-    const dataObject = await world.fetchDataObject();
-    const raceObject = dataObject?.[sceneDropId] || {};
-    const profileObject = raceObject?.profiles?.[profileId] || {};
-
-    const { startTimestamp } = profileObject;
-    if (!startTimestamp) return { success: false, message: "Race has not started yet" };
-    const currentTimestamp = Date.now();
-
     if (checkpointNumber === 0) {
-      const currentElapsedTime = checkpointZeroEntered(currentTimestamp, profileObject);
       redisObj.publish(channel, {
         profileId,
         checkpointNumber,
         currentRaceFinishedElapsedTime: currentElapsedTime,
       });
-      await finishLineEntered({ credentials, currentElapsedTime, profileObject, raceObject, world });
+      const result = await finishLineEntered({ credentials, currentElapsedTime });
+      if (result instanceof Error) throw result;
     } else {
-      await checkpointEntered({ checkpointNumber, currentTimestamp, credentials, profileObject, world });
+      const result = await checkpointEntered({
+        checkpoints: cachedCheckpoints,
+        checkpointNumber,
+        currentElapsedTime,
+        credentials,
+      });
+      if (result instanceof Error) throw result;
     }
 
     return res.status(200).json({ success: true });

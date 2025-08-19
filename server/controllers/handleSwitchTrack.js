@@ -1,20 +1,21 @@
-import { DroppedAsset, World, Visitor, errorHandler, getCredentials } from "../utils/index.js";
+import { DEFAULT_PROGRESS } from "../constants.js";
+import {
+  DroppedAsset,
+  World,
+  errorHandler,
+  getCredentials,
+  getVisitor,
+  updateVisitorProgress,
+} from "../utils/index.js";
 
 export const handleSwitchTrack = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { assetId, profileId, urlSlug, visitorId, sceneDropId } = credentials;
+    const { assetId, profileId, urlSlug, sceneDropId } = credentials;
     const { trackSceneId } = req.query;
 
     const world = await World.create(urlSlug, { credentials });
-    const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
-
-    if (!visitor?.isAdmin) {
-      return res.status(403).json({
-        success: false,
-        msg: "The user is not an admin.",
-      });
-    }
+    const { visitor } = await getVisitor(credentials);
 
     const allRaceAssets = await world.fetchDroppedAssetsBySceneDropId({ sceneDropId });
 
@@ -66,11 +67,18 @@ export const handleSwitchTrack = async (req, res) => {
     await world.updateDataObject(
       {
         [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
-        [`${sceneDropId}.profiles`]: {},
+        [`${sceneDropId}.leaderboard`]: {},
         [`${sceneDropId}.position`]: position,
       },
       { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId }] },
     );
+
+    const updateVisitorResult = await updateVisitorProgress({
+      credentials,
+      updatedProgress: DEFAULT_PROGRESS,
+      visitor,
+    });
+    if (updateVisitorResult instanceof Error) throw updateVisitorResult;
 
     const droppedAsset = DroppedAsset.create(assetId, urlSlug, { credentials });
     await droppedAsset.deleteDroppedAsset();

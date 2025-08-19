@@ -10,7 +10,7 @@ export const loadGameState = async (dispatch) => {
         payload: {
           checkpointsCompleted: result.data.checkpointsCompleted,
           elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
-          highscore: result.data.highscore,
+          highScore: result.data.highScore,
           isAdmin: result.data.isAdmin,
           leaderboard: result.data.leaderboard,
           numberOfCheckpoints: result.data.numberOfCheckpoints,

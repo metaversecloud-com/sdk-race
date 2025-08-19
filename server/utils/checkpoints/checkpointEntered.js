@@ -1,18 +1,12 @@
-import { Visitor } from "../index.js";
-import { formatElapsedTime } from "../utils.js";
 import { ENCOURAGEMENT_MESSAGES } from "../../constants.js";
+import { getVisitor, updateVisitorProgress } from "../visitors/index.js";
 
-export const checkpointEntered = async ({ checkpointNumber, currentTimestamp, credentials, profileObject, world }) => {
+export const checkpointEntered = async ({ checkpoints, checkpointNumber, currentElapsedTime, credentials }) => {
   try {
-    const { profileId, sceneDropId, urlSlug, visitorId } = credentials;
-    const { checkpoints, startTimestamp } = profileObject;
+    const { profileId } = credentials;
 
-    if (checkpoints[checkpointNumber - 1]) return;
+    const { visitor, visitorProgress } = await getVisitor(credentials);
 
-    checkpoints[checkpointNumber - 1] = true;
-    const currentElapsedTime = !startTimestamp ? null : formatElapsedTime(currentTimestamp - startTimestamp);
-
-    const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
     await visitor
       .fireToast({
         groupId: "race",
@@ -27,17 +21,22 @@ export const checkpointEntered = async ({ checkpointNumber, currentTimestamp, cr
         }),
       );
 
-    await world.updateDataObject(
-      {
-        [`${sceneDropId}.profiles.${profileId}.checkpoints.${checkpointNumber - 1}`]: true,
-        [`${sceneDropId}.profiles.${profileId}.elapsedTime`]: currentElapsedTime,
-        [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
+    const result = await updateVisitorProgress({
+      credentials,
+      options: {
+        analytics: [{ analyticName: `checkpointEntered${checkpointNumber}`, profileId, uniqueKey: profileId }],
       },
-      { analytics: [{ analyticName: `checkpointEntered${checkpointNumber}`, profileId, uniqueKey: profileId }] },
-    );
+      updatedProgress: {
+        checkpoints,
+        elapsedTime: currentElapsedTime,
+      },
+      visitor,
+      visitorProgress,
+    });
+    if (result instanceof Error) throw result;
 
     return;
   } catch (error) {
-    return error;
+    return new Error(error);
   }
 };

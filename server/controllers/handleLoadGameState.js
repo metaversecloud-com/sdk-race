@@ -1,69 +1,93 @@
-import { Visitor, World, errorHandler, getCredentials } from "../utils/index.js";
+import { World, errorHandler, getCredentials, getVisitor } from "../utils/index.js";
 import { TRACKS } from "../constants.js";
 
 export const handleLoadGameState = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { urlSlug, profileId, sceneDropId, username, visitorId } = credentials;
+    const { urlSlug, sceneDropId } = credentials;
     const now = Date.now();
 
     const world = await World.create(urlSlug, { credentials });
+    await world.fetchDataObject();
 
-    const result = await Promise.all([world.fetchDataObject(), Visitor.get(visitorId, urlSlug, { credentials })]);
-    const visitor = result?.[1];
+    let sceneData = world.dataObject?.[sceneDropId];
+    let shouldUpdateWorldDataObject = false;
 
-    let data = world.dataObject || {};
-    let shouldUpdateDataObject = false,
-      shouldSetDataObject = !world.dataObject || Object.keys(world?.dataObject).length === 0;
-
-    if (data.race) {
-      data.race = { removedFromWorld: now };
-      shouldUpdateDataObject = true;
-    }
-
-    if (!data[sceneDropId]) {
-      const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
+    if (!sceneData) {
+      const checkpointAssets = await world.fetchDroppedAssetsWithUniqueName({
         uniqueName: "race-track-checkpoint",
         isPartial: true,
       });
 
-      data[sceneDropId] = {
-        profiles: {},
-        numberOfCheckpoints: numberOfCheckpoints?.length,
+      let count = 0;
+      for (const asset of checkpointAssets) {
+        if (asset.sceneDropId === sceneDropId) count++;
+      }
+
+      sceneData = {
+        numberOfCheckpoints: count,
+        leaderboard: {},
       };
-      shouldUpdateDataObject = true;
+      shouldUpdateWorldDataObject = true;
+    } else if (sceneData.profiles) {
+      let leaderboard = {};
+      for (const profileId in sceneData.profiles) {
+        const { username, highscore } = sceneData.profiles[profileId];
+        leaderboard[profileId] = `${username}|${highscore}`;
+      }
+      sceneData.leaderboard = leaderboard;
+      delete sceneData.profiles;
+      shouldUpdateWorldDataObject = true;
     }
 
-    const profile = data[sceneDropId]?.profiles?.[profileId] || {};
-
-    let startTimestamp = profile?.startTimestamp;
-
-    // restart client race if the elapsed time is higher than 3 minutes
-    if (!profile || (startTimestamp && now - startTimestamp > 180000)) {
-      profile.checkpoints = {};
-      profile.startTimestamp = null;
-      profile.elapsedTime = null;
-      profile.highscore = profile?.highscore;
-      profile.username = username;
-      data[sceneDropId].profiles[profileId] = profile;
-      shouldUpdateDataObject = true;
+    const lockId = `${sceneDropId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
+    if (!world.dataObject || Object.keys(world.dataObject).length === 0) {
+      await world.setDataObject(
+        {
+          [sceneDropId]: sceneData,
+        },
+        { lock: { lockId, releaseLock: true } },
+      );
+    } else if (shouldUpdateWorldDataObject) {
+      await world.updateDataObject(
+        {
+          [sceneDropId]: sceneData,
+        },
+        { lock: { lockId, releaseLock: true } },
+      );
     }
 
-    const lockId = `${sceneDropId}-${profileId}-${new Date(Math.round(new Date().getTime() / 60000) * 60000)}`;
-    if (shouldSetDataObject) {
-      await world.setDataObject(data, { lock: { lockId, releaseLock: true } });
-    } else if (shouldUpdateDataObject) {
-      await world.updateDataObject(data, { lock: { lockId, releaseLock: true } });
+    const { visitor, visitorProgress } = await getVisitor(credentials, true);
+    const { checkpoints, highScore, startTimestamp } = visitorProgress;
+
+    const leaderboard = [];
+    for (const profileId in sceneData.leaderboard) {
+      const data = sceneData.leaderboard[profileId];
+
+      const [displayName, highScore] = data.split("|");
+
+      leaderboard.push({
+        displayName,
+        highScore,
+      });
     }
+
+    // Sort leaderboard by highScore as time string (HH:MM:SS)
+    const timeToSeconds = (t) => {
+      if (!t) return Infinity;
+      const [h = "0", m = "0", s = "0"] = t.split(":");
+      return parseInt(h, 10) * 3600 + parseInt(m, 10) * 60 + parseInt(s, 10);
+    };
+    leaderboard.sort((a, b) => timeToSeconds(a.highScore) - timeToSeconds(b.highScore)).slice(0, 20);
 
     return res.json({
-      checkpointsCompleted: profile?.checkpoints,
-      elapsedTimeInSeconds: profile?.startTimestamp ? Math.floor((now - profile.startTimestamp) / 1000) : 0,
-      highscore: profile?.highscore,
+      checkpointsCompleted: checkpoints,
+      elapsedTimeInSeconds: startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0,
+      highScore,
       isAdmin: visitor.isAdmin,
-      leaderboard: data[sceneDropId]?.profiles,
-      numberOfCheckpoints: data[sceneDropId]?.numberOfCheckpoints,
-      startTimestamp: profile?.startTimestamp,
+      leaderboard,
+      numberOfCheckpoints: sceneData.numberOfCheckpoints,
+      startTimestamp,
       success: true,
       tracks: parseEnvJson(process.env.TRACKS) || TRACKS,
     });

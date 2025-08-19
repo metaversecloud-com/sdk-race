@@ -11,6 +11,7 @@ export const getCredentials = (query) => {
 
   return {
     assetId: query.assetId,
+    displayName: query.displayName,
     interactiveNonce: query.interactiveNonce,
     interactivePublicKey: query.interactivePublicKey,
     profileId: query.profileId,
