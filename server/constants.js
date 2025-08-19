@@ -40,3 +40,10 @@ export const TRACKS = [
     sceneId: "oXghmgohNPuaICPA9Ne5",
   },
 ];
+
+export const DEFAULT_PROGRESS = {
+  checkpoints: { 0: false },
+  elapsedTime: null,
+  highScore: null,
+  startTimestamp: null,
+};

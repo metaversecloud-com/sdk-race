@@ -1,3 +1,3 @@
 export * from "./checkpointEntered.js";
-export * from "./checkpointZeroEntered.js";
+export * from "./getElapsedTime.js";
 export * from "./finishLineEntered.js";

@@ -1,11 +1,18 @@
-import { addNewRowToGoogleSheets, Visitor, World, errorHandler, getCredentials } from "../utils/index.js";
+import {
+  addNewRowToGoogleSheets,
+  World,
+  errorHandler,
+  getCredentials,
+  getVisitor,
+  updateVisitorProgress,
+} from "../utils/index.js";
 import redisObj from "../redis/redis.js";
 import { WorldActivityType } from "@rtsdk/topia";
 
 export const handleRaceStart = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { assetId, urlSlug, visitorId, profileId, sceneDropId } = credentials;
+    const { assetId, urlSlug, profileId, sceneDropId } = credentials;
     const { identityId, displayName } = req.query;
     const startTimestamp = Date.now();
 
@@ -27,21 +34,26 @@ export const handleRaceStart = async (req, res) => {
         uniqueName: "race-track-start",
       })
     )?.[0];
-    const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
+
+    const { visitor, visitorProgress } = await getVisitor(credentials);
     await visitor.moveVisitor({
       shouldTeleportVisitor: true,
       x: startCheckpoint?.position?.x,
       y: startCheckpoint?.position?.y,
     });
 
-    // reset race data in World data object)
-    await world.updateDataObject(
-      {
-        [`${sceneDropId}.profiles.${profileId}.checkpoints`]: {},
-        [`${sceneDropId}.profiles.${profileId}.startTimestamp`]: startTimestamp,
+    // reset race data
+    const updateVisitorResult = await updateVisitorProgress({
+      credentials,
+      options: { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
+      updatedProgress: {
+        checkpoints: {},
+        startTimestamp,
       },
-      { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
-    );
+      visitor,
+      visitorProgress,
+    });
+    if (updateVisitorResult instanceof Error) throw updateVisitorResult;
 
     addNewRowToGoogleSheets({
       identityId,

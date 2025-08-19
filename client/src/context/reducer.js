@@ -74,7 +74,7 @@ const globalReducer = (state, action) => {
         ...state,
         checkpointsCompleted: payload.checkpointsCompleted,
         elapsedTimeInSeconds: payload.elapsedTimeInSeconds,
-        highscore: payload.highscore,
+        highScore: payload.highScore,
         isAdmin: payload.isAdmin,
         leaderboard: payload.leaderboard,
         numberOfCheckpoints: payload.numberOfCheckpoints,

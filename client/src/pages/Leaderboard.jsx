@@ -16,7 +16,7 @@ import { backendAPI, loadGameState } from "@utils";
 
 function Leaderboard() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { leaderboard, highscore, isAdmin } = useContext(GlobalStateContext);
+  const { leaderboard, highScore, isAdmin } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const location = useLocation();
@@ -36,23 +36,6 @@ function Leaderboard() {
     fetchGameState();
   }, [dispatch, backendAPI]);
 
-  const sortedLeaderboard = leaderboard
-    ? Object.entries(leaderboard)
-        .filter(([, playerData]) => playerData && playerData.highscore)
-        .sort(([, a], [, b]) => {
-          const aScore = a.highscore.split(":").map(Number);
-          const bScore = b.highscore.split(":").map(Number);
-
-          for (let i = 0; i < 3; i++) {
-            if (aScore[i] !== bScore[i]) {
-              return aScore[i] - bScore[i];
-            }
-          }
-          return 0;
-        })
-        .slice(0, 20)
-    : [];
-
   if (loading) return <Loading />;
 
   if (showSettings) return <AdminView setShowSettings={setShowSettings} />;
@@ -63,10 +46,10 @@ function Leaderboard() {
     <>
       {isAdmin && <AdminGear setShowSettings={setShowSettings} />}
       <div className="px-4 my-6">
-        <div className="highscore-container">
+        <div className="highScore-container">
           <div className="icon">🏅</div>
           <h3>Personal Best</h3>
-          <p>{highscore || "No highscore available"}</p>
+          <p>{highScore || "No highScore available"}</p>
         </div>
         <div className="icon pt-4">🏆</div>
         <div className="pb-4">
@@ -81,18 +64,20 @@ function Leaderboard() {
             </tr>
           </thead>
           <tbody>
-            {sortedLeaderboard?.length === 0 ? (
+            {leaderboard?.length === 0 ? (
               <tr>
                 <td colSpan="3">There are no race finishes yet.</td>
               </tr>
             ) : (
-              sortedLeaderboard?.map(([userId, entry], index) => (
-                <tr key={userId}>
-                  <td>{index + 1}</td>
-                  <td>{entry.username}</td>
-                  <td>{entry.highscore}</td>
-                </tr>
-              ))
+              leaderboard?.map((item, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{item.displayName}</td>
+                    <td>{item.highScore}</td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
