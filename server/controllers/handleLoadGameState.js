@@ -32,8 +32,8 @@ export const handleLoadGameState = async (req, res) => {
     } else if (sceneData.profiles) {
       let leaderboard = {};
       for (const profileId in sceneData.profiles) {
-        const { username, highScore } = sceneData.profiles[profileId];
-        leaderboard[profileId] = `${username}|${highScore}`;
+        const { username, highscore } = sceneData.profiles[profileId];
+        leaderboard[profileId] = `${username}|${highscore}`;
       }
       sceneData.leaderboard = leaderboard;
       delete sceneData.profiles;

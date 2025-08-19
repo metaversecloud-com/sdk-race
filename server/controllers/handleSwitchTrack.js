@@ -1,3 +1,4 @@
+import { DEFAULT_PROGRESS } from "../constants.js";
 import {
   DroppedAsset,
   World,
