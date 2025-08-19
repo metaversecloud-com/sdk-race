@@ -1,15 +1,11 @@
-import { formatElapsedTime } from "../utils.js";
 import { ENCOURAGEMENT_MESSAGES } from "../../constants.js";
 import { getVisitor, updateVisitorProgress } from "../visitors/index.js";
 
-export const checkpointEntered = async ({ checkpoints, checkpointNumber, currentTimestamp, credentials }) => {
+export const checkpointEntered = async ({ checkpoints, checkpointNumber, currentElapsedTime, credentials }) => {
   try {
     const { profileId } = credentials;
 
     const { visitor, visitorProgress } = await getVisitor(credentials);
-    const { startTimestamp } = visitorProgress;
-
-    const currentElapsedTime = !startTimestamp ? null : formatElapsedTime(currentTimestamp - startTimestamp);
 
     await visitor
       .fireToast({

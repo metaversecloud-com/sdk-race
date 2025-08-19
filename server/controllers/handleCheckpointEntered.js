@@ -67,16 +67,14 @@ export const handleCheckpointEntered = async (req, res) => {
         currentRaceFinishedElapsedTime: currentElapsedTime,
       });
       const result = await finishLineEntered({ credentials, currentElapsedTime });
-      console.log("🚀 ~ handleCheckpointEntered.js:70 ~ result:", result);
       if (result instanceof Error) throw result;
     } else {
       const result = await checkpointEntered({
         checkpoints: cachedCheckpoints,
         checkpointNumber,
-        currentTimestamp,
+        currentElapsedTime,
         credentials,
       });
-      console.log("🚀 ~ handleCheckpointEntered.js:79 ~ result:", result);
       if (result instanceof Error) throw result;
     }
 

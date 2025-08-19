@@ -1,5 +1,5 @@
 import { WorldActivityType } from "@rtsdk/topia";
-import { World, getVisitor, timeToValue, updateVisitorProgress } from "../index.js";
+import { World, errorHandler, getVisitor, timeToValue, updateVisitorProgress } from "../index.js";
 
 export const finishLineEntered = async ({ credentials, currentElapsedTime }) => {
   try {
