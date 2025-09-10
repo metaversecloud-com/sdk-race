@@ -1,24 +1,131 @@
-import { createClient } from "redis";
+import * as redis from "redis";
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
 
-const redisConfig = {
-  url: process.env.REDIS_URL,
-  socket: {
-    tls: process.env.REDIS_URL?.startsWith("rediss"),
-  },
+// Health/retry config
+const RAPID_RETRY_MAX = 10;
+const RAPID_ERROR_THRESHOLD = 5000; // ms
+
+// Publisher health state
+let pubRapidErrorCount = 0;
+let pubReconnectionAttempt = 0;
+let pubLastReconnectAttemptTime = null;
+let pubLastConnectionTime = null;
+
+// Subscriber health state
+let subRapidErrorCount = 0;
+let subReconnectionAttempt = 0;
+let subLastReconnectAttemptTime = null;
+let subLastConnectionTime = null;
+
+const getRedisHealth = (name) => {
+  const currentTime = Date.now();
+  const lastConnectionTime = name === "pub" ? pubLastConnectionTime : subLastConnectionTime;
+  const lastReconnectAttemptTime = name === "pub" ? pubLastReconnectAttemptTime : subLastReconnectAttemptTime;
+  const rapidReconnectCount = name === "pub" ? pubRapidErrorCount : subRapidErrorCount;
+  const reconnectCount = name === "pub" ? pubReconnectionAttempt : subReconnectionAttempt;
+  const status = rapidReconnectCount < RAPID_RETRY_MAX ? "OK" : "UNHEALTHY";
+  const timeSinceLastReconnectAttempt = lastReconnectAttemptTime ? currentTime - lastReconnectAttemptTime : null;
+
+  return {
+    status,
+    currentTime,
+    lastConnectionTime,
+    rapidReconnectCount,
+    reconnectCount,
+    timeSinceLastReconnectAttempt,
+  };
 };
 
-const redisObj = {
-  publisher: createClient(redisConfig),
-  subscriber: createClient(redisConfig),
+const handleRedisConnection = (client, name) => {
+  const { reconnectCount, currentTime, status } = getRedisHealth(name);
+  const info = reconnectCount ? `status: ${status}, reconnectCount: ${reconnectCount}` : `status: ${status}`;
+  console.log(`Redis connected - ${name} server, on process: ${process.pid}`, info);
+
+  if (name === "pub") pubLastConnectionTime = currentTime;
+  if (name === "sub") subLastConnectionTime = currentTime;
+
+  client.health = getRedisHealth(name);
+};
+
+const handleRedisReconnection = (name) => {
+  const { currentTime, timeSinceLastReconnectAttempt } = getRedisHealth(name);
+
+  if (name === "pub") {
+    pubLastReconnectAttemptTime = currentTime;
+    pubReconnectionAttempt++;
+    if (timeSinceLastReconnectAttempt && timeSinceLastReconnectAttempt < RAPID_ERROR_THRESHOLD) {
+      pubRapidErrorCount++;
+    }
+  }
+
+  if (name === "sub") {
+    subLastReconnectAttemptTime = currentTime;
+    subReconnectionAttempt++;
+    if (timeSinceLastReconnectAttempt && timeSinceLastReconnectAttempt < RAPID_ERROR_THRESHOLD) {
+      subRapidErrorCount++;
+    }
+  }
+};
+
+const handleRedisError = (name, error) => {
+  const { reconnectCount, rapidReconnectCount, status, timeSinceLastReconnectAttempt } = getRedisHealth(name);
+  const info = reconnectCount
+    ? `status: ${status}, reconnectCount: ${reconnectCount}, rapidReconnectCount: ${rapidReconnectCount} timeSinceLastReconnectAttempt: ${timeSinceLastReconnectAttempt}`
+    : `status: ${status}`;
+  console.error(`Redis error - ${name} server, on process: ${process.pid}, ${info}`);
+  console.error(`Redis error details - ${error}`);
+};
+
+function getRedisClient(url = process.env.REDIS_URL) {
+  let isClusterMode = false;
+  if (typeof process.env.REDIS_CLUSTER_MODE === "undefined") {
+    console.log("[Redis] Environment variable REDIS_CLUSTER_MODE is not set. Defaulting to false.");
+  } else {
+    isClusterMode = process.env.REDIS_CLUSTER_MODE === "true";
+  }
+
+  const safeUrl = url || "";
+  const parsedUrl = new URL(safeUrl);
+  const host = parsedUrl.hostname;
+  const port = parsedUrl.port ? parseInt(parsedUrl.port) : 6379;
+  const username = parsedUrl.username || "default";
+  const password = parsedUrl.password || "";
+  const tls = safeUrl.startsWith("rediss");
+
+  if (!isClusterMode) {
+    return redis.createClient({
+      socket: { host, port, tls },
+      username,
+      password,
+      url: safeUrl,
+    });
+  }
+
+  return redis.createCluster({
+    useReplicas: true,
+    rootNodes: [
+      {
+        url: safeUrl,
+        socket: { tls },
+      },
+    ],
+    defaults: { username, password },
+  });
+}
+
+const gameManager = {
+  publisher: getRedisClient(),
+  subscriber: getRedisClient(),
   connections: [],
   publish: function (channel, message) {
+    if (process.env.NODE_ENV === "development") console.log(`Publishing ${JSON.stringify(message)} on ${channel}`);
     this.publisher.publish(channel, JSON.stringify(message));
   },
   subscribe: function (channel) {
     this.subscriber.subscribe(channel, (message) => {
       const data = JSON.parse(message);
+      if (process.env.NODE_ENV === "development") console.log(`Event received on ${channel}:`, data);
       this.connections.forEach(({ res: existingConnection }) => {
         const { profileId } = existingConnection.req.query;
         if (data.profileId === profileId) {
@@ -29,7 +136,6 @@ const redisObj = {
   },
   addConn: function (connection) {
     const { profileId, interactiveNonce } = connection.res.req.query;
-
     if (
       this.connections.some(
         ({ res: existingConnection }) =>
@@ -37,7 +143,6 @@ const redisObj = {
           existingConnection.req.query.profileId === profileId,
       )
     ) {
-      // Replace old connection with new one
       this.connections.splice(
         this.connections.findIndex(
           ({ res: existingConnection }) =>
@@ -50,12 +155,16 @@ const redisObj = {
     } else {
       this.connections.push(connection);
     }
+    if (process.env.NODE_ENV === "development") {
+      console.log(`Connection ${interactiveNonce} added. Length is ${this.connections.length}`);
+    }
   },
   deleteConn: function () {
-    // Remove inactive connections older than 30 minutes
+    // Remove inactive connections older than 10 minutes
     this.connections = this.connections.filter(({ res, lastHeartbeatTime }) => {
-      const isActive = lastHeartbeatTime > Date.now() - 30 * 60 * 1000;
-      if (!isActive) {
+      const isActive = lastHeartbeatTime > Date.now() - 10 * 60 * 1000;
+      if (!isActive && process.env.NODE_ENV === "development") {
+        console.log(`Connection to ${res.req.query.interactiveNonce} deleted`);
       }
       return isActive;
     });
@@ -68,18 +177,27 @@ const redisObj = {
   },
 };
 
-redisObj.publisher.connect();
-redisObj.subscriber.connect();
+// Wire health handlers
+gameManager.publisher.on("connect", () => handleRedisConnection(gameManager.publisher, "pub"));
+gameManager.publisher.on("reconnecting", () => handleRedisReconnection("pub"));
+gameManager.publisher.on("error", (err) => handleRedisError("pub", err));
 
-redisObj.subscribe(`${process.env.INTERACTIVE_KEY}_RACE`);
+gameManager.subscriber.on("connect", () => handleRedisConnection(gameManager.subscriber, "sub"));
+gameManager.subscriber.on("reconnecting", () => handleRedisReconnection("sub"));
+gameManager.subscriber.on("error", (err) => handleRedisError("sub", err));
 
-redisObj.publisher.on("error", (err) => console.error("Publisher Error", err));
-redisObj.subscriber.on("error", (err) => console.error("Subscriber Error", err));
+// Establish connections
+gameManager.publisher.connect();
+gameManager.subscriber.connect();
 
+// Subscribe to race channel
+gameManager.subscribe(`${process.env.INTERACTIVE_KEY}_RACE`);
+
+// Periodically prune stale SSE connections
 setInterval(() => {
-  if (redisObj.connections.length > 0) {
-    redisObj.deleteConn();
+  if (gameManager.connections.length > 0) {
+    gameManager.deleteConn();
   }
 }, 1000 * 60);
 
-export default redisObj;
+export default gameManager;
