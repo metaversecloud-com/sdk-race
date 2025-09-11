@@ -186,12 +186,20 @@ gameManager.subscriber.on("connect", () => handleRedisConnection(gameManager.sub
 gameManager.subscriber.on("reconnecting", () => handleRedisReconnection("sub"));
 gameManager.subscriber.on("error", (err) => handleRedisError("sub", err));
 
-// Establish connections
-gameManager.publisher.connect();
-gameManager.subscriber.connect();
+// Initialize connections and subscription with proper sequencing
+async function initRedis() {
+  try {
+    await gameManager.publisher.connect();
+    await gameManager.subscriber.connect();
+    // Subscribe only after connections are established
+    gameManager.subscribe(`${process.env.INTERACTIVE_KEY}_RACE`);
+  } catch (err) {
+    console.error("[Redis] Initialization error:", err);
+  }
+}
 
-// Subscribe to race channel
-gameManager.subscribe(`${process.env.INTERACTIVE_KEY}_RACE`);
+// Kick off initialization (top-level)
+initRedis();
 
 // Periodically prune stale SSE connections
 setInterval(() => {
