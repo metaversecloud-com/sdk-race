@@ -85,6 +85,8 @@ function getRedisClient(url = process.env.REDIS_URL) {
     isClusterMode = process.env.REDIS_CLUSTER_MODE === "true";
   }
 
+  console.log(`[Redis] Creating Redis client - Cluster mode: ${isClusterMode}`);
+
   const safeUrl = url || "";
   const parsedUrl = new URL(safeUrl);
   const host = parsedUrl.hostname;
@@ -93,7 +95,10 @@ function getRedisClient(url = process.env.REDIS_URL) {
   const password = parsedUrl.password || "";
   const tls = safeUrl.startsWith("rediss");
 
+  console.log(`[Redis] Connection details - Host: ${host}, Port: ${port}, TLS: ${tls}, Username: ${username}`);
+
   if (!isClusterMode) {
+    console.log("[Redis] Creating standalone Redis client");
     return redis.createClient({
       socket: { host, port, tls },
       username,
@@ -102,6 +107,7 @@ function getRedisClient(url = process.env.REDIS_URL) {
     });
   }
 
+  console.log("[Redis] Creating Redis cluster client");
   return redis.createCluster({
     useReplicas: true,
     rootNodes: [
@@ -122,17 +128,24 @@ const gameManager = {
     if (process.env.NODE_ENV === "development") console.log(`Publishing ${JSON.stringify(message)} on ${channel}`);
     this.publisher.publish(channel, JSON.stringify(message));
   },
-  subscribe: function (channel) {
-    this.subscriber.subscribe(channel, (message) => {
-      const data = JSON.parse(message);
-      if (process.env.NODE_ENV === "development") console.log(`Event received on ${channel}:`, data);
-      this.connections.forEach(({ res: existingConnection }) => {
-        const { profileId } = existingConnection.req.query;
-        if (data.profileId === profileId) {
-          existingConnection.write(`retry: 5000\ndata: ${JSON.stringify(data)}\n\n`);
-        }
+  subscribe: async function (channel) {
+    try {
+      console.log(`[Redis] Attempting to subscribe to channel: ${channel}`);
+      await this.subscriber.subscribe(channel, (message) => {
+        const data = JSON.parse(message);
+        if (process.env.NODE_ENV === "development") console.log(`Event received on ${channel}:`, data);
+        this.connections.forEach(({ res: existingConnection }) => {
+          const { profileId } = existingConnection.req.query;
+          if (data.profileId === profileId) {
+            existingConnection.write(`retry: 5000\ndata: ${JSON.stringify(data)}\n\n`);
+          }
+        });
       });
-    });
+      console.log(`[Redis] Successfully subscribed to channel: ${channel}`);
+    } catch (error) {
+      console.error(`[Redis] Failed to subscribe to channel ${channel}:`, error);
+      throw error;
+    }
   },
   addConn: function (connection) {
     const { profileId, interactiveNonce } = connection.res.req.query;
@@ -189,12 +202,26 @@ gameManager.subscriber.on("error", (err) => handleRedisError("sub", err));
 // Initialize connections and subscription with proper sequencing
 async function initRedis() {
   try {
+    console.log(`[Redis] INTERACTIVE_KEY: ${process.env.INTERACTIVE_KEY}`);
+    console.log(`[Redis] REDIS_URL: ${process.env.REDIS_URL ? 'SET' : 'NOT SET'}`);
+    console.log(`[Redis] REDIS_CLUSTER_MODE: ${process.env.REDIS_CLUSTER_MODE}`);
+    
+    console.log("[Redis] Connecting publisher...");
     await gameManager.publisher.connect();
+    console.log("[Redis] Publisher connected successfully");
+    
+    console.log("[Redis] Connecting subscriber...");
     await gameManager.subscriber.connect();
+    console.log("[Redis] Subscriber connected successfully");
+    
     // Subscribe only after connections are established
-    gameManager.subscribe(`${process.env.INTERACTIVE_KEY}_RACE`);
+    console.log(`[Redis] Subscribing to channel: ${process.env.INTERACTIVE_KEY}_RACE`);
+    await gameManager.subscribe(`${process.env.INTERACTIVE_KEY}_RACE`);
+    console.log("[Redis] Subscription established");
   } catch (err) {
     console.error("[Redis] Initialization error:", err);
+    console.error("[Redis] Error details:", err.message);
+    console.error("[Redis] Stack trace:", err.stack);
   }
 }
 
