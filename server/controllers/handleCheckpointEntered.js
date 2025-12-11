@@ -26,7 +26,8 @@ export const handleCheckpointEntered = async (req, res) => {
 
     if (!startTimestamp) return { success: false, message: "Race has not started yet" };
 
-    const cachedCheckpoints = JSON.parse(await redisObj.get(profileId)) || {};
+    const { checkpoints: cachedCheckpoints, wasWrongCheckpointEntered } =
+      JSON.parse(await redisObj.get(profileId)) || {};
 
     if (checkpointNumber !== 0) {
       if (checkpointNumber > 1 && !cachedCheckpoints[checkpointNumber - 2]) {
@@ -48,6 +49,8 @@ export const handleCheckpointEntered = async (req, res) => {
               message: "Error firing toast",
             }),
           );
+
+        redisObj.set(profileId, JSON.stringify({ checkpoints: cachedCheckpoints, wasWrongCheckpointEntered: true }));
         return;
       } else {
         redisObj.publish(channel, {
@@ -56,7 +59,7 @@ export const handleCheckpointEntered = async (req, res) => {
           currentRaceFinishedElapsedTime: null,
         });
         cachedCheckpoints[checkpointNumber - 1] = true;
-        redisObj.set(profileId, JSON.stringify(cachedCheckpoints));
+        redisObj.set(profileId, JSON.stringify({ checkpoints: cachedCheckpoints, wasWrongCheckpointEntered }));
       }
     }
 
@@ -66,7 +69,7 @@ export const handleCheckpointEntered = async (req, res) => {
         checkpointNumber,
         currentRaceFinishedElapsedTime: currentElapsedTime,
       });
-      const result = await finishLineEntered({ credentials, currentElapsedTime });
+      const result = await finishLineEntered({ credentials, currentElapsedTime, wasWrongCheckpointEntered });
       if (result instanceof Error) throw result;
     } else {
       const result = await checkpointEntered({

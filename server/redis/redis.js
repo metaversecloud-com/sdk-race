@@ -88,7 +88,7 @@ function getRedisClient(url = process.env.REDIS_URL) {
   console.log(`[Redis] Creating Redis client - Cluster mode: ${isClusterMode}`);
 
   const safeUrl = url || "";
-  console.log(`[Redis] Raw URL protocol: ${safeUrl.split('://')[0]}://`); // Log protocol specifically
+  console.log(`[Redis] Raw URL protocol: ${safeUrl.split("://")[0]}://`); // Log protocol specifically
   console.log(`[Redis] URL starts with rediss://: ${safeUrl.startsWith("rediss://")}`);
   const parsedUrl = new URL(safeUrl);
   const host = parsedUrl.hostname;
@@ -102,23 +102,25 @@ function getRedisClient(url = process.env.REDIS_URL) {
   if (!isClusterMode) {
     console.log("[Redis] Creating standalone Redis client");
     const clientConfig = {
-      socket: { 
-        host, 
-        port, 
-        tls: tls ? {
-          // AWS ElastiCache specific TLS options
-          servername: host,
-          checkServerIdentity: () => undefined, // Disable hostname verification for ElastiCache
-        } : false,
+      socket: {
+        host,
+        port,
+        tls: tls
+          ? {
+              // AWS ElastiCache specific TLS options
+              servername: host,
+              checkServerIdentity: () => undefined, // Disable hostname verification for ElastiCache
+            }
+          : false,
         connectTimeout: 10000,
-        lazyConnect: false
+        lazyConnect: false,
       },
       username,
       password,
       url: safeUrl,
     };
     console.log(`[Redis] Client config TLS enabled: ${!!clientConfig.socket.tls}`);
-    console.log(`[Redis] TLS servername: ${clientConfig.socket.tls ? clientConfig.socket.tls.servername : 'N/A'}`);
+    console.log(`[Redis] TLS servername: ${clientConfig.socket.tls ? clientConfig.socket.tls.servername : "N/A"}`);
     return redis.createClient(clientConfig);
   }
 
@@ -128,12 +130,14 @@ function getRedisClient(url = process.env.REDIS_URL) {
     rootNodes: [
       {
         url: safeUrl,
-        socket: { 
-          tls: tls ? {
-            servername: host,
-            checkServerIdentity: () => undefined,
-          } : false,
-          connectTimeout: 10000
+        socket: {
+          tls: tls
+            ? {
+                servername: host,
+                checkServerIdentity: () => undefined,
+              }
+            : false,
+          connectTimeout: 10000,
         },
       },
     ],
@@ -146,7 +150,7 @@ const gameManager = {
   subscriber: getRedisClient(),
   connections: [],
   publish: function (channel, message) {
-    if (process.env.NODE_ENV === "development") console.log(`Publishing ${JSON.stringify(message)} on ${channel}`);
+    // if (process.env.NODE_ENV === "development") console.log(`Publishing ${JSON.stringify(message)} on ${channel}`);
     this.publisher.publish(channel, JSON.stringify(message));
   },
   subscribe: async function (channel) {
@@ -154,7 +158,7 @@ const gameManager = {
       console.log(`[Redis] Attempting to subscribe to channel: ${channel}`);
       await this.subscriber.subscribe(channel, (message) => {
         const data = JSON.parse(message);
-        if (process.env.NODE_ENV === "development") console.log(`Event received on ${channel}:`, data);
+        // if (process.env.NODE_ENV === "development") console.log(`Event received on ${channel}:`, data);
         this.connections.forEach(({ res: existingConnection }) => {
           const { profileId } = existingConnection.req.query;
           if (data.profileId === profileId) {
@@ -228,9 +232,9 @@ gameManager.subscriber.on("ready", () => console.log("[Redis] Subscriber is read
 async function initRedis() {
   try {
     console.log(`[Redis] INTERACTIVE_KEY: ${process.env.INTERACTIVE_KEY}`);
-    console.log(`[Redis] REDIS_URL: ${process.env.REDIS_URL ? 'SET' : 'NOT SET'}`);
+    console.log(`[Redis] REDIS_URL: ${process.env.REDIS_URL ? "SET" : "NOT SET"}`);
     console.log(`[Redis] REDIS_CLUSTER_MODE: ${process.env.REDIS_CLUSTER_MODE}`);
-    
+
     console.log("[Redis] Connecting publisher...");
     try {
       await gameManager.publisher.connect();
@@ -239,7 +243,7 @@ async function initRedis() {
       console.error("[Redis] Publisher connection failed:", pubError.message);
       throw pubError;
     }
-    
+
     console.log("[Redis] Connecting subscriber...");
     try {
       await gameManager.subscriber.connect();
@@ -248,7 +252,7 @@ async function initRedis() {
       console.error("[Redis] Subscriber connection failed:", subError.message);
       throw subError;
     }
-    
+
     // Subscribe only after connections are established
     const channelName = `${process.env.INTERACTIVE_KEY}_RACE`;
     console.log(`[Redis] Subscribing to channel: ${channelName}`);
@@ -259,7 +263,7 @@ async function initRedis() {
       console.error("[Redis] Subscription failed:", subError.message);
       throw subError;
     }
-    
+
     console.log("[Redis] Redis initialization completed successfully");
   } catch (err) {
     console.error("[Redis] Initialization error:", err);

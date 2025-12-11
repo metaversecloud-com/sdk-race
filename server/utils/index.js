@@ -1,3 +1,4 @@
+export * from "./badges/index.js";
 export * from "./checkpoints/index.js";
 export * from "./visitors/index.js";
 export * from "./addNewRowToGoogleSheets.js";
