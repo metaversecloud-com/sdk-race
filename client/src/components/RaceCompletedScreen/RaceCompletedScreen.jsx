@@ -1,15 +1,13 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
 
 // components
-import Footer from "@components/Shared/Footer";
+import { Footer, Tabs } from "@components";
 
 // context
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER } from "@context/types";
 
-const RaceCompletedScreen = () => {
-  const queryParams = new URLSearchParams(location.search);
+export const RaceCompletedScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
   const { elapsedTime } = useContext(GlobalStateContext);
 
@@ -19,18 +17,25 @@ const RaceCompletedScreen = () => {
 
   return (
     <>
-      <div className="container p-4 text-center">
-        <h2 className="pt-4">🏆 Congratulations!</h2>
-        <p className="my-6">You have successfully completed the race.</p>
-        <h3 className="pt-10">Elapsed Time: {elapsedTime}</h3>
+      <div className="grid gap-6">
+        <Tabs />
+
+        <div className="card">
+          <div className="grid gap-2 p-4 text-center">
+            <h2>
+              <strong>Congratulations!</strong>
+            </h2>
+            <div style={{ fontSize: "50px" }}>🏁</div>
+            <h3>Your Time</h3>
+            <h2>
+              <strong>{elapsedTime}</strong>
+            </h2>
+          </div>
+        </div>
       </div>
+
       <Footer>
-        <Link to={`/leaderboard?${queryParams.toString()}`}>
-          <button className="btn-success mb-2" style={{ width: "94%" }}>
-            🏆 View Leaderboard
-          </button>
-        </Link>
-        <button style={{ width: "94%" }} onClick={() => handlePlayAgain()}>
+        <button className="btn-primary" onClick={() => handlePlayAgain()}>
           Play Again
         </button>
       </Footer>

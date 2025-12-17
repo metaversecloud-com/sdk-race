@@ -4,10 +4,10 @@ export const handleCompleteRace = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
 
-    const { visitorProgress } = await getVisitor(credentials);
+    const { visitorProgress, visitorInventory } = await getVisitor(credentials);
     const elapsedTime = visitorProgress.elapsedTime;
 
-    return res.json({ success: true, elapsedTime });
+    return res.json({ success: true, elapsedTime, visitorInventory });
   } catch (error) {
     return errorHandler({
       error,

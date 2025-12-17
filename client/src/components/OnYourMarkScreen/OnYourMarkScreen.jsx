@@ -7,7 +7,7 @@ import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContex
 // utils
 import { startRace } from "@utils";
 
-const OnYourMarkScreen = () => {
+export const OnYourMarkScreen = () => {
   const navigate = useNavigate();
   const dispatch = useContext(GlobalDispatchContext);
   const { isAdmin } = useContext(GlobalStateContext);

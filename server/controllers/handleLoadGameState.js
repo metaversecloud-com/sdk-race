@@ -1,4 +1,4 @@
-import { World, errorHandler, getCredentials, getVisitor } from "../utils/index.js";
+import { Ecosystem, World, errorHandler, getCredentials, getInventoryItems, getVisitor } from "../utils/index.js";
 import { TRACKS } from "../constants.js";
 
 export const handleLoadGameState = async (req, res) => {
@@ -57,7 +57,7 @@ export const handleLoadGameState = async (req, res) => {
       );
     }
 
-    const { visitor, visitorProgress } = await getVisitor(credentials, true);
+    const { visitor, visitorProgress, visitorInventory } = await getVisitor(credentials, true);
     const { checkpoints, highScore, startTimestamp } = visitorProgress;
 
     const leaderboard = [];
@@ -80,6 +80,8 @@ export const handleLoadGameState = async (req, res) => {
     };
     leaderboard.sort((a, b) => timeToSeconds(a.highScore) - timeToSeconds(b.highScore)).slice(0, 20);
 
+    const { badges } = await getInventoryItems(credentials);
+
     return res.json({
       checkpointsCompleted: checkpoints,
       elapsedTimeInSeconds: startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0,
@@ -90,6 +92,8 @@ export const handleLoadGameState = async (req, res) => {
       startTimestamp,
       success: true,
       tracks: parseEnvJson(process.env.TRACKS) || TRACKS,
+      visitorInventory,
+      badges,
     });
   } catch (error) {
     return errorHandler({

@@ -1,5 +1,5 @@
 import { DEFAULT_PROGRESS } from "../constants.js";
-import { World, errorHandler, getCredentials, updateVisitorProgress } from "../utils/index.js";
+import { World, errorHandler, getCredentials, getVisitor, updateVisitorProgress } from "../utils/index.js";
 
 export const handleResetGame = async (req, res) => {
   try {

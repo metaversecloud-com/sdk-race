@@ -1,13 +1,16 @@
 import { useContext, useState, useEffect } from "react";
 
 // components
-import OnYourMarkScreen from "@components/OnYourMarkScreen/OnYourMarkScreen";
-import RaceInProgressScreen from "@components/RaceInProgressScreen/RaceInProgressScreen";
-import NewGameScreen from "@components/NewGameScreen/NewGameScreen";
-import RaceCompletedScreen from "@components/RaceCompletedScreen/RaceCompletedScreen";
-import AdminGear from "@components/Admin/AdminGear";
-import AdminView from "@components/Admin/AdminView";
-import Loading from "@components/Shared/Loading";
+import {
+  PageContainer,
+  NewGameScreen,
+  LeaderboardScreen,
+  BadgesScreen,
+  SwitchTrackScreen,
+  OnYourMarkScreen,
+  RaceInProgressScreen,
+  RaceCompletedScreen,
+} from "@components";
 
 // context
 import { SCREEN_MANAGER } from "@context/types";
@@ -18,9 +21,8 @@ import { backendAPI, loadGameState } from "@utils";
 
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
-  const { error, screenManager, isAdmin } = useContext(GlobalStateContext);
+  const { screenManager } = useContext(GlobalStateContext);
   const [loading, setLoading] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const fetchGameState = async () => {
@@ -37,21 +39,29 @@ function Home() {
     fetchGameState();
   }, [dispatch, backendAPI]);
 
-  if (loading) return <Loading />;
-
-  if (showSettings) {
-    return <AdminView setShowSettings={setShowSettings} />;
-  }
-
   return (
-    <div>
-      {isAdmin && <AdminGear setShowSettings={setShowSettings} />}
-      {screenManager === SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN && <OnYourMarkScreen />}
-      {screenManager === SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN && <RaceInProgressScreen />}
-      {screenManager === SCREEN_MANAGER.SHOW_HOME_SCREEN && <NewGameScreen />}
-      {screenManager === SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN && <RaceCompletedScreen />}
-      {error && <p className="p3 pt-10 text-center text-error">{error}</p>}
-    </div>
+    <PageContainer isLoading={loading}>
+      {(() => {
+        switch (screenManager) {
+          case SCREEN_MANAGER.SHOW_HOME_SCREEN:
+            return <NewGameScreen />;
+          case SCREEN_MANAGER.SHOW_LEADERBOARD_SCREEN:
+            return <LeaderboardScreen />;
+          case SCREEN_MANAGER.SHOW_BADGES_SCREEN:
+            return <BadgesScreen />;
+          case SCREEN_MANAGER.SHOW_SWITCH_TRACK_SCREEN:
+            return <SwitchTrackScreen />;
+          case SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN:
+            return <OnYourMarkScreen />;
+          case SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN:
+            return <RaceInProgressScreen />;
+          case SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN:
+            return <RaceCompletedScreen />;
+          default:
+            return null;
+        }
+      })()}
+    </PageContainer>
   );
 }
 

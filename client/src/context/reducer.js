@@ -23,6 +23,21 @@ const globalReducer = (state, action) => {
         ...state,
         screenManager: SCREEN_MANAGER.SHOW_HOME_SCREEN,
       };
+    case SCREEN_MANAGER.SHOW_LEADERBOARD_SCREEN:
+      return {
+        ...state,
+        screenManager: SCREEN_MANAGER.SHOW_LEADERBOARD_SCREEN,
+      };
+    case SCREEN_MANAGER.SHOW_BADGES_SCREEN:
+      return {
+        ...state,
+        screenManager: SCREEN_MANAGER.SHOW_BADGES_SCREEN,
+      };
+    case SCREEN_MANAGER.SHOW_SWITCH_TRACK_SCREEN:
+      return {
+        ...state,
+        screenManager: SCREEN_MANAGER.SHOW_SWITCH_TRACK_SCREEN,
+      };
     case SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN:
       return {
         ...state,
@@ -80,6 +95,8 @@ const globalReducer = (state, action) => {
         numberOfCheckpoints: payload.numberOfCheckpoints,
         startTimestamp: payload.startTimestamp,
         tracks: payload.tracks,
+        visitorInventory: payload.visitorInventory,
+        badges: payload.badges,
         error: "",
       };
     case SET_ERROR:

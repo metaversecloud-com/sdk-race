@@ -2,9 +2,9 @@ import PropTypes from "prop-types";
 
 export const Checkpoint = ({ number, completed }) => {
   return (
-    <div className={`pb-2 ${completed ? "completed" : ""}`}>
-      <span className="px-2">{completed ? "🟢" : "⚪"}</span>
-      <span>{number === "Finish" ? "Finish" : `Checkpoint ${number}`}</span>
+    <div>
+      <span className={`px-2 mt-2 mx-2 checkpoint ${completed ? "completed" : ""}`}></span>
+      <span className="align-super p2">{number === "Finish" ? "Finish" : `Checkpoint ${number}`}</span>
     </div>
   );
 };
