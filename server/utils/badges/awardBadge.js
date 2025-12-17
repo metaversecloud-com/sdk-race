@@ -1,6 +1,6 @@
 import { Ecosystem } from "../topiaInit.js";
 
-export const grantBadge = async ({ credentials, visitor, visitorInventory, badgeName }) => {
+export const awardBadge = async ({ credentials, visitor, visitorInventory, badgeName }) => {
   try {
     if (visitorInventory[badgeName]) return { success: true };
 
