@@ -1,12 +1,13 @@
 import express from "express";
 
 import {
-  handleRaceStart,
-  handleCheckpointEntered,
-  handleLoadGameState,
   handleCancelRace,
-  handleGetEvents,
+  handleCheckpointEntered,
   handleCompleteRace,
+  handleGetEvents,
+  handleGetVisitorInventory,
+  handleLoadGameState,
+  handleRaceStart,
   handleResetGame,
   handleSwitchTrack,
 } from "./controllers/index.js";
@@ -36,6 +37,8 @@ router.get("/system/health", (req, res) => {
     },
   });
 });
+
+router.get("/visitor-inventory", handleGetVisitorInventory);
 
 // Race
 router.post("/race/game-state", handleLoadGameState);

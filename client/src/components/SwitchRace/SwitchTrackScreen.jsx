@@ -1,34 +1,57 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 
 // components
 import { BackButton, Footer } from "@components";
 
 // context
 import { GlobalDispatchContext, GlobalStateContext } from "@context/GlobalContext";
-import { SET_ERROR, SCREEN_MANAGER } from "@context/types";
+import { SET_ERROR, SCREEN_MANAGER, SET_SCENE_DATA } from "@context/types";
 
 // utils
 import { backendAPI, getErrorMessage } from "@utils";
 
 export const SwitchTrackScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
-  const { tracks } = useContext(GlobalStateContext);
+  const { tracks, trackLastSwitchedDate } = useContext(GlobalStateContext);
 
   const [selectedTrack, setSelectedTrack] = useState(null);
-  const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
+  const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(true);
+
+  useEffect(() => {
+    if (trackLastSwitchedDate) {
+      const lastSwitch = trackLastSwitchedDate;
+      const now = new Date().getTime();
+      const diffMs = now - lastSwitch;
+      const diffMinutes = diffMs / (100 * 60);
+      setAreAllButtonsDisabled(diffMinutes < 30);
+    } else {
+      setAreAllButtonsDisabled(false);
+    }
+  }, [trackLastSwitchedDate]);
 
   const updateTrack = async () => {
     setAreAllButtonsDisabled(true);
 
     await backendAPI
       .post(`/race/switch-track?trackSceneId=${selectedTrack.sceneId}`)
+      .then((response) => {
+        const { leaderboard, numberOfCheckpoints, trackLastSwitchedDate } = response.data.sceneData;
+
+        dispatch({
+          type: SET_SCENE_DATA,
+          payload: {
+            leaderboard,
+            numberOfCheckpoints,
+            tracks,
+            trackLastSwitchedDate,
+          },
+        });
+      })
       .catch((error) => {
         dispatch({
           type: SET_ERROR,
           payload: { error: getErrorMessage("resetting", error) },
         });
-      })
-      .finally(() => {
         setAreAllButtonsDisabled(false);
       });
   };
@@ -43,18 +66,20 @@ export const SwitchTrackScreen = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        {tracks?.map((track) => (
-          <button
-            key={track.id}
-            className={`mb-2 ${selectedTrack === track.id ? "selected" : ""}`}
-            onClick={() => setSelectedTrack(track)}
-          >
-            <div className="tooltip">
-              <span className="tooltip-content">{track.name}</span>
-              <img className="track object-cover" src={track?.thumbnail} alt={track.name} />
-            </div>
-          </button>
-        ))}
+        {tracks?.map((track) => {
+          return (
+            <button key={track.id} className="mb-2" onClick={() => setSelectedTrack(track)}>
+              <div className="tooltip">
+                <span className="tooltip-content">{track.name}</span>
+                <img
+                  className={`track object-cover ${selectedTrack && selectedTrack.id === track.id ? "selected" : ""}`}
+                  src={track?.thumbnail}
+                  alt={track.name}
+                />
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       <Footer>

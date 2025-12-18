@@ -123,7 +123,7 @@ export const RaceInProgressScreen = () => {
     if (allCompleted && !completeRaceCalledRef.current) {
       completeRaceCalledRef.current = true;
       successAudioRef.current.play();
-      completeRace({ dispatch, currentFinishedElapsedTime });
+      completeRace({ dispatch });
     }
   }, [checkpoints, isFinishComplete, currentFinishedElapsedTime, dispatch]);
 

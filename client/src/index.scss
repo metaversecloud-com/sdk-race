@@ -40,6 +40,23 @@
   background-color: #ffffff;
 }
 
+.btn-primary:disabled {
+  background-color: #e2dfd7;
+  border: 4px solid #ffd880;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #1a8dff;
+  border: 4px solid #1a8dff;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
+}
+
 .icon-btn {
   cursor: pointer;
   color: white;
@@ -73,6 +90,10 @@
   border: 2px solid #000000;
   background: #cccccc;
   height: 120px;
+}
+
+.selected {
+  border: 2px solid #fdb41d;
 }
 
 table {

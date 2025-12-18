@@ -1,4 +1,4 @@
-import { Ecosystem, World, errorHandler, getCredentials, getInventoryItems, getVisitor } from "../utils/index.js";
+import { World, errorHandler, getCredentials, getInventoryItems, getVisitor } from "../utils/index.js";
 import { TRACKS } from "../constants.js";
 
 export const handleLoadGameState = async (req, res) => {
@@ -94,6 +94,7 @@ export const handleLoadGameState = async (req, res) => {
       tracks: parseEnvJson(process.env.TRACKS) || TRACKS,
       visitorInventory,
       badges,
+      trackLastSwitchedDate: sceneData.trackLastSwitchedDate || null,
     });
   } catch (error) {
     return errorHandler({

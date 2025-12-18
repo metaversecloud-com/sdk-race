@@ -6,6 +6,8 @@ import {
   CANCEL_RACE,
   LOAD_GAME_STATE,
   RESET_GAME,
+  SET_VISITOR_INVENTORY,
+  SET_SCENE_DATA,
   SET_ERROR,
 } from "./types";
 
@@ -68,6 +70,7 @@ const globalReducer = (state, action) => {
         ...state,
         screenManager: SCREEN_MANAGER.SHOW_RACE_COMPLETED_SCREEN,
         elapsedTime: payload.elapsedTime,
+        visitorInventory: payload.visitorInventory,
         error: "",
       };
     case CANCEL_RACE:
@@ -97,6 +100,21 @@ const globalReducer = (state, action) => {
         tracks: payload.tracks,
         visitorInventory: payload.visitorInventory,
         badges: payload.badges,
+        trackLastSwitchedDate: payload.trackLastSwitchedDate,
+        error: "",
+      };
+    case SET_VISITOR_INVENTORY:
+      return {
+        ...state,
+        visitorInventory: payload.visitorInventory,
+        error: "",
+      };
+    case SET_SCENE_DATA:
+      return {
+        ...state,
+        leaderboard: payload.leaderboard,
+        numberOfCheckpoints: payload.numberOfCheckpoints,
+        trackLastSwitchedDate: payload.trackLastSwitchedDate,
         error: "",
       };
     case SET_ERROR:

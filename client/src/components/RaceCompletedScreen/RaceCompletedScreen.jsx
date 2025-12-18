@@ -1,7 +1,8 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 // components
-import { Footer, Tabs } from "@components";
+import { Footer, NewBadgeModal, Tabs } from "@components";
 
 // context
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
@@ -9,11 +10,28 @@ import { SCREEN_MANAGER } from "@context/types";
 
 export const RaceCompletedScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
-  const { elapsedTime } = useContext(GlobalStateContext);
+  const { elapsedTime, badges } = useContext(GlobalStateContext);
 
-  function handlePlayAgain() {
-    dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
-  }
+  const [newBadgeKey, setNewBadgeKey] = useState();
+
+  const [searchParams] = useSearchParams();
+  const profileId = searchParams.get("profileId");
+
+  useEffect(() => {
+    if (profileId) {
+      const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
+      eventSource.onmessage = function (event) {
+        const newEvent = JSON.parse(event.data);
+        if (newEvent.badgeKey) setNewBadgeKey(newEvent.badgeKey);
+      };
+      eventSource.onerror = (event) => {
+        console.error("Server Event error:", event);
+      };
+      return () => {
+        eventSource.close();
+      };
+    }
+  }, [profileId]);
 
   return (
     <>
@@ -35,10 +53,12 @@ export const RaceCompletedScreen = () => {
       </div>
 
       <Footer>
-        <button className="btn-primary" onClick={() => handlePlayAgain()}>
+        <button className="btn-primary" onClick={() => dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN })}>
           Play Again
         </button>
       </Footer>
+
+      {newBadgeKey && <NewBadgeModal badge={badges[newBadgeKey]} handleToggleShowModal={() => {}} />}
     </>
   );
 };

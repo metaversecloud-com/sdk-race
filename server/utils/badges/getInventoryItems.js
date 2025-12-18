@@ -8,7 +8,7 @@ export const getInventoryItems = async (credentials) => {
     const badges = {};
 
     for (const item of ecosystem.inventoryItems) {
-      badges[item.id] = {
+      badges[item.name] = {
         id: item.id,
         name: item.name || "Unknown",
         icon: item.image_path || "",
@@ -22,7 +22,7 @@ export const getInventoryItems = async (credentials) => {
     Object.values(badges)
       .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
       .forEach((badge) => {
-        sortedBadges[badge.id] = badge;
+        sortedBadges[badge.name] = badge;
       });
 
     return {

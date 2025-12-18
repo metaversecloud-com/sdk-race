@@ -64,11 +64,16 @@ export const handleSwitchTrack = async (req, res) => {
       isPartial: true,
     });
 
+    const sceneData = {
+      numberOfCheckpoints: numberOfCheckpoints?.length,
+      leaderboard: {},
+      position,
+      trackLastSwitchedDate: new Date().getTime(),
+    };
+
     await world.updateDataObject(
       {
-        [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
-        [`${sceneDropId}.leaderboard`]: {},
-        [`${sceneDropId}.position`]: position,
+        [sceneDropId]: sceneData,
       },
       { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId }] },
     );
@@ -83,7 +88,7 @@ export const handleSwitchTrack = async (req, res) => {
     const droppedAsset = DroppedAsset.create(assetId, urlSlug, { credentials });
     await droppedAsset.deleteDroppedAsset();
 
-    return res.json({ success: true });
+    return res.json({ success: true, sceneData });
   } catch (error) {
     return errorHandler({
       error,

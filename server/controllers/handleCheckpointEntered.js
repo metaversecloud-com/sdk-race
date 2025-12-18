@@ -69,7 +69,7 @@ export const handleCheckpointEntered = async (req, res) => {
         checkpointNumber,
         currentRaceFinishedElapsedTime: currentElapsedTime,
       });
-      const result = await finishLineEntered({ credentials, currentElapsedTime, wasWrongCheckpointEntered });
+      const result = await finishLineEntered({ credentials, currentElapsedTime, wasWrongCheckpointEntered, redisObj });
       if (result instanceof Error) throw result;
     } else {
       const result = await checkpointEntered({

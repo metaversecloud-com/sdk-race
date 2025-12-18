@@ -5,6 +5,7 @@ export * from "./Leaderboard/LeaderboardScreen.jsx";
 export * from "./BadgesScreen/BadgesScreen.jsx";
 export * from "./NewGameScreen/NewGameScreen.jsx";
 export * from "./OnYourMarkScreen/OnYourMarkScreen.jsx";
+export * from "./RaceCompletedScreen/NewBadgeModal.jsx";
 export * from "./RaceCompletedScreen/RaceCompletedScreen.jsx";
 export * from "./RaceInProgressScreen/Checkpoint.jsx";
 export * from "./RaceInProgressScreen/RaceInProgressScreen.jsx";
