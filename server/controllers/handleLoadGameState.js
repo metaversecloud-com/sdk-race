@@ -1,4 +1,11 @@
-import { World, errorHandler, getCredentials, getInventoryItems, getVisitor } from "../utils/index.js";
+import {
+  World,
+  errorHandler,
+  formatLeaderboard,
+  getCredentials,
+  getInventoryItems,
+  getVisitor,
+} from "../utils/index.js";
 import { TRACKS } from "../constants.js";
 
 export const handleLoadGameState = async (req, res) => {
@@ -30,6 +37,7 @@ export const handleLoadGameState = async (req, res) => {
       };
       shouldUpdateWorldDataObject = true;
     } else if (sceneData.profiles) {
+      // Migrate old leaderboard format to new format
       let leaderboard = {};
       for (const profileId in sceneData.profiles) {
         const { username, highscore } = sceneData.profiles[profileId];
@@ -60,25 +68,7 @@ export const handleLoadGameState = async (req, res) => {
     const { visitor, visitorProgress, visitorInventory } = await getVisitor(credentials, true);
     const { checkpoints, highScore, startTimestamp } = visitorProgress;
 
-    const leaderboard = [];
-    for (const profileId in sceneData.leaderboard) {
-      const data = sceneData.leaderboard[profileId];
-
-      const [displayName, highScore] = data.split("|");
-
-      leaderboard.push({
-        displayName,
-        highScore,
-      });
-    }
-
-    // Sort leaderboard by highScore as time string (HH:MM:SS)
-    const timeToSeconds = (t) => {
-      if (!t) return Infinity;
-      const [h = "0", m = "0", s = "0"] = t.split(":");
-      return parseInt(h, 10) * 3600 + parseInt(m, 10) * 60 + parseInt(s, 10);
-    };
-    leaderboard.sort((a, b) => timeToSeconds(a.highScore) - timeToSeconds(b.highScore)).slice(0, 20);
+    const leaderboardArray = await formatLeaderboard(sceneData.leaderboard);
 
     const { badges } = await getInventoryItems(credentials);
 
@@ -87,7 +77,7 @@ export const handleLoadGameState = async (req, res) => {
       elapsedTimeInSeconds: startTimestamp ? Math.floor((now - startTimestamp) / 1000) : 0,
       highScore,
       isAdmin: visitor.isAdmin,
-      leaderboard,
+      leaderboard: leaderboardArray,
       numberOfCheckpoints: sceneData.numberOfCheckpoints,
       startTimestamp,
       success: true,

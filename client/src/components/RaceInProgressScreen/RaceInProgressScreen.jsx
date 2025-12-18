@@ -6,9 +6,10 @@ import { Checkpoint, Footer, Loading } from "@components";
 
 // context
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import { COMPLETE_RACE } from "@context/types";
 
 // utils
-import { cancelRace, completeRace } from "@utils";
+import { cancelRace } from "@utils";
 
 export const RaceInProgressScreen = () => {
   const positiveAudioRef = useRef(null);
@@ -123,7 +124,13 @@ export const RaceInProgressScreen = () => {
     if (allCompleted && !completeRaceCalledRef.current) {
       completeRaceCalledRef.current = true;
       successAudioRef.current.play();
-      completeRace({ dispatch });
+
+      dispatch({
+        type: COMPLETE_RACE,
+        payload: {
+          elapsedTime: currentFinishedElapsedTime,
+        },
+      });
     }
   }, [checkpoints, isFinishComplete, currentFinishedElapsedTime, dispatch]);
 

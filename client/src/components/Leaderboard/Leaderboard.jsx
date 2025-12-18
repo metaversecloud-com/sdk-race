@@ -1,15 +1,44 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // components
-import { Footer } from "@components";
+import { Loading } from "@components";
 
 // context
 import { GlobalDispatchContext, GlobalStateContext } from "@context/GlobalContext";
-import { SCREEN_MANAGER } from "@context/types";
+import { SET_LEADERBOARD, SET_ERROR } from "@context/types";
+
+// utils
+import { backendAPI, getErrorMessage } from "@utils";
 
 export const Leaderboard = () => {
   const dispatch = useContext(GlobalDispatchContext);
   const { leaderboard, highScore } = useContext(GlobalStateContext);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    const getLeaderboard = async () => {
+      await backendAPI
+        .get("/leaderboard")
+        .then((response) => {
+          dispatch({ type: SET_LEADERBOARD, payload: response.data });
+        })
+        .catch((error) => {
+          dispatch({
+            type: SET_ERROR,
+            payload: { error: getErrorMessage("getting visitor inventory", error) },
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    };
+    getLeaderboard();
+  }, []);
+
+  if (isLoading) return <Loading />;
 
   return (
     <>
@@ -51,12 +80,6 @@ export const Leaderboard = () => {
           )}
         </div>
       </div>
-
-      <Footer>
-        <button className="btn-primary" onClick={() => dispatch({ type: SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN })}>
-          Start Race
-        </button>
-      </Footer>
     </>
   );
 };

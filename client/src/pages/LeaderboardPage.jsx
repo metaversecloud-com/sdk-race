@@ -1,7 +1,8 @@
 import { useContext, useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 // components
-import { PageContainer, Leaderboard } from "@components";
+import { PageContainer, Leaderboard, Footer } from "@components";
 
 // context
 import { GlobalDispatchContext } from "@context/GlobalContext";
@@ -12,6 +13,9 @@ import { backendAPI, loadGameState } from "@utils";
 export const LeaderboardPage = () => {
   const dispatch = useContext(GlobalDispatchContext);
   const [loading, setLoading] = useState(true);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
 
   useEffect(() => {
     const fetchGameState = async () => {
@@ -31,6 +35,12 @@ export const LeaderboardPage = () => {
   return (
     <PageContainer isLoading={loading}>
       <Leaderboard />
+
+      <Footer>
+        <Link to={`/start?${queryParams.toString()}`}>
+          <button className="btn-primary">Start Race</button>
+        </Link>
+      </Footer>
     </PageContainer>
   );
 };

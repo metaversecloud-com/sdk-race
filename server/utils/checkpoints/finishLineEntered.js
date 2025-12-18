@@ -14,7 +14,6 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWr
     const { assetId, displayName, profileId, sceneDropId, urlSlug } = credentials;
 
     const promises = [];
-    let newBadgeKey;
 
     const world = World.create(urlSlug, { credentials });
     await world.fetchDataObject();
@@ -93,14 +92,14 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWr
 
     // Award Race Rookie badge if this is the visitor's first high score
     if (!visitorProgress.highScore) {
-      newBadgeKey = "Race Rookie";
       promises.push(
-        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Race Rookie" }).catch((error) =>
-          errorHandler({
-            error,
-            functionName: "finishLineEntered",
-            message: "Error awarding Race Rookie badge",
-          }),
+        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Race Rookie", redisObj, profileId }).catch(
+          (error) =>
+            errorHandler({
+              error,
+              functionName: "finishLineEntered",
+              message: "Error awarding Race Rookie badge",
+            }),
         ),
       );
     }
@@ -108,14 +107,14 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWr
     // Award Top 3 Racer badge if newHighScore is in top 3 of leaderboard
     const shouldGetTop3Badge = await isNewHighScoreTop3(raceObject.leaderboard, newHighScore);
     if (shouldGetTop3Badge) {
-      newBadgeKey = "Top 3 Racer";
       promises.push(
-        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Top 3 Racer" }).catch((error) =>
-          errorHandler({
-            error,
-            functionName: "finishLineEntered",
-            message: "Error awarding Top 3 Racer badge",
-          }),
+        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Top 3 Racer", redisObj, profileId }).catch(
+          (error) =>
+            errorHandler({
+              error,
+              functionName: "finishLineEntered",
+              message: "Error awarding Top 3 Racer badge",
+            }),
         ),
       );
     }
@@ -124,64 +123,64 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWr
     const [min, sec, mili] = currentElapsedTime.split(":").map(Number);
     const totalSeconds = min * 60 + sec + mili / 100;
     if (totalSeconds < 30) {
-      newBadgeKey = "Speed Demon";
       promises.push(
-        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Speed Demon" }).catch((error) =>
-          errorHandler({
-            error,
-            functionName: "finishLineEntered",
-            message: "Error awarding Speed Demon badge",
-          }),
+        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Speed Demon", redisObj, profileId }).catch(
+          (error) =>
+            errorHandler({
+              error,
+              functionName: "finishLineEntered",
+              message: "Error awarding Speed Demon badge",
+            }),
         ),
       );
     } else if (totalSeconds > 120) {
-      newBadgeKey = "Slow & Steady";
       promises.push(
-        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Slow & Steady" }).catch((error) =>
-          errorHandler({
-            error,
-            functionName: "finishLineEntered",
-            message: "Error awarding Slow & Steady badge",
-          }),
+        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Slow & Steady", redisObj, profileId }).catch(
+          (error) =>
+            errorHandler({
+              error,
+              functionName: "finishLineEntered",
+              message: "Error awarding Slow & Steady badge",
+            }),
         ),
       );
     }
 
     // Award Race Pro badge if visitor has completed 100 races or Race Expert badge if visitor has completed 1000 races
     if (visitor.dataObject.racesCompleted + 1 === 100) {
-      newBadgeKey = "Race Pro";
       promises.push(
-        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Race Pro" }).catch((error) =>
-          errorHandler({
-            error,
-            functionName: "finishLineEntered",
-            message: "Error awarding Race Pro badge",
-          }),
+        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Race Pro", redisObj, profileId }).catch(
+          (error) =>
+            errorHandler({
+              error,
+              functionName: "finishLineEntered",
+              message: "Error awarding Race Pro badge",
+            }),
         ),
       );
     } else if (visitor.dataObject.racesCompleted + 1 === 1000) {
-      newBadgeKey = "Race Expert";
       promises.push(
-        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Race Expert" }).catch((error) =>
-          errorHandler({
-            error,
-            functionName: "finishLineEntered",
-            message: "Error awarding Race Expert badge",
-          }),
+        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Race Expert", redisObj, profileId }).catch(
+          (error) =>
+            errorHandler({
+              error,
+              functionName: "finishLineEntered",
+              message: "Error awarding Race Expert badge",
+            }),
         ),
       );
     }
 
     // Award Never Give Up badge if visitor completed the race after previously entering a wrong checkpoint
     if (wasWrongCheckpointEntered) {
-      newBadgeKey = "Never Give Up";
       promises.push(
-        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Never Give Up" }).catch((error) =>
-          errorHandler({
-            error,
-            functionName: "finishLineEntered",
-            message: "Error awarding Never Give Up badge",
-          }),
+        awardBadge({ credentials, visitor, visitorInventory, badgeName: "Never Give Up", redisObj, profileId }).catch(
+          (error) =>
+            errorHandler({
+              error,
+              functionName: "finishLineEntered",
+              message: "Error awarding Never Give Up badge",
+            }),
         ),
       );
     }
@@ -190,13 +189,6 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWr
     results.forEach((result) => {
       if (result.status === "rejected") console.error(result.reason);
     });
-
-    if (newBadgeKey) {
-      redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
-        profileId,
-        badgeKey: newBadgeKey,
-      });
-    }
 
     return;
   } catch (error) {

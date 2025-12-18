@@ -22,7 +22,7 @@ export const RaceCompletedScreen = () => {
       const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
       eventSource.onmessage = function (event) {
         const newEvent = JSON.parse(event.data);
-        if (newEvent.badgeKey) setNewBadgeKey(newEvent.badgeKey);
+        if (newEvent.newBadgeName) setNewBadgeKey(newEvent.newBadgeName);
       };
       eventSource.onerror = (event) => {
         console.error("Server Event error:", event);
