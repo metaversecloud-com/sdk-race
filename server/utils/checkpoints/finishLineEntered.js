@@ -185,6 +185,24 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWr
       );
     }
 
+    // Award Track Completion badge for specific track by name if available
+    promises.push(
+      awardBadge({
+        credentials,
+        visitor,
+        visitorInventory,
+        badgeName: raceObject.trackName,
+        redisObj,
+        profileId,
+      }).catch((error) =>
+        errorHandler({
+          error,
+          functionName: "finishLineEntered",
+          message: `Error awarding ${raceObject.trackName} completion badge`,
+        }),
+      ),
+    );
+
     const results = await Promise.allSettled(promises);
     results.forEach((result) => {
       if (result.status === "rejected") console.error(result.reason);

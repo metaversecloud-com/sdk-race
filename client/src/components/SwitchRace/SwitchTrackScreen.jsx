@@ -33,7 +33,7 @@ export const SwitchTrackScreen = () => {
     setAreAllButtonsDisabled(true);
 
     await backendAPI
-      .post(`/race/switch-track?trackSceneId=${selectedTrack.sceneId}`)
+      .post("/race/switch-track", { selectedTrack })
       .then((response) => {
         const { leaderboard, numberOfCheckpoints, trackLastSwitchedDate } = response.data.sceneData;
 

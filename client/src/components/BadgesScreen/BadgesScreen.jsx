@@ -52,7 +52,8 @@ export const BadgesScreen = () => {
         <div className="grid grid-cols-3 gap-6 pt-4">
           {Object.values(badges).map((badge) => {
             const hasBadge = visitorInventory && Object.keys(visitorInventory).includes(badge.name);
-            const style = hasBadge ? {} : { filter: "grayscale(1)" };
+            const style = { width: "90px" };
+            if (!hasBadge) style.filter = "grayscale(1)";
             return (
               <div className="tooltip" key={badge.id}>
                 <span className="tooltip-content">{badge.name}</span>
