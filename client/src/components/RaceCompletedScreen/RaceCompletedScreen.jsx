@@ -43,7 +43,12 @@ export const RaceCompletedScreen = () => {
             <h2>
               <strong>Congratulations!</strong>
             </h2>
-            <div style={{ fontSize: "50px" }}>🏁</div>
+            <img
+              src="https://sdk-race.s3.us-east-1.amazonaws.com/checkeredFlag.png"
+              alt="checkered flag"
+              className="mx-auto"
+              style={{ height: "255px" }}
+            />
             <h3>Your Time</h3>
             <h2>
               <strong>{elapsedTime}</strong>

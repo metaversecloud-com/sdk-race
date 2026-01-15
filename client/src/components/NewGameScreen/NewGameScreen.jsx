@@ -1,7 +1,6 @@
 import { useContext } from "react";
 
 // components
-import racingMap from "../../assets/racingMap.png";
 import { Footer, Tabs } from "@components";
 
 // context
@@ -23,7 +22,7 @@ export const NewGameScreen = () => {
     <>
       <div className="grid gap-6">
         <Tabs />
-        <img src={racingMap} alt="racing map" className="rounded-lg shadow-lg" />
+        <img src="https://sdk-race.s3.us-east-1.amazonaws.com/logo.png" alt="racing map" style={{ height: "300px" }} />
         <div className="card p-4">
           <strong>How to Play</strong>
           <ol style={{ marginLeft: "18px", listStyle: "auto" }}>

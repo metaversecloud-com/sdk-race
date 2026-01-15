@@ -43,7 +43,11 @@ export const Leaderboard = () => {
   return (
     <>
       <div className="grid gap-4 text-center">
-        <div className="icon">🏆</div>
+        <img
+          src="https://sdk-race.s3.us-east-1.amazonaws.com/leaderboard.png"
+          alt="leaderboard"
+          style={{ height: "325px" }}
+        />
         <h2 className="text-white">
           <strong>Leaderboard</strong>
         </h2>
