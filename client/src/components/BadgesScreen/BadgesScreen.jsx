@@ -49,13 +49,13 @@ export const BadgesScreen = () => {
           <strong>Badges</strong>
         </h2>
 
-        <div className="grid grid-cols-3 gap-6 pt-4">
+        <div className="grid grid-cols-3 gap-2 pt-4">
           {Object.values(badges).map((badge) => {
             const hasBadge = visitorInventory && Object.keys(visitorInventory).includes(badge.name);
             const style = { width: "90px" };
             if (!hasBadge) style.filter = "grayscale(1)";
             return (
-              <div className="tooltip" key={badge.id}>
+              <div className="tooltip m-auto" key={badge.id}>
                 <span className="tooltip-content">{badge.name}</span>
                 <img src={badge.icon} alt={badge.name} style={style} />
               </div>
