@@ -31,10 +31,18 @@ export const handleCheckpointEntered = async (req, res) => {
 
     if (checkpointNumber !== 0) {
       if (checkpointNumber > 1 && !cachedCheckpoints[checkpointNumber - 2]) {
-        redisObj.publish(channel, {
-          profileId,
-          checkpointsCompleted: cachedCheckpoints,
-        });
+        try {
+          await redisObj.publish(channel, {
+            profileId,
+            checkpointsCompleted: cachedCheckpoints,
+          });
+        } catch (error) {
+          errorHandler({
+            error,
+            functionName: "handleCheckpointEntered",
+            message: "Error publishing wrong checkpoint entered to redis",
+          });
+        }
         const visitor = await Visitor.create(visitorId, urlSlug, { credentials });
         await visitor
           .fireToast({
@@ -50,25 +58,60 @@ export const handleCheckpointEntered = async (req, res) => {
             }),
           );
 
-        redisObj.set(profileId, JSON.stringify({ checkpoints: cachedCheckpoints, wasWrongCheckpointEntered: true }));
+        try {
+          await redisObj.set(
+            profileId,
+            JSON.stringify({ checkpoints: cachedCheckpoints, wasWrongCheckpointEntered: true }),
+          );
+        } catch (error) {
+          errorHandler({
+            error,
+            functionName: "handleCheckpointEntered",
+            message: "Error updating object in redis when wrong checkpoint entered",
+          });
+        }
         return;
       } else {
-        redisObj.publish(channel, {
-          profileId,
-          checkpointNumber,
-          currentRaceFinishedElapsedTime: null,
-        });
+        try {
+          await redisObj.publish(channel, {
+            profileId,
+            checkpointNumber,
+            currentRaceFinishedElapsedTime: null,
+          });
+        } catch (error) {
+          errorHandler({
+            error,
+            functionName: "handleCheckpointEntered",
+            message: "Error publishing checkpoint entered to redis",
+          });
+        }
         cachedCheckpoints[checkpointNumber - 1] = true;
-        redisObj.set(profileId, JSON.stringify({ checkpoints: cachedCheckpoints, wasWrongCheckpointEntered }));
+        try {
+          await redisObj.set(profileId, JSON.stringify({ checkpoints: cachedCheckpoints, wasWrongCheckpointEntered }));
+        } catch (error) {
+          errorHandler({
+            error,
+            functionName: "handleCheckpointEntered",
+            message: "Error updating object in redis when checkpoint entered",
+          });
+        }
       }
     }
 
     if (checkpointNumber === 0) {
-      redisObj.publish(channel, {
-        profileId,
-        checkpointNumber,
-        currentRaceFinishedElapsedTime: currentElapsedTime,
-      });
+      try {
+        await redisObj.publish(channel, {
+          profileId,
+          checkpointNumber,
+          currentRaceFinishedElapsedTime: currentElapsedTime,
+        });
+      } catch (error) {
+        errorHandler({
+          error,
+          functionName: "handleCheckpointEntered",
+          message: "Error publishing finish line entered to redis",
+        });
+      }
       const result = await finishLineEntered({ credentials, currentElapsedTime, wasWrongCheckpointEntered, redisObj });
       if (result instanceof Error) throw result;
     } else {

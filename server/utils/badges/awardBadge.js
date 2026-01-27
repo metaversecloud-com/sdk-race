@@ -12,10 +12,25 @@ export const awardBadge = async ({ credentials, visitor, visitorInventory, badge
 
     await visitor.grantInventoryItem(inventoryItem, 1);
 
-    redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
-      profileId,
-      newBadgeName: badgeName,
-    });
+    await visitor
+      .fireToast({
+        title: "Badge Awarded",
+        text: `You have earned the ${badgeName} badge!`,
+      })
+      .catch(() => console.error(`Failed to fire toast after awarding the ${badgeName} badge.`));
+
+    try {
+      await redisObj.publish(`${process.env.INTERACTIVE_KEY}_RACE`, {
+        profileId,
+        newBadgeName: badgeName,
+      });
+    } catch (error) {
+      errorHandler({
+        error,
+        functionName: "awardBadge",
+        message: "Error publishing new badge awarded to redis",
+      });
+    }
 
     return { success: true };
   } catch (error) {
