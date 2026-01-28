@@ -12,26 +12,26 @@ export const RaceCompletedScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
   const { elapsedTime, badges } = useContext(GlobalStateContext);
 
-  const [newBadgeKey, setNewBadgeKey] = useState();
+  const [newBadgeKey, setNewBadgeKey] = useState("Race Expert");
 
   const [searchParams] = useSearchParams();
   const profileId = searchParams.get("profileId");
 
-  useEffect(() => {
-    if (profileId) {
-      const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
-      eventSource.onmessage = function (event) {
-        const newEvent = JSON.parse(event.data);
-        if (newEvent.newBadgeName) setNewBadgeKey(newEvent.newBadgeName);
-      };
-      eventSource.onerror = (event) => {
-        console.error("Server Event error:", event);
-      };
-      return () => {
-        eventSource.close();
-      };
-    }
-  }, [profileId]);
+  // useEffect(() => {
+  //   if (profileId) {
+  //     const eventSource = new EventSource(`/api/events?profileId=${profileId}`);
+  //     eventSource.onmessage = function (event) {
+  //       const newEvent = JSON.parse(event.data);
+  //       if (newEvent.newBadgeName) setNewBadgeKey(newEvent.newBadgeName);
+  //     };
+  //     eventSource.onerror = (event) => {
+  //       console.error("Server Event error:", event);
+  //     };
+  //     return () => {
+  //       eventSource.close();
+  //     };
+  //   }
+  // }, [profileId]);
 
   return (
     <>
@@ -63,7 +63,7 @@ export const RaceCompletedScreen = () => {
         </button>
       </Footer>
 
-      {newBadgeKey && <NewBadgeModal badge={badges[newBadgeKey]} handleToggleShowModal={() => {}} />}
+      {newBadgeKey && <NewBadgeModal badge={badges[newBadgeKey]} handleToggleShowModal={() => setNewBadgeKey(null)} />}
     </>
   );
 };
