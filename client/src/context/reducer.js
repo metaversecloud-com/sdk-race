@@ -121,6 +121,7 @@ const globalReducer = (state, action) => {
       return {
         ...state,
         leaderboard: payload.leaderboard,
+        highScore: payload.highScore,
         error: "",
       };
     case SET_ERROR:

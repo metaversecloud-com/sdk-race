@@ -1,4 +1,4 @@
-export const formatLeaderboard = async (leaderboard) => {
+export const formatLeaderboard = async (leaderboard, profileId) => {
   const leaderboardArray = [];
   for (const profileId in leaderboard) {
     const data = leaderboard[profileId];
@@ -19,5 +19,8 @@ export const formatLeaderboard = async (leaderboard) => {
   };
   leaderboardArray.sort((a, b) => timeToSeconds(a.highScore) - timeToSeconds(b.highScore)).slice(0, 20);
 
-  return leaderboardArray;
+  let highScore;
+  if (Object.keys(leaderboard).includes(profileId)) highScore = leaderboard[profileId].split("|")[1];
+
+  return { leaderboardArray, highScore };
 };

@@ -11,7 +11,7 @@ import { TRACKS } from "../constants.js";
 export const handleLoadGameState = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
-    const { urlSlug, sceneDropId } = credentials;
+    const { profileId, urlSlug, sceneDropId } = credentials;
     const now = Date.now();
 
     const world = await World.create(urlSlug, { credentials });
@@ -65,10 +65,10 @@ export const handleLoadGameState = async (req, res) => {
       );
     }
 
-    const { visitor, visitorProgress, visitorInventory } = await getVisitor(credentials, true);
-    const { checkpoints, highScore, startTimestamp } = visitorProgress;
+    const { leaderboardArray, highScore } = await formatLeaderboard(sceneData.leaderboard, profileId);
 
-    const leaderboardArray = await formatLeaderboard(sceneData.leaderboard);
+    const { visitor, visitorProgress, visitorInventory } = await getVisitor(credentials, true);
+    let { checkpoints, startTimestamp } = visitorProgress;
 
     const { badges } = await getInventoryItems(credentials);
 

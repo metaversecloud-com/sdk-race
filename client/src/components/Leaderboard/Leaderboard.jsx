@@ -53,7 +53,7 @@ export const Leaderboard = () => {
         </h2>
         <div className="card-primary grid gap-2">
           <h3>Personal Best</h3>
-          <p>{highScore || "No highScore available"}</p>
+          <p>{highScore || "No high score available"}</p>
         </div>
         <div className="card-outline">
           {leaderboard?.length > 0 ? (
