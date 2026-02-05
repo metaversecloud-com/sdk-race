@@ -12,7 +12,8 @@ export const handleSwitchTrack = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
     const { assetId, profileId, urlSlug, sceneDropId } = credentials;
-    const { trackSceneId } = req.query;
+    const { selectedTrack } = req.body;
+    const { sceneId, name } = selectedTrack;
 
     const world = await World.create(urlSlug, { credentials });
     const { visitor } = await getVisitor(credentials);
@@ -54,7 +55,7 @@ export const handleSwitchTrack = async (req, res) => {
 
     await world.dropScene({
       allowNonAdmins: true,
-      sceneId: trackSceneId,
+      sceneId,
       position,
       sceneDropId,
     });
@@ -64,11 +65,17 @@ export const handleSwitchTrack = async (req, res) => {
       isPartial: true,
     });
 
+    const sceneData = {
+      trackName: name,
+      numberOfCheckpoints: numberOfCheckpoints?.length,
+      leaderboard: {},
+      position,
+      trackLastSwitchedDate: new Date().getTime(),
+    };
+
     await world.updateDataObject(
       {
-        [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
-        [`${sceneDropId}.leaderboard`]: {},
-        [`${sceneDropId}.position`]: position,
+        [sceneDropId]: sceneData,
       },
       { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId }] },
     );
@@ -83,7 +90,7 @@ export const handleSwitchTrack = async (req, res) => {
     const droppedAsset = DroppedAsset.create(assetId, urlSlug, { credentials });
     await droppedAsset.deleteDroppedAsset();
 
-    return res.json({ success: true });
+    return res.json({ success: true, sceneData });
   } catch (error) {
     return errorHandler({
       error,

@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
 
-function SwitchRaceTrackButton({ track, handleToggleShowTrackModal }) {
+export const SwitchRaceTrackButton = ({ track, handleToggleShowTrackModal }) => {
   return (
     <div onClick={() => handleToggleShowTrackModal(track)}>
       <img src={track.thumbnail} alt={track.name} />
       <p>{track.name}</p>
     </div>
   );
-}
+};
 
 SwitchRaceTrackButton.propTypes = {
   handleToggleShowTrackModal: PropTypes.func,

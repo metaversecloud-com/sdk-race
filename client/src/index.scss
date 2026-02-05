@@ -1,39 +1,121 @@
+.page-container {
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  background-color: #1a8dff;
+  z-index: -1;
+}
+
 .footer-fixed {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   max-width: 352px;
-  padding: 10px 0;
   text-align: center;
-  background-color: white;
 }
 
-.icon-with-rounded-border {
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-yellow {
+  color: #fdb41d !important;
+}
+
+.btn-primary,
+.btn-primary-outline {
+  background-color: #fdb41d;
+  border: 4px solid #fdb41d;
+  padding: 12px 20px;
   border-radius: 50px;
-  border: 1px solid #ebedef;
-  display: flex;
-  width: 40px;
-  height: 40px;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
 }
 
-.btn-danger-outline:disabled:hover {
+.btn-primary-outline {
+  background-color: #ffffff;
+}
+
+.btn-primary:disabled {
+  background-color: #e2dfd7;
+  border: 4px solid #ffd880;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #1a8dff;
+  border: 4px solid #1a8dff;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
+}
+
+.icon-btn {
+  cursor: pointer;
+  color: white;
+  background: transparent;
+  font-size: 32px;
+  line-height: 32px;
+}
+
+.card-primary,
+.card-outline {
   background: #ffffff;
-  border-color: #d6dbdf;
-  color: #d6dbdf;
-  cursor: not-allowed;
+  border: 4px solid #01aefe;
+  border-radius: 25px;
+  padding: 16px;
+}
+
+.card-primary {
+  background: #caedff;
+}
+
+.tab {
+  background: #caedff;
+  border: 1px solid #ffffff;
+  border-radius: 25px;
+  padding: 6px 4px;
+  font-size: 14px;
+}
+
+.track {
+  border-radius: 25px;
+  border: 2px solid #000000;
+  background: #cccccc;
+  height: 120px;
+}
+
+.selected {
+  border: 2px solid #fdb41d;
+}
+
+table {
+  tr:nth-child(even) {
+    background-color: #f8f8f8;
+  }
+}
+
+.checkpoint {
+  border-radius: 50%;
+  border: 2px solid #000000;
+  background-color: #ffffff;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+}
+.completed {
+  background-color: #fdb41d;
 }
 
 .small-to-large {
   animation: grow 1s forwards;
-}
-
-.heartbeat {
-  font-size: 40px;
-  color: #e74c3c;
-  animation: heartbeat 1.5s infinite;
 }
 
 @keyframes grow {

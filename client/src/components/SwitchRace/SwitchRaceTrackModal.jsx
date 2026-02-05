@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { backendAPI } from "@utils/backendAPI";
 
-function TrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
+export const SwitchRaceTrackModal = ({ track, handleToggleShowModal, setMessage }) => {
   const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
 
   async function handleSwitchTrack() {
@@ -45,9 +45,9 @@ function TrackSwitcherModal({ track, handleToggleShowModal, setMessage }) {
       </div>
     </div>
   );
-}
+};
 
-TrackSwitcherModal.propTypes = {
+SwitchRaceTrackModal.propTypes = {
   handleToggleShowModal: PropTypes.func,
   setMessage: PropTypes.func,
   track: {
@@ -56,4 +56,4 @@ TrackSwitcherModal.propTypes = {
   },
 };
 
-export default TrackSwitcherModal;
+export default SwitchRaceTrackModal;

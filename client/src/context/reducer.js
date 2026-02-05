@@ -6,6 +6,9 @@ import {
   CANCEL_RACE,
   LOAD_GAME_STATE,
   RESET_GAME,
+  SET_VISITOR_INVENTORY,
+  SET_SCENE_DATA,
+  SET_LEADERBOARD,
   SET_ERROR,
 } from "./types";
 
@@ -22,6 +25,21 @@ const globalReducer = (state, action) => {
       return {
         ...state,
         screenManager: SCREEN_MANAGER.SHOW_HOME_SCREEN,
+      };
+    case SCREEN_MANAGER.SHOW_LEADERBOARD_SCREEN:
+      return {
+        ...state,
+        screenManager: SCREEN_MANAGER.SHOW_LEADERBOARD_SCREEN,
+      };
+    case SCREEN_MANAGER.SHOW_BADGES_SCREEN:
+      return {
+        ...state,
+        screenManager: SCREEN_MANAGER.SHOW_BADGES_SCREEN,
+      };
+    case SCREEN_MANAGER.SHOW_SWITCH_TRACK_SCREEN:
+      return {
+        ...state,
+        screenManager: SCREEN_MANAGER.SHOW_SWITCH_TRACK_SCREEN,
       };
     case SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN:
       return {
@@ -80,6 +98,30 @@ const globalReducer = (state, action) => {
         numberOfCheckpoints: payload.numberOfCheckpoints,
         startTimestamp: payload.startTimestamp,
         tracks: payload.tracks,
+        visitorInventory: payload.visitorInventory,
+        badges: payload.badges,
+        trackLastSwitchedDate: payload.trackLastSwitchedDate,
+        error: "",
+      };
+    case SET_VISITOR_INVENTORY:
+      return {
+        ...state,
+        visitorInventory: payload.visitorInventory,
+        error: "",
+      };
+    case SET_SCENE_DATA:
+      return {
+        ...state,
+        leaderboard: payload.leaderboard,
+        numberOfCheckpoints: payload.numberOfCheckpoints,
+        trackLastSwitchedDate: payload.trackLastSwitchedDate,
+        error: "",
+      };
+    case SET_LEADERBOARD:
+      return {
+        ...state,
+        leaderboard: payload.leaderboard,
+        highScore: payload.highScore,
         error: "",
       };
     case SET_ERROR:

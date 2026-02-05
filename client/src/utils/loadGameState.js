@@ -5,33 +5,51 @@ export const loadGameState = async (dispatch) => {
   try {
     const result = await backendAPI?.post("/race/game-state");
     if (result?.data?.success) {
+      const {
+        checkpointsCompleted,
+        elapsedTimeInSeconds,
+        highScore,
+        isAdmin,
+        leaderboard,
+        numberOfCheckpoints,
+        startTimestamp,
+        endTimestamp,
+        tracks,
+        visitorInventory,
+        badges,
+        trackLastSwitchedDate,
+      } = result.data;
+
       await dispatch({
         type: LOAD_GAME_STATE,
         payload: {
-          checkpointsCompleted: result.data.checkpointsCompleted,
-          elapsedTimeInSeconds: result.data.elapsedTimeInSeconds,
-          highScore: result.data.highScore,
-          isAdmin: result.data.isAdmin,
-          leaderboard: result.data.leaderboard,
-          numberOfCheckpoints: result.data.numberOfCheckpoints,
-          startTimestamp: result.data.startTimestamp,
-          tracks: result.data.tracks,
+          checkpointsCompleted,
+          elapsedTimeInSeconds,
+          highScore,
+          isAdmin,
+          leaderboard,
+          numberOfCheckpoints,
+          startTimestamp,
+          tracks,
+          visitorInventory,
+          badges,
+          trackLastSwitchedDate,
         },
       });
 
-      if (result.data.startTimestamp && !result.data.endTimestamp) {
+      if (startTimestamp && !endTimestamp) {
         await dispatch({
           type: SCREEN_MANAGER.SHOW_RACE_IN_PROGRESS_SCREEN,
         });
       }
 
-      if (result.data.startTimestamp && result.data.endTimestamp) {
+      if (startTimestamp && endTimestamp) {
         await dispatch({
           type: SCREEN_MANAGER.SHOW_RACE_COMPLETED,
         });
       }
 
-      if (!result.data.startTimestamp) {
+      if (!startTimestamp) {
         await dispatch({
           type: SCREEN_MANAGER.SHOW_HOME_SCREEN,
         });

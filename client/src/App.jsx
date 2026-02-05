@@ -1,9 +1,9 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Route, Routes, useSearchParams } from "react-router-dom";
 
-// pagrs
+// pages
 import Home from "@pages/Home";
-import Leaderboard from "@pages/Leaderboard";
+import LeaderboardPage from "@pages/LeaderboardPage";
 import Error from "@pages/Error";
 
 // context
@@ -89,7 +89,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/start" element={<Home />} />
-      <Route path="/leaderboard" element={<Leaderboard />} />
+      <Route path="/leaderboard" element={<LeaderboardPage />} />
       <Route path="*" element={<Error />} />
     </Routes>
   );

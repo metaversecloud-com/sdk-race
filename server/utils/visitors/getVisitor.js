@@ -44,7 +44,20 @@ export const getVisitor = async (credentials, shouldGetVisitorDetails = false) =
 
     await visitor.fetchDataObject();
 
-    return { visitor, visitorProgress: visitor.dataObject?.[`${urlSlug}-${sceneDropId}`] };
+    await visitor.fetchInventoryItems();
+    let visitorInventory = {};
+
+    for (const item of visitor.inventoryItems || []) {
+      const { id, name = "", image_url } = item;
+
+      visitorInventory[name] = {
+        id,
+        icon: image_url,
+        name,
+      };
+    }
+
+    return { visitor, visitorProgress: visitor.dataObject?.[`${urlSlug}-${sceneDropId}`], visitorInventory };
   } catch (error) {
     return new Error(error);
   }

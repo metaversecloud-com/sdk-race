@@ -2,17 +2,16 @@ import { useState, useContext, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 
 // components
-import Checkpoint from "./Checkpoint";
-import Footer from "@components/Shared/Footer";
-import Loading from "@components/Shared/Loading";
+import { Checkpoint, Footer, Loading } from "@components";
 
 // context
 import { GlobalStateContext, GlobalDispatchContext } from "@context/GlobalContext";
+import { COMPLETE_RACE } from "@context/types";
 
 // utils
-import { cancelRace, completeRace } from "@utils";
+import { cancelRace } from "@utils";
 
-const RaceInProgressScreen = () => {
+export const RaceInProgressScreen = () => {
   const positiveAudioRef = useRef(null);
   const negativeAudioRef = useRef(null);
   const successAudioRef = useRef(null);
@@ -125,7 +124,13 @@ const RaceInProgressScreen = () => {
     if (allCompleted && !completeRaceCalledRef.current) {
       completeRaceCalledRef.current = true;
       successAudioRef.current.play();
-      completeRace({ dispatch, currentFinishedElapsedTime });
+
+      dispatch({
+        type: COMPLETE_RACE,
+        payload: {
+          elapsedTime: currentFinishedElapsedTime,
+        },
+      });
     }
   }, [checkpoints, isFinishComplete, currentFinishedElapsedTime, dispatch]);
 
@@ -175,24 +180,19 @@ const RaceInProgressScreen = () => {
   if (elapsedTime == "00:00") return <Loading />;
 
   return (
-    <div className="text-center pb-16">
-      <div style={{ textAlign: "center" }}>
-        <div className="mt-4">⌛ {elapsedTime}</div>
-      </div>
-      <h2 className="py-6">Race in progress!</h2>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "10px" }}>
-        <h2 key={"run"} className={`heartbeat`}>
-          Run!
-        </h2>
-      </div>
-      <div className="p-4 text-left">
+    <div className="grid gap-4 text-center">
+      <h2 className="text-yellow">
+        <strong>{elapsedTime}</strong>
+      </h2>
+      <div className="card-outline text-left">
         {checkpoints?.map((checkpoint) => (
           <Checkpoint key={checkpoint.id} number={checkpoint.id} completed={checkpoint.completed} />
         ))}
         <Checkpoint key="finish" number="Finish" completed={isFinishComplete} />
       </div>
+
       <Footer>
-        <button style={{ width: "94%" }} disabled={areAllButtonsDisabled} onClick={() => handleCancelRace()}>
+        <button className="btn-primary" disabled={areAllButtonsDisabled} onClick={handleCancelRace}>
           Cancel Race
         </button>
       </Footer>

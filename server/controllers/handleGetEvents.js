@@ -12,7 +12,15 @@ export const handleGetEvents = async (req, res) => {
       "Cache-Control": "no-cache",
     });
 
-    redisObj.addConn({ res, lastHeartbeatTime: Date.now() });
+    try {
+      await redisObj.addConn({ res, lastHeartbeatTime: Date.now() });
+    } catch (error) {
+      errorHandler({
+        error,
+        functionName: "handleGetEvents",
+        message: "Error adding connection to redis",
+      });
+    }
 
     res.write(`retry: 5000\ndata: ${JSON.stringify({ success: true })}\n\n`);
   } catch (error) {

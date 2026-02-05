@@ -16,7 +16,15 @@ export const handleRaceStart = async (req, res) => {
     const { identityId, displayName } = req.query;
     const startTimestamp = Date.now();
 
-    redisObj.set(profileId, JSON.stringify({ 0: false }));
+    try {
+      await redisObj.set(profileId, JSON.stringify({ checkpoints: { 0: false }, wasWrongCheckpointEntered: false }));
+    } catch (error) {
+      errorHandler({
+        error,
+        functionName: "handleRaceStart",
+        message: "Error updating object in redis when race started",
+      });
+    }
 
     const world = World.create(urlSlug, { credentials });
     world.triggerActivity({ type: WorldActivityType.GAME_ON, assetId }).catch((error) =>

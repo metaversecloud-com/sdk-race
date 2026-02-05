@@ -1,52 +1,42 @@
 import { useContext } from "react";
 
 // components
-import racingMap from "../../assets/racingMap.png";
-import Footer from "../Shared/Footer";
+import { Footer, Tabs } from "@components";
 
 // context
 import { GlobalDispatchContext } from "@context/GlobalContext";
 import { SCREEN_MANAGER } from "@context/types";
 
-const NewGameScreen = () => {
+export const NewGameScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
+
+  const goToSwitchTrackScreen = () => {
+    dispatch({ type: SCREEN_MANAGER.SHOW_SWITCH_TRACK_SCREEN });
+  };
 
   const startRace = () => {
     dispatch({ type: SCREEN_MANAGER.SHOW_ON_YOUR_MARK_SCREEN });
   };
 
-  const Instructions = () => (
-    <>
-      <h3 className="text-center p-6">🏎️ Welcome to the Race!</h3>
-      <div className="p-4">
-        <h4 className="pb-2">How to play:</h4>
-        <ol style={{ marginLeft: "24px", listStyle: "auto" }}>
-          <li>
-            Click <span style={{ color: "green" }}>Start Race</span> to begin.
-          </li>
-          <li>🏁 Run through all checkpoints in the correct order to complete the race!</li>
-        </ol>
-
-        <h4 className="pt-6 pb-2">Important rules:</h4>
-        <ul style={{ marginLeft: "24px", listStyle: "disc" }}>
-          <li>
-            Time starts when you click <span style={{ color: "green" }}>Start Race</span>.
-          </li>
-          <li>Check your rank by clicking the 🏆 leaderboard.</li>
-        </ul>
-      </div>
-    </>
-  );
-
   return (
     <>
-      <div className="">
-        <img src={racingMap} alt="racing map" className="rounded-lg shadow-lg" />
+      <div className="grid gap-6">
+        <Tabs />
+        <img src="https://sdk-race.s3.us-east-1.amazonaws.com/logo.png" alt="racing map" style={{ height: "300px" }} />
+        <div className="card p-4">
+          <strong>How to Play</strong>
+          <ol style={{ marginLeft: "18px", listStyle: "auto" }}>
+            <li>Click Start Race to begin.</li>
+            <li>Run through all checkpoints in the correct order to complete the race!</li>
+          </ol>
+        </div>
       </div>
-      <Instructions />
+
       <Footer>
-        <button onClick={startRace} style={{ width: "94%" }}>
-          {" "}
+        <button className="btn-primary-outline" onClick={goToSwitchTrackScreen}>
+          Update Track
+        </button>
+        <button className="btn-primary" onClick={startRace}>
           Start Race
         </button>
       </Footer>

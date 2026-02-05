@@ -1,82 +1,62 @@
-import { useState, useContext } from "react";
-import PropTypes from "prop-types";
+import { useContext, useState } from "react";
 
 // components
-import BackArrow from "./BackArrow";
-import ResetGameButton from "../ResetGame/ResetGameButton";
-import ResetGameModal from "../ResetGame/ResetGameModal";
-import SwitchRaceTrackModal from "../SwitchRace/SwitchRaceTrackModal";
-import Footer from "../Shared/Footer";
+import { ConfirmationModal, Footer } from "@components";
 
 // context
-import { GlobalStateContext } from "@context/GlobalContext";
+import { GlobalDispatchContext } from "@context/GlobalContext";
+import { RESET_GAME, SCREEN_MANAGER, SET_ERROR } from "@context/types";
 
-function AdminView({ setShowSettings }) {
-  const { tracks } = useContext(GlobalStateContext);
-  const [message, setMessage] = useState(false);
+// utils
+import { backendAPI, getErrorMessage } from "@utils";
+
+export const AdminView = () => {
+  const dispatch = useContext(GlobalDispatchContext);
+
   const [showResetGameModal, setShowResetGameModal] = useState(false);
-  const [showTrackModal, setShowTrackModal] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState(null);
 
   function handleToggleShowResetGameModal() {
     setShowResetGameModal(!showResetGameModal);
   }
 
-  function handleToggleShowTrackModal(track) {
-    setSelectedTrack(track);
-    setShowTrackModal(!showTrackModal);
-  }
-
-  function handleTrackSelect(track) {
-    setSelectedTrack(track.id);
-    setShowTrackModal(true);
-  }
+  const handleResetGame = async () => {
+    await backendAPI
+      .post("/race/reset-game")
+      .then(() => {
+        dispatch({ type: RESET_GAME });
+        dispatch({ type: SCREEN_MANAGER.SHOW_HOME_SCREEN });
+      })
+      .catch((error) => {
+        dispatch({
+          type: SET_ERROR,
+          payload: { error: getErrorMessage("resetting", error) },
+        });
+      })
+      .finally(() => {
+        handleToggleShowResetGameModal();
+      });
+  };
 
   return (
     <>
+      <h2 className="text-white">Settings</h2>
+
+      <Footer>
+        <button className="btn-primary" onClick={handleToggleShowResetGameModal}>
+          Reset Game
+        </button>
+      </Footer>
+
       {showResetGameModal && (
-        <ResetGameModal handleToggleShowModal={handleToggleShowResetGameModal} setMessage={setMessage} />
-      )}
-      {showTrackModal && selectedTrack && (
-        <SwitchRaceTrackModal
-          track={tracks?.find((track) => track.id === selectedTrack)}
-          handleToggleShowModal={() => handleToggleShowTrackModal(null)}
-          setMessage={setMessage}
+        <ConfirmationModal
+          title="Reset Game"
+          message="If you reset the game, the leaderboard will be removed. Are you sure that you would like to continue?"
+          handleOnConfirm={handleResetGame}
+          handleToggleShowConfirmationModal={handleToggleShowResetGameModal}
         />
       )}
-      <BackArrow setShowSettings={setShowSettings} />
-      <div className="px-4 pb-20">
-        <div className="text-center pb-8">
-          <h2>Settings</h2>
-          <p className="pt-4">Select a track to change the current one.</p>
-          <p>{message}</p>
-        </div>
-        {tracks?.map((track) => (
-          <div
-            key={track.id}
-            className={`mb-2 ${selectedTrack === track.id ? "selected" : ""}`}
-            onClick={() => handleTrackSelect(track)}
-          >
-            <div className="card small">
-              <div className="card-image" style={{ height: "auto" }}>
-                <img src={track?.thumbnail} alt={track.name} />
-              </div>
-              <div className="card-details">
-                <h4 className="card-title h4">{track.name}</h4>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <Footer>
-        <ResetGameButton handleToggleShowModal={handleToggleShowResetGameModal} />
-      </Footer>
     </>
   );
-}
-
-AdminView.propTypes = {
-  setShowSettings: PropTypes.func,
 };
 
 export default AdminView;

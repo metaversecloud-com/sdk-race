@@ -1,12 +1,13 @@
 import express from "express";
 
 import {
-  handleRaceStart,
-  handleCheckpointEntered,
-  handleLoadGameState,
   handleCancelRace,
+  handleCheckpointEntered,
   handleGetEvents,
-  handleCompleteRace,
+  handleGetLeaderboard,
+  handleGetVisitorInventory,
+  handleLoadGameState,
+  handleRaceStart,
   handleResetGame,
   handleSwitchTrack,
 } from "./controllers/index.js";
@@ -37,12 +38,14 @@ router.get("/system/health", (req, res) => {
   });
 });
 
+router.get("/visitor-inventory", handleGetVisitorInventory);
+router.get("/leaderboard", handleGetLeaderboard);
+
 // Race
 router.post("/race/game-state", handleLoadGameState);
 router.post("/race/start-race", handleRaceStart);
 router.post("/race/checkpoint-entered", handleCheckpointEntered);
 router.post("/race/cancel-race", handleCancelRace);
-router.post("/race/complete-race", handleCompleteRace);
 router.post("/race/reset-game", handleResetGame);
 router.post("/race/switch-track", handleSwitchTrack);
 
