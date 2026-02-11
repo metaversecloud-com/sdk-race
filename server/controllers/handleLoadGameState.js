@@ -84,7 +84,7 @@ export const handleLoadGameState = async (req, res) => {
       tracks: parseEnvJson(process.env.TRACKS) || TRACKS,
       visitorInventory,
       badges,
-      trackLastSwitchedDate: sceneData.trackLastSwitchedDate || null,
+      lastRaceStartedDate: sceneData.lastRaceStartedDate || null,
     });
   } catch (error) {
     return errorHandler({
