@@ -74,26 +74,46 @@ On the admin page, click the "Reset Race Stats" button to remove all previously 
 
 The following assets must exist in the world with specific unique names:
 
-| Unique Name | Description |
-|-------------|-------------|
-| `race-track-container` | A rectangle asset that surrounds the entire race track area. Used to determine placement position when switching tracks. |
+| Unique Name             | Description                                                                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `race-track-container`  | A rectangle asset that surrounds the entire race track area. Used to determine placement position when switching tracks.                                 |
 | `race-track-checkpoint` | Checkpoint assets placed along the track. Multiple checkpoints should use partial matching (e.g., `race-track-checkpoint-1`, `race-track-checkpoint-2`). |
-| `race-track-start` | The starting line asset where players begin the race. |
+| `race-track-start`      | The starting line asset where players begin the race.                                                                                                    |
 
-### Additional Environment Variables
+### Environment Variables
 
-In addition to the standard environment variables, this app supports Google Sheets integration for leaderboards:
+Create a `.env` file in the root directory. See `.env-example` for a template.
 
-| Variable | Description |
-|----------|-------------|
-| `GOOGLESHEETS_CLIENT_EMAIL` | Google service account email for Sheets API access |
-| `GOOGLESHEETS_SHEET_ID` | The ID of the Google Spreadsheet for storing leaderboard data |
-| `GOOGLESHEETS_PRIVATE_KEY` | Service account private key for authentication |
+| Variable                    | Description                                                                                                  | Required |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------ | -------- |
+| `NODE_ENV`                  | Node environment (`development` or `production`)                                                             | No       |
+| `INSTANCE_DOMAIN`           | Topia API domain (`api.topia.io` for production, `api-stage.topia.io` for staging)                           | Yes      |
+| `INTERACTIVE_KEY`           | Topia interactive app key                                                                                    | Yes      |
+| `INTERACTIVE_SECRET`        | Topia interactive app secret                                                                                 | Yes      |
+| `REDIS_URL`                 | Redis connection URL for caching race state (e.g., `redis://localhost:6379`)                                 | Yes      |
+| `TRACKS`                    | JSON array of track configurations. Each track requires `id`, `name`, `thumbnail`, and `sceneId`. See below. | Yes      |
+| `GOOGLESHEETS_CLIENT_EMAIL` | Google service account email for analytics                                                                   | No       |
+| `GOOGLESHEETS_SHEET_ID`     | Google Sheet ID for analytics                                                                                | No       |
+| `GOOGLESHEETS_PRIVATE_KEY`  | Google service account private key                                                                           | No       |
 
 ### Track Configuration
 
-Tracks are configured in `server/constants.js`. Each track requires:
+Tracks are configured via the `TRACKS` environment variable as a JSON array. Each track requires:
+
 - `id`: Unique track identifier
 - `name`: Display name for the track
 - `thumbnail`: URL to track preview image
 - `sceneId`: The Topia scene ID containing the track assets
+
+Example:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Beach",
+    "thumbnail": "https://example.com/thumbnails/beach.png",
+    "sceneId": "your_scene_id"
+  }
+]
+```
