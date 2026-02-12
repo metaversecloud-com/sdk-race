@@ -70,7 +70,6 @@ export const handleSwitchTrack = async (req, res) => {
       numberOfCheckpoints: numberOfCheckpoints?.length,
       leaderboard: {},
       position,
-      trackLastSwitchedDate: new Date().getTime(),
     };
 
     await world.updateDataObject(

@@ -100,7 +100,7 @@ const globalReducer = (state, action) => {
         tracks: payload.tracks,
         visitorInventory: payload.visitorInventory,
         badges: payload.badges,
-        trackLastSwitchedDate: payload.trackLastSwitchedDate,
+        lastRaceStartedDate: payload.lastRaceStartedDate,
         error: "",
       };
     case SET_VISITOR_INVENTORY:
@@ -114,7 +114,6 @@ const globalReducer = (state, action) => {
         ...state,
         leaderboard: payload.leaderboard,
         numberOfCheckpoints: payload.numberOfCheckpoints,
-        trackLastSwitchedDate: payload.trackLastSwitchedDate,
         error: "",
       };
     case SET_LEADERBOARD:

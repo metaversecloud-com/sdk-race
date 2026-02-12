@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 
 // components
-import { BackButton, Footer } from "@components";
+import { BackButton, ConfirmationModal, Footer } from "@components";
 
 // context
 import { GlobalDispatchContext, GlobalStateContext } from "@context/GlobalContext";
@@ -12,22 +12,36 @@ import { backendAPI, getErrorMessage } from "@utils";
 
 export const SwitchTrackScreen = () => {
   const dispatch = useContext(GlobalDispatchContext);
-  const { tracks, trackLastSwitchedDate } = useContext(GlobalStateContext);
+  const { tracks, lastRaceStartedDate, isAdmin } = useContext(GlobalStateContext);
 
   const [selectedTrack, setSelectedTrack] = useState(null);
-  const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(true);
+  const [areAllButtonsDisabled, setAreAllButtonsDisabled] = useState(false);
+  const [showRaceWarning, setShowRaceWarning] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   useEffect(() => {
-    if (trackLastSwitchedDate) {
-      const lastSwitch = trackLastSwitchedDate;
-      const now = new Date().getTime();
-      const diffMs = now - lastSwitch;
-      const diffMinutes = diffMs / (100 * 60);
-      setAreAllButtonsDisabled(diffMinutes < 30);
+    if (lastRaceStartedDate) {
+      const now = Date.now();
+      const diffMinutes = (now - lastRaceStartedDate) / (1000 * 60);
+      const isRecentRace = diffMinutes < 5;
+
+      if (isRecentRace) {
+        if (isAdmin) {
+          setAreAllButtonsDisabled(false);
+          setShowRaceWarning(true);
+        } else {
+          setAreAllButtonsDisabled(true);
+          setShowRaceWarning(false);
+        }
+      } else {
+        setAreAllButtonsDisabled(false);
+        setShowRaceWarning(false);
+      }
     } else {
       setAreAllButtonsDisabled(false);
+      setShowRaceWarning(false);
     }
-  }, [trackLastSwitchedDate]);
+  }, [lastRaceStartedDate, isAdmin]);
 
   const updateTrack = async () => {
     setAreAllButtonsDisabled(true);
@@ -35,7 +49,7 @@ export const SwitchTrackScreen = () => {
     await backendAPI
       .post("/race/switch-track", { selectedTrack })
       .then((response) => {
-        const { leaderboard, numberOfCheckpoints, trackLastSwitchedDate } = response.data.sceneData;
+        const { leaderboard, numberOfCheckpoints } = response.data.sceneData;
 
         dispatch({
           type: SET_SCENE_DATA,
@@ -43,7 +57,6 @@ export const SwitchTrackScreen = () => {
             leaderboard,
             numberOfCheckpoints,
             tracks,
-            trackLastSwitchedDate,
           },
         });
       })
@@ -54,6 +67,14 @@ export const SwitchTrackScreen = () => {
         });
         setAreAllButtonsDisabled(false);
       });
+  };
+
+  const handleUpdateTrackClick = () => {
+    if (showRaceWarning) {
+      setShowConfirmationModal(true);
+    } else {
+      updateTrack();
+    }
   };
 
   return (
@@ -83,10 +104,36 @@ export const SwitchTrackScreen = () => {
       </div>
 
       <Footer>
-        <button className="btn-primary" disabled={areAllButtonsDisabled || !selectedTrack} onClick={updateTrack}>
-          Update Track
-        </button>
+        {areAllButtonsDisabled && !isAdmin ? (
+          <div className="tooltip">
+            <span className="tooltip-content">A race was recently started. Please try again in a few minutes.</span>
+            <button
+              className="btn-primary"
+              disabled={areAllButtonsDisabled || !selectedTrack}
+              onClick={handleUpdateTrackClick}
+            >
+              Update Track
+            </button>
+          </div>
+        ) : (
+          <button
+            className="btn-primary"
+            disabled={areAllButtonsDisabled || !selectedTrack}
+            onClick={handleUpdateTrackClick}
+          >
+            Update Track
+          </button>
+        )}
       </Footer>
+
+      {showConfirmationModal && (
+        <ConfirmationModal
+          title="Switch Track"
+          message="A race may currently be in progress. Are you sure you want to switch tracks?"
+          handleOnConfirm={updateTrack}
+          handleToggleShowConfirmationModal={() => setShowConfirmationModal(false)}
+        />
+      )}
     </>
   );
 };

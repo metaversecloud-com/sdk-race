@@ -63,6 +63,13 @@ export const handleRaceStart = async (req, res) => {
     });
     if (updateVisitorResult instanceof Error) throw updateVisitorResult;
 
+    // Update world data object with last race started timestamp
+    await world.updateDataObject(
+      {
+        [`${sceneDropId}.lastRaceStartedDate`]: startTimestamp,
+      },
+    );
+
     addNewRowToGoogleSheets({
       identityId,
       displayName,

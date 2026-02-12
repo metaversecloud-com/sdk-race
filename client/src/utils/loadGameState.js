@@ -17,7 +17,7 @@ export const loadGameState = async (dispatch) => {
         tracks,
         visitorInventory,
         badges,
-        trackLastSwitchedDate,
+        lastRaceStartedDate,
       } = result.data;
 
       await dispatch({
@@ -33,7 +33,7 @@ export const loadGameState = async (dispatch) => {
           tracks,
           visitorInventory,
           badges,
-          trackLastSwitchedDate,
+          lastRaceStartedDate,
         },
       });
 
