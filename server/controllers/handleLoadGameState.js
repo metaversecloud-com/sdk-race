@@ -12,6 +12,7 @@ export const handleLoadGameState = async (req, res) => {
   try {
     const credentials = getCredentials(req.query);
     const { profileId, urlSlug, sceneDropId } = credentials;
+    const forceRefresh = req.body?.forceRefreshInventory === true;
     const now = Date.now();
 
     const world = await World.create(urlSlug, { credentials });
@@ -70,7 +71,7 @@ export const handleLoadGameState = async (req, res) => {
     const { visitor, visitorProgress, visitorInventory } = await getVisitor(credentials, true);
     let { checkpoints, startTimestamp } = visitorProgress;
 
-    const { badges } = await getInventoryItems(credentials);
+    const { badges } = await getInventoryItems(credentials, { forceRefresh });
 
     return res.json({
       checkpointsCompleted: checkpoints,

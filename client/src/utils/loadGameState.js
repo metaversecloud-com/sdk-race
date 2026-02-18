@@ -1,9 +1,9 @@
 import { backendAPI, getErrorMessage } from "@utils";
 import { LOAD_GAME_STATE, SCREEN_MANAGER, SET_ERROR } from "@context/types";
 
-export const loadGameState = async (dispatch) => {
+export const loadGameState = async (dispatch, forceRefreshInventory) => {
   try {
-    const result = await backendAPI?.post("/race/game-state");
+    const result = await backendAPI?.post("/race/game-state", { forceRefreshInventory });
     if (result?.data?.success) {
       const {
         checkpointsCompleted,

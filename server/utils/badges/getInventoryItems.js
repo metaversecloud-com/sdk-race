@@ -1,13 +1,11 @@
-import { Ecosystem } from "../index.js";
+import { getCachedInventoryItems } from "../inventoryCache.js";
 
-export const getInventoryItems = async (credentials) => {
+export const getInventoryItems = async (credentials, { forceRefresh = false } = {}) => {
   try {
-    const ecosystem = await Ecosystem.create({ credentials });
-    await ecosystem.fetchInventoryItems();
+    const items = await getCachedInventoryItems({ credentials, forceRefresh });
 
     const badges = {};
-
-    for (const item of ecosystem.inventoryItems) {
+    for (const item of items) {
       badges[item.name] = {
         id: item.id,
         name: item.name || "Unknown",
@@ -16,18 +14,7 @@ export const getInventoryItems = async (credentials) => {
       };
     }
 
-    // Sort items by sortOrder while keeping them as objects
-    const sortedBadges = {};
-
-    Object.values(badges)
-      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-      .forEach((badge) => {
-        sortedBadges[badge.name] = badge;
-      });
-
-    return {
-      badges: sortedBadges,
-    };
+    return { badges };
   } catch (error) {
     return standardizeError(error);
   }

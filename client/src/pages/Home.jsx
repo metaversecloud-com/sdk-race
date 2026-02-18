@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 // components
 import {
@@ -22,13 +23,17 @@ import { backendAPI, loadGameState } from "@utils";
 function Home() {
   const dispatch = useContext(GlobalDispatchContext);
   const { screenManager } = useContext(GlobalStateContext);
+
+  const [searchParams] = useSearchParams();
+  const forceRefreshInventory = searchParams.get("forceRefreshInventory") === "true";
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchGameState = async () => {
       try {
         setLoading(true);
-        await loadGameState(dispatch);
+        await loadGameState(dispatch, forceRefreshInventory);
       } catch (error) {
         console.error("error in loadGameState action");
       } finally {
