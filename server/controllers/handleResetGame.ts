@@ -1,0 +1,43 @@
+import { Request, Response } from "express";
+import { DEFAULT_PROGRESS } from "../constants.js";
+import { World, errorHandler, getCredentials, getVisitor, updateVisitorProgress } from "../utils/index.js";
+
+export const handleResetGame = async (req: Request, res: Response) => {
+  try {
+    const credentials = getCredentials(req.query as Record<string, any>);
+    const { urlSlug, sceneDropId } = credentials;
+
+    const world = await (World as any).create(urlSlug, { credentials });
+
+    await world.fetchDataObject();
+
+    const numberOfCheckpoints = await world.fetchDroppedAssetsWithUniqueName({
+      uniqueName: "race-track-checkpoint",
+      isPartial: true,
+    });
+
+    await world.updateDataObject({
+      [`${sceneDropId}.numberOfCheckpoints`]: numberOfCheckpoints?.length,
+      [`${sceneDropId}.leaderboard`]: {},
+    });
+
+    const { visitor } = await getVisitor(credentials);
+
+    const updateVisitorResult = await updateVisitorProgress({
+      credentials,
+      updatedProgress: DEFAULT_PROGRESS,
+      visitor,
+    });
+    if (updateVisitorResult instanceof Error) throw updateVisitorResult;
+
+    return res.json({ success: true });
+  } catch (error) {
+    return errorHandler({
+      error,
+      functionName: "handleResetGame",
+      message: "Error in reset game",
+      req,
+      res,
+    });
+  }
+};
