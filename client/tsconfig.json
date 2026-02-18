@@ -25,9 +25,13 @@
     "paths": {
       "@/*": ["src/*"],
       "@components": ["src/components"],
+      "@components/*": ["src/components/*"],
       "@context": ["src/context"],
+      "@context/*": ["src/context/*"],
       "@pages": ["src/pages"],
-      "@utils": ["src/utils"]
+      "@pages/*": ["src/pages/*"],
+      "@utils": ["src/utils"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"],
