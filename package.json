@@ -15,7 +15,7 @@
   },
   "keywords": [],
   "license": "ISC",
-  "main": "./server/index.js",
+  "main": "./server/index.ts",
   "devDependencies": {
     "cross-env": "^7.0.3",
     "nodemon": "^3.1.4",
@@ -27,12 +27,12 @@
   ],
   "private": true,
   "scripts": {
-    "build": "npm run build -w client",
+    "build": "npm run build -ws",
     "link-sdk": "yalc link @rtsdk/topia",
     "unlink-sdk": "yalc remove @rtsdk/topia",
     "server": "npm run start --prefix server",
     "client": "npm start --prefix client",
-    "start": "source commit_info.txt; npm start -w server",
+    "start": "npm run start -w server",
     "dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
     "dev-server": "npm run dev --prefix server",
     "dev-client": "npm run start --prefix client"

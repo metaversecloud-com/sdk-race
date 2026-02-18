@@ -35,7 +35,6 @@ package-lock.json
 yarn.lock
 
 # custom
-
+server/dist
 build/
-
 tmp/
