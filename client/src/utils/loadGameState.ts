@@ -2,7 +2,7 @@ import { Dispatch } from "react";
 import { backendAPI, getErrorMessage } from "@utils";
 import { ActionType, LOAD_GAME_STATE, SCREEN_MANAGER, SET_ERROR } from "@context/types";
 
-export const loadGameState = async (dispatch: Dispatch<ActionType>, forceRefreshInventory: boolean) => {
+export const loadGameState = async (dispatch: Dispatch<ActionType>, forceRefreshInventory?: boolean) => {
   try {
     const result = await backendAPI?.post("/race/game-state", { forceRefreshInventory });
     if (result?.data?.success) {

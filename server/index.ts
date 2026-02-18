@@ -36,7 +36,7 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
   res.send = function (data: any) {
     if (data) {
       try {
-        const cleanData = cleanReturnPayload(typeof data === "string" ? JSON.parse(data) : data, "topia");
+        const cleanData = cleanReturnPayload(typeof data === "string" ? JSON.parse(data) : data);
         res.send = ogSend;
         return res.send(cleanData);
       } catch (error) {
