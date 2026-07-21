@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stg-race0-config
+  labels:
+    app.kubernetes.io/name: stg-race0
+data:
+  INSTANCE_DOMAIN: "api-stage.topia.io"
+  API_DOMAIN: "api-stage.topia.io"
+  INTERACTIVE_KEY: "zqeOlcbNy4BZISp7Et3k"
+  NODE_ENV: "production"
+  PORT: "3000"
+  ANALYTICS_GA: "G-3V4ZGJPD5S"
+  RACE_FINISH_PARTICLE_EFFECT_ID: "8JQFPDmKqWeLQeCBep4e"
+  RACE_FINISH_PARTICLE_EFFECT_NAME: "Firework2_BlueGreen"
+  TRACKS: '[{"id":1,"name":"Beach","thumbnail":"https://sdk-race.s3.amazonaws.com/thumbnails/beach.png","sceneId":"kvXJF5YaTUIl1iWjjJsp"},{"id":2,"name":"Desert","thumbnail":"https://sdk-race.s3.amazonaws.com/thumbnails/desert.png","sceneId":"3tQB1LokokTxUhbxtmO5"},{"id":3,"name":"Sunset","thumbnail":"https://sdk-race.s3.amazonaws.com/thumbnails/sunset.png","sceneId":"fVgr1LKoIMfzREUKE6fX"}]'
