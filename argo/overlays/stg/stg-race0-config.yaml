@@ -10,6 +10,8 @@ data:
   INTERACTIVE_KEY: "zqeOlcbNy4BZISp7Et3k"
   NODE_ENV: "production"
   PORT: "3000"
+  REDIS_CLUSTER_MODE: "false"
+  REDIS_URL: "rediss://topia-dev-sdk-apps-internal-l7mqm2.serverless.use1.cache.amazonaws.com:6379"
   ANALYTICS_GA: "G-3V4ZGJPD5S"
   RACE_FINISH_PARTICLE_EFFECT_ID: "8JQFPDmKqWeLQeCBep4e"
   RACE_FINISH_PARTICLE_EFFECT_NAME: "Firework2_BlueGreen"
