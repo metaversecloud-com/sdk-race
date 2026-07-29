@@ -26,4 +26,4 @@ patches:
 images:
   - name: race0
     newName: 368076259134.dkr.ecr.us-east-1.amazonaws.com/sdk-example
-    digest: sha256:01684368dba4300f7bd5b7b5c16472b23a9be00ebc58e03367a109079285464e
+    digest: sha256:730823c18970f1fe0ab9ffae9cded2eee9785841bfaf9438cf6ecbb6549a1d0e
