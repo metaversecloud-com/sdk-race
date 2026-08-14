@@ -78,7 +78,7 @@ export const handleSwitchTrack = async (req: Request, res: Response) => {
       {
         [sceneDropId]: sceneData,
       },
-      { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId }] },
+      { analytics: [{ analyticName: "trackUpdates", profileId, uniqueKey: profileId, urlSlug }] },
     );
 
     const updateVisitorResult = await updateVisitorProgress({
