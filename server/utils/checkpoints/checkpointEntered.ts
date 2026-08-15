@@ -10,9 +10,14 @@ interface CheckpointEnteredParams {
   credentials: Credentials;
 }
 
-export const checkpointEntered = async ({ checkpoints, checkpointNumber, currentElapsedTime, credentials }: CheckpointEnteredParams) => {
+export const checkpointEntered = async ({
+  checkpoints,
+  checkpointNumber,
+  currentElapsedTime,
+  credentials,
+}: CheckpointEnteredParams) => {
   try {
-    const { profileId } = credentials;
+    const { profileId, urlSlug } = credentials;
 
     const { visitor, visitorProgress } = await getVisitor(credentials);
 
@@ -33,7 +38,7 @@ export const checkpointEntered = async ({ checkpoints, checkpointNumber, current
     const result = await updateVisitorProgress({
       credentials,
       options: {
-        analytics: [{ analyticName: `checkpointEntered${checkpointNumber}`, profileId, uniqueKey: profileId }],
+        analytics: [{ analyticName: `checkpointEntered${checkpointNumber}`, profileId, uniqueKey: profileId, urlSlug }],
       },
       updatedProgress: {
         checkpoints,

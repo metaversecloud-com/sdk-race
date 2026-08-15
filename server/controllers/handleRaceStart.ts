@@ -54,7 +54,7 @@ export const handleRaceStart = async (req: Request, res: Response) => {
     // reset race data
     const updateVisitorResult = await updateVisitorProgress({
       credentials,
-      options: { analytics: [{ analyticName: "starts", uniqueKey: profileId }] },
+      options: { analytics: [{ analyticName: "starts", profileId, urlSlug, uniqueKey: profileId }] },
       updatedProgress: {
         checkpoints: {},
         startTimestamp,

@@ -17,7 +17,12 @@ interface FinishLineParams {
   redisObj: any;
 }
 
-export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWrongCheckpointEntered, redisObj }: FinishLineParams) => {
+export const finishLineEntered = async ({
+  credentials,
+  currentElapsedTime,
+  wasWrongCheckpointEntered,
+  redisObj,
+}: FinishLineParams) => {
   try {
     const { assetId, displayName, profileId, sceneDropId, urlSlug } = credentials;
 
@@ -54,7 +59,7 @@ export const finishLineEntered = async ({ credentials, currentElapsedTime, wasWr
 
     const updateVisitorResult = await updateVisitorProgress({
       credentials,
-      options: { analytics: [{ analyticName: "completions", uniqueKey: profileId }] },
+      options: { analytics: [{ analyticName: "completions", profileId, urlSlug, uniqueKey: profileId }] },
       updatedProgress: {
         checkpoints: {},
         elapsedTime: currentElapsedTime,
