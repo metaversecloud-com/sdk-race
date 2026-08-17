@@ -25,6 +25,7 @@ router.get("/system/health", (req: Request, res: Response) => {
     envs: {
       NODE_ENV: process.env.NODE_ENV,
       COMMIT_HASH: process.env.COMMIT_HASH,
+      BUILD_TIME: process.env.BUILD_TIME ?? "NOT SET",
       INSTANCE_DOMAIN: process.env.INSTANCE_DOMAIN,
       INSTANCE_PROTOCOL: process.env.INSTANCE_PROTOCOL,
       INTERACTIVE_KEY: process.env.INTERACTIVE_KEY,
