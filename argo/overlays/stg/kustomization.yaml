@@ -10,8 +10,6 @@ resources:
   - stg-race0-config.yaml
   - stg-race0-sealedsecret.yaml
   - stg-race0-httpscaledobject.yaml
-  - stg-race0-interceptor-ingress.yaml
-
 patches:
   # Drop the direct ALB Ingress: in stg the app is fronted through the KEDA
   # interceptor so a scaled-to-zero Deployment is woken by the first request.

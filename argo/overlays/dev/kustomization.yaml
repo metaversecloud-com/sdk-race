@@ -8,7 +8,6 @@ resources:
   - race0-config.yaml
   - race0-sealedsecret.yaml
   - race0-httpscaledobject.yaml
-  - race0-interceptor-ingress.yaml
 patches:
   # Drop the direct ALB Ingress: in dev the app is fronted through the KEDA
   # interceptor so a scaled-to-zero Deployment is woken by the first request.
