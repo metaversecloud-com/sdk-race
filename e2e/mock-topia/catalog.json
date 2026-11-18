@@ -1,0 +1,66 @@
+[
+  {
+    "id": "badge-1",
+    "name": "Race Rookie",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Race Rookie badge",
+    "image_path": "https://example.invalid/badges/1.png"
+  },
+  {
+    "id": "badge-2",
+    "name": "Top 3 Racer",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Top 3 Racer badge",
+    "image_path": "https://example.invalid/badges/2.png"
+  },
+  {
+    "id": "badge-3",
+    "name": "Speed Demon",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Speed Demon badge",
+    "image_path": "https://example.invalid/badges/3.png"
+  },
+  {
+    "id": "badge-4",
+    "name": "Slow & Steady",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Slow & Steady badge",
+    "image_path": "https://example.invalid/badges/4.png"
+  },
+  {
+    "id": "badge-5",
+    "name": "Race Pro",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Race Pro badge",
+    "image_path": "https://example.invalid/badges/5.png"
+  },
+  {
+    "id": "badge-6",
+    "name": "Race Expert",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Race Expert badge",
+    "image_path": "https://example.invalid/badges/6.png"
+  },
+  {
+    "id": "badge-7",
+    "name": "Never Give Up",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Never Give Up badge",
+    "image_path": "https://example.invalid/badges/7.png"
+  },
+  {
+    "id": "badge-8",
+    "name": "Beach Track",
+    "type": "BADGE",
+    "status": "ACTIVE",
+    "description": "Beach Track badge",
+    "image_path": "https://example.invalid/badges/8.png"
+  }
+]
